@@ -6,10 +6,19 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Spanned;
+import android.util.Log;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.text.HtmlCompat;
 
 import com.facebook.react.bridge.ReactContext;
+import com.wix.reactnativenotifications.R;
 import com.wix.reactnativenotifications.core.AppLaunchHelper;
 import com.wix.reactnativenotifications.core.AppLifecycleFacade;
 import com.wix.reactnativenotifications.core.AppLifecycleFacade.AppVisibilityListener;
@@ -18,6 +27,10 @@ import com.wix.reactnativenotifications.core.InitialNotificationHolder;
 import com.wix.reactnativenotifications.core.JsIOHelper;
 import com.wix.reactnativenotifications.core.NotificationIntentAdapter;
 import com.wix.reactnativenotifications.core.ProxyService;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import static com.wix.reactnativenotifications.Defs.NOTIFICATION_OPENED_EVENT_NAME;
 import static com.wix.reactnativenotifications.Defs.NOTIFICATION_RECEIVED_EVENT_NAME;
@@ -145,19 +158,37 @@ public class PushNotification implements IPushNotification {
         String CHANNEL_ID = "channel_01";
         String CHANNEL_NAME = "Channel Name";
 
+        String title = mNotificationProps.getTitle("title");
+        if (title == null) {
+            title = mContext.getString(R.string.fcm_default_title);
+        }
+
+        Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
         final Notification.Builder notification = new Notification.Builder(mContext)
-                .setContentTitle(mNotificationProps.getTitle())
-                .setContentText(mNotificationProps.getBody())
+                .setContentTitle(title)
+                .setContentText(mNotificationProps.getBody("service"))
                 .setContentIntent(intent)
                 .setDefaults(Notification.DEFAULT_ALL)
+                .setPriority(Notification.PRIORITY_HIGH)
+                .setSound(soundUri)
                 .setAutoCancel(true);
+
+
+        setActions(notification);
 
         setUpIcon(notification);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String rawTimeoutTs = mNotificationProps.asBundle().getString("expired_time");
+            long expiredTime = getExpiredTime(rawTimeoutTs);
+            if (expiredTime > 0) {
+                notification.setTimeoutAfter(expiredTime);
+            }
+
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
                     CHANNEL_NAME,
-                    NotificationManager.IMPORTANCE_DEFAULT);
+                    NotificationManager.IMPORTANCE_HIGH);
             final NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(channel);
             notification.setChannelId(CHANNEL_ID);
@@ -167,7 +198,7 @@ public class PushNotification implements IPushNotification {
     }
 
     private void setUpIcon(Notification.Builder notification) {
-        int iconResId = getAppResourceId("notification_icon", "drawable");
+        int iconResId = getAppResourceId("ic_notification", "mipmap");
         if (iconResId != 0) {
             notification.setSmallIcon(iconResId);
         } else {
@@ -218,5 +249,78 @@ public class PushNotification implements IPushNotification {
 
     private int getAppResourceId(String resName, String resType) {
         return mContext.getResources().getIdentifier(resName, resType, mContext.getPackageName());
+    }
+
+    private long getExpiredTime(String expiredTimeTs) {
+        long delayMillisToExpiredTime = 0;
+        if (expiredTimeTs != null) {
+            long currentTimeMillis = System.currentTimeMillis();
+            long timeoutTs = Long.parseLong(expiredTimeTs);
+            if (timeoutTs == 0) {
+                timeoutTs = currentTimeMillis + 10 * 1000;
+                delayMillisToExpiredTime = Math.max(timeoutTs - currentTimeMillis, 0);
+            }
+        }
+        return delayMillisToExpiredTime;
+    }
+
+    private void setActions(Notification.Builder notification) {
+        String actionsJson = mContext.getString(R.string.fcm_actions);
+        JSONArray actionsArray = null;
+        Class intentClass = getMainActivity();
+        try {
+            actionsArray = new JSONArray(actionsJson);
+        } catch (JSONException e) {
+            Log.e("PushNotification", "Exception while converting actions to JSON object.", e);
+        }
+
+        if (actionsArray != null) {
+            // No icon for now. The icon value of 0 shows no icon.
+            int icon = 0;
+
+            // Add button for each actions.
+            for (int i = 0; i < actionsArray.length(); i++) {
+                String actionName;
+                String actionColor;
+                try {
+                    JSONObject actionObject = actionsArray.getJSONObject(i);
+                    actionName = actionObject.getString("name");
+                    actionColor = actionObject.getString("color");
+                } catch (JSONException e) {
+                    Log.e("PushNotification", "Exception while getting action from actionsArray.", e);
+                    continue;
+                }
+
+                Intent actionIntent = new Intent(mContext, intentClass);
+                actionIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                actionIntent.setAction(mContext.getPackageName() + "." + actionName);
+
+                // Add "action" for later identifying which button gets pressed.
+                Bundle bundle = mNotificationProps.asBundle();
+                bundle.putString("action", actionName);
+                actionIntent.putExtra("notification", bundle);
+                actionIntent.setPackage(mContext.getPackageName());
+
+                Spanned actionStyle = HtmlCompat.fromHtml(
+                        "<font color=\"" + Color.parseColor(actionColor) + "\">" + actionName,
+                        HtmlCompat.FROM_HTML_MODE_LEGACY);
+
+                PendingIntent pendingActionIntent = PendingIntent.getActivity(mContext, 0, actionIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+                notification.addAction(icon, actionStyle, pendingActionIntent);
+            }
+        }
+    }
+
+    private Class getMainActivity() {
+        String packageName = mContext.getPackageName();
+        Intent launchIntent = mContext.getPackageManager().getLaunchIntentForPackage(packageName);
+        String className = launchIntent.getComponent().getClassName();
+        try {
+            return Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

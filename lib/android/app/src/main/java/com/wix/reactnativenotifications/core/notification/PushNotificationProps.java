@@ -10,12 +10,12 @@ public class PushNotificationProps {
         mBundle = bundle;
     }
 
-    public String getTitle() {
-        return getBundleStringFirstNotNull("gcm.notification.title", "title");
+    public String getTitle(String defaultTitle) {
+        return getBundleStringFirstNotNull("gcm.notification.title", defaultTitle);
     }
 
-    public String getBody() {
-        return getBundleStringFirstNotNull("gcm.notification.body", "body");
+    public String getBody(String defaultBody) {
+        return getBundleStringFirstNotNull("gcm.notification.body", defaultBody);
     }
 
     public Bundle asBundle() {
