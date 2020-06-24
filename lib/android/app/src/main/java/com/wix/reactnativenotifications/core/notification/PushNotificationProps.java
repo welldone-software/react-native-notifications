@@ -1,9 +1,14 @@
 package com.wix.reactnativenotifications.core.notification;
 
 import android.os.Bundle;
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class PushNotificationProps {
 
+    private final static String ACTION = "action";
     protected Bundle mBundle;
 
     public PushNotificationProps(Bundle bundle) {
@@ -16,6 +21,10 @@ public class PushNotificationProps {
 
     public String getBody(String defaultBody) {
         return getBundleStringFirstNotNull("gcm.notification.body", defaultBody);
+    }
+
+    public void setAction(String action) {
+        mBundle.putString(ACTION, action);
     }
 
     public Bundle asBundle() {

@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.text.Spanned;
 import android.util.Log;
 
-import androidx.core.app.NotificationCompat;
 import androidx.core.text.HtmlCompat;
 
 import com.facebook.react.bridge.ReactContext;
@@ -79,8 +78,16 @@ public class PushNotification implements IPushNotification {
     }
 
     @Override
-    public void onOpened() {
+    public void onOpened(String action) {
+        if (action != null) {
+            mNotificationProps.setAction(action);
+        }
         digestNotification();
+    }
+
+    @Override
+    public void onOpened() {
+        onOpened(null);
     }
 
     @Override
@@ -94,9 +101,11 @@ public class PushNotification implements IPushNotification {
     }
 
     protected int postNotification(Integer notificationId) {
-        final PendingIntent pendingIntent = getCTAPendingIntent();
+        int id = notificationId != null ? notificationId : createNotificationId();
+        final PendingIntent pendingIntent = getCTAPendingIntent(id);
         final Notification notification = buildNotification(pendingIntent);
-        return postNotification(notification, notificationId);
+        postNotification(id, notification);
+        return id;
     }
 
     protected void digestNotification() {
@@ -144,8 +153,9 @@ public class PushNotification implements IPushNotification {
         return mAppVisibilityListener;
     }
 
-    protected PendingIntent getCTAPendingIntent() {
+    protected PendingIntent getCTAPendingIntent(int notificationId) {
         final Intent cta = new Intent(mContext, ProxyService.class);
+        mNotificationProps.setId(notificationId);
         return NotificationIntentAdapter.createPendingNotificationIntent(mContext, cta, mNotificationProps);
     }
 
@@ -216,18 +226,17 @@ public class PushNotification implements IPushNotification {
         }
     }
 
-    protected int postNotification(Notification notification, Integer notificationId) {
-        int id = notificationId != null ? notificationId : createNotificationId(notification);
-        postNotification(id, notification);
-        return id;
-    }
-
     protected void postNotification(int id, Notification notification) {
         final NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(id, notification);
     }
 
-    protected int createNotificationId(Notification notification) {
+    protected void cancelNotification(int id) {
+        final NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(id);
+    }
+
+    protected int createNotificationId() {
         return (int) System.nanoTime();
     }
 
@@ -240,6 +249,8 @@ public class PushNotification implements IPushNotification {
         response.putBundle("notification", mNotificationProps.asBundle());
 
         mJsIOHelper.sendEventToJS(NOTIFICATION_OPENED_EVENT_NAME, response, mAppLifecycleFacade.getRunningReactContext());
+
+        cancelNotification(mNotificationProps.getId());
     }
 
     protected void launchOrResumeApp() {
@@ -267,7 +278,6 @@ public class PushNotification implements IPushNotification {
     private void setActions(Notification.Builder notification) {
         String actionsJson = mContext.getString(R.string.fcm_actions);
         JSONArray actionsArray = null;
-        Class intentClass = getMainActivity();
         try {
             actionsArray = new JSONArray(actionsJson);
         } catch (JSONException e) {
@@ -275,10 +285,6 @@ public class PushNotification implements IPushNotification {
         }
 
         if (actionsArray != null) {
-            // No icon for now. The icon value of 0 shows no icon.
-            int icon = 0;
-
-            // Add button for each actions.
             for (int i = 0; i < actionsArray.length(); i++) {
                 String actionName;
                 String actionColor;
@@ -291,36 +297,16 @@ public class PushNotification implements IPushNotification {
                     continue;
                 }
 
-                Intent actionIntent = new Intent(mContext, intentClass);
-                actionIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                actionIntent.setAction(mContext.getPackageName() + "." + actionName);
-
-                // Add "action" for later identifying which button gets pressed.
-                Bundle bundle = mNotificationProps.asBundle();
-                bundle.putString("action", actionName);
-                actionIntent.putExtra("notification", bundle);
-                actionIntent.setPackage(mContext.getPackageName());
+                Intent actionIntent = new Intent(mContext, ProxyService.class);
+                PendingIntent pendingActionIntent = NotificationIntentAdapter.createPendingNotificationIntent(mContext, actionIntent, mNotificationProps, actionName);
 
                 Spanned actionStyle = HtmlCompat.fromHtml(
                         "<font color=\"" + Color.parseColor(actionColor) + "\">" + actionName,
                         HtmlCompat.FROM_HTML_MODE_LEGACY);
 
-                PendingIntent pendingActionIntent = PendingIntent.getActivity(mContext, 0, actionIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT);
-                notification.addAction(icon, actionStyle, pendingActionIntent);
+                notification.addAction(0, actionStyle, pendingActionIntent);
             }
         }
     }
 
-    private Class getMainActivity() {
-        String packageName = mContext.getPackageName();
-        Intent launchIntent = mContext.getPackageManager().getLaunchIntentForPackage(packageName);
-        String className = launchIntent.getComponent().getClassName();
-        try {
-            return Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 }

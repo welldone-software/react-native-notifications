@@ -23,7 +23,8 @@ public class ProxyService extends IntentService {
         final Bundle notificationData = NotificationIntentAdapter.extractPendingNotificationDataFromIntent(intent);
         final IPushNotification pushNotification = PushNotification.get(this, notificationData);
         if (pushNotification != null) {
-            pushNotification.onOpened();
+            String action = NotificationIntentAdapter.extractActionFromIntent(intent);
+            pushNotification.onOpened(action);
         }
     }
 }
