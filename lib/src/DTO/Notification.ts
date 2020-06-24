@@ -30,4 +30,8 @@ export class Notification {
   get thread(): string {
     return this.payload.thread;
   }
+
+  get action(): string {
+    return this.payload.action;
+  }
 }

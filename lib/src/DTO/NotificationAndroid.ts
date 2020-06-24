@@ -1,4 +1,4 @@
-import {Notification} from './Notification';
+import { Notification } from "./Notification";
 
 export class NotificationAndroid extends Notification {
   constructor(payload: object) {
