@@ -33,7 +33,7 @@ public class PushNotificationProps {
     }
 
     public int getId() {
-        mBundle.getInt(ID);
+        return mBundle.getInt(ID);
     }
 
     public Bundle asBundle() {
