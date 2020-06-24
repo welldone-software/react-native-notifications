@@ -9,6 +9,7 @@ import org.json.JSONObject;
 public class PushNotificationProps {
 
     private final static String ACTION = "action";
+    private final static String ID = "id";
     protected Bundle mBundle;
 
     public PushNotificationProps(Bundle bundle) {
@@ -25,6 +26,14 @@ public class PushNotificationProps {
 
     public void setAction(String action) {
         mBundle.putString(ACTION, action);
+    }
+
+    public void setId(int id) {
+        mBundle.putInt(ID, id);
+    }
+
+    public int getId() {
+        mBundle.getInt(ID);
     }
 
     public Bundle asBundle() {
