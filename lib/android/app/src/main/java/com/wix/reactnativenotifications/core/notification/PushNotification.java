@@ -179,7 +179,6 @@ public class PushNotification implements IPushNotification {
                 .setContentTitle(title)
                 .setContentText(mNotificationProps.getBody("service"))
                 .setContentIntent(intent)
-                .setDefaults(Notification.DEFAULT_ALL)
                 .setPriority(Notification.PRIORITY_HIGH)
                 .setSound(soundUri)
                 .setAutoCancel(true);
@@ -269,8 +268,8 @@ public class PushNotification implements IPushNotification {
             long timeoutTs = Long.parseLong(expiredTimeTs);
             if (timeoutTs == 0) {
                 timeoutTs = currentTimeMillis + 10 * 1000;
-                delayMillisToExpiredTime = Math.max(timeoutTs - currentTimeMillis, 0);
             }
+            delayMillisToExpiredTime = Math.max(timeoutTs - currentTimeMillis, 0);
         }
         return delayMillisToExpiredTime;
     }
