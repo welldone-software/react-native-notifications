@@ -87,12 +87,12 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
         final PushNotificationProps notification = InitialNotificationHolder.getInstance().get();
         try {
             InitialNotificationHolder.getInstance().clear();
-            result = Arguments.fromBundle(notification.asBundle());
+            if (notification != null) {
+                result = Arguments.fromBundle(notification.asBundle());
+            }
             promise.resolve(result);
         } catch (Exception error) {
-            if (notification != null) {
-                promise.reject(error);
-            }
+            promise.reject(error);
         }
     }
 
