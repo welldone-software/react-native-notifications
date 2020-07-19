@@ -35,7 +35,7 @@ export class Notification {
     return this.payload.action;
   }
 
-  set setAction(action: String) {
+  set setAction(action: string) {
     this.payload.action = action;
   }
 }
