@@ -1,4 +1,4 @@
-interface NotificationCategoryParams {
+export interface NotificationCategoryParams {
   identifier: string;
   actions: NotificationAction[];
 }
@@ -18,7 +18,7 @@ export interface NotificationTextInput {
   placeholder: string;
 }
 
-interface NotificationActionParams {
+export interface NotificationActionParams {
   identifier: string;
   activationMode: 'foreground' | 'authenticationRequired' | 'destructive';
   title: string;
