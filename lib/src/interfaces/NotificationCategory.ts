@@ -1,10 +1,15 @@
+interface NotificationCategoryParams {
+  identifier: string;
+  actions: NotificationAction[];
+}
+
 export class NotificationCategory {
   identifier: string
-  actions: [NotificationAction?];
+  actions: NotificationAction[];
 
-  constructor(identifier: string, actions: [NotificationAction?]) {
-    this.identifier = identifier;
-    this.actions = actions;
+  constructor(params: NotificationCategoryParams) {
+    this.identifier = params.identifier;
+    this.actions = params.actions;
   }
 }
 
