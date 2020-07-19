@@ -13,18 +13,26 @@ export interface NotificationTextInput {
   placeholder: string;
 }
 
+interface NotificationActionParams {
+  identifier: string;
+  activationMode: 'foreground' | 'authenticationRequired' | 'destructive';
+  title: string;
+  authenticationRequired: boolean;
+  textInput?: NotificationTextInput;
+}
+
 export class NotificationAction {
   identifier: string;
   activationMode: 'foreground' | 'authenticationRequired' | 'destructive';
   title: string;
   authenticationRequired: boolean;
-  textInput: NotificationTextInput;
+  textInput: NotificationTextInput | undefined;
 
-  constructor(identifier: string, activationMode: 'foreground' | 'authenticationRequired' | 'destructive', title: string, authenticationRequired: boolean, textInput: NotificationTextInput) {
-    this.identifier = identifier;
-    this.activationMode = activationMode;
-    this.title = title;
-    this.authenticationRequired = authenticationRequired;
-    this.textInput = textInput;
+  constructor(params: NotificationActionParams) {
+    this.identifier = params.identifier;
+    this.activationMode = params.activationMode;
+    this.title = params.title;
+    this.authenticationRequired = params.authenticationRequired;
+    this.textInput = params.textInput;
   }
 }
