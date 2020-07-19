@@ -34,4 +34,8 @@ export class Notification {
   get action(): string {
     return this.payload.action;
   }
+
+  set setAction(action: String) {
+    this.payload.action = action;
+  }
 }
