@@ -39,10 +39,6 @@
     [[self sharedInstance] startMonitorPushKitNotifications];
 }
 
-+ (void)didReceiveBackgroundNotification:(NSDictionary *)userInfo withCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
-    [[self sharedInstance] didReceiveBackgroundNotification:userInfo withCompletionHandler:completionHandler];
-}
-
 + (void)didRegisterForRemoteNotificationsWithDeviceToken:(id)deviceToken {
     [[self sharedInstance] didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
 }
@@ -71,10 +67,6 @@
 - (void)startMonitorPushKitNotifications {
     _pushKitEventHandler = [RNPushKitEventHandler new];
     _pushKit = [[RNPushKit alloc] initWithEventHandler:_pushKitEventHandler];
-}
-
-- (void)didReceiveBackgroundNotification:(NSDictionary *)userInfo withCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
-    [_notificationEventHandler didReceiveBackgroundNotification:userInfo withCompletionHandler:completionHandler];
 }
 
 - (void)didRegisterForRemoteNotificationsWithDeviceToken:(id)deviceToken {

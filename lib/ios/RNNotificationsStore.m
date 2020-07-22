@@ -3,7 +3,6 @@
 @implementation RNNotificationsStore
 NSMutableDictionary* _actionCompletionHandlers;
 NSMutableDictionary* _presentationCompletionHandlers;
-NSMutableDictionary* _backgroundActionCompletionHandlers;
 
 + (instancetype)sharedInstance {
     static RNNotificationsStore *sharedInstance = nil;
@@ -19,7 +18,6 @@ NSMutableDictionary* _backgroundActionCompletionHandlers;
     self = [super init];
     _actionCompletionHandlers = [NSMutableDictionary new];
     _presentationCompletionHandlers = [NSMutableDictionary new];
-    _backgroundActionCompletionHandlers = [NSMutableDictionary new];
     return self;
 }
 
@@ -29,10 +27,6 @@ NSMutableDictionary* _backgroundActionCompletionHandlers;
 
 - (void)setPresentationCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler withCompletionKey:(NSString *)completionKey {
     _presentationCompletionHandlers[completionKey] = completionHandler;
-}
-
-- (void)setBackgroundActionCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler withCompletionKey:(NSString *)completionKey {
-    _backgroundActionCompletionHandlers[completionKey] = completionHandler;
 }
 
 - (void (^)(void))getActionCompletionHandler:(NSString *)key {
@@ -56,14 +50,6 @@ NSMutableDictionary* _backgroundActionCompletionHandlers;
     if (completionHandler) {
         completionHandler(presentationOptions);
         [_presentationCompletionHandlers removeObjectForKey:completionKey];
-    }
-}
-
-- (void)completeBackgroundAction:(NSString *)completionKey withBackgroundFetchResult:(UIBackgroundFetchResult)backgroundFetchResult {
-    void (^completionHandler)() = (void (^)(UIBackgroundFetchResult))[_backgroundActionCompletionHandlers valueForKey:completionKey];
-    if (completionHandler) {
-        completionHandler(backgroundFetchResult);
-        [_backgroundActionCompletionHandlers removeObjectForKey:completionKey];
     }
 }
 

@@ -36,14 +36,6 @@ class NotificationsExampleApp extends Component {
 
       completion();
     });
-
-    Notifications.events().registerNotificationReceivedBackground((notification, completion) => {
-      this.setState({
-        notifications: [...this.state.notifications, notification]
-      });
-
-      completion();
-    });
   }
 
   requestPermissions() {

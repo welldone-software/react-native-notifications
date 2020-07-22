@@ -1,6 +1,6 @@
 import { NativeModules, NativeEventEmitter, EventEmitter, EmitterSubscription } from 'react-native';
 import {
-  Registered, RegistrationError, RegisteredPushKit, NotificationResponse
+  Registered, RegistrationError, RegisteredPushKit
 } from '../interfaces/NotificationEvents';
 import { Notification } from '../DTO/Notification';
 import { NotificationActionResponse } from '../interfaces/NotificationActionResponse';
@@ -26,20 +26,14 @@ export class NativeEventsReceiver {
     });
   }
 
-  public registerNotificationReceivedBackground(callback: (notification: Notification) => void): EmitterSubscription {
-    return this.emitter.addListener('notificationReceivedBackground', (payload) => {
-      callback(this.notificationFactory.fromPayload(payload));
-    });
-  }
-
   public registerPushKitNotificationReceived(callback: (event: object) => void): EmitterSubscription {
     return this.emitter.addListener('pushKitNotificationReceived', callback);
   }
 
-  public registerNotificationOpened(callback: (notification: Notification, actionResponse?: NotificationActionResponse) => void): EmitterSubscription {
-    return this.emitter.addListener('notificationOpened', (response: NotificationResponse) => {
-      const action = response.action ? new NotificationActionResponse(response.action) : undefined;
-      callback(this.notificationFactory.fromPayload(response.notification), action);
+  public registerNotificationOpened(callback: (notification: Notification, completion: () => void, actionResponse?: NotificationActionResponse) => void): EmitterSubscription {
+    return this.emitter.addListener('notificationOpened', (response, completion) => {
+      const action = response.action ? new NotificationActionResponse(response.action) : undefined
+      callback(this.notificationFactory.fromPayload(response.notification), completion, action);
     });
   }
 

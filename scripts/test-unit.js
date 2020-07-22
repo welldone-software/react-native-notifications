@@ -24,12 +24,12 @@ function runAndroidUnitTests() {
 
 function runIosUnitTests() {
   const conf = release ? `Release` : `Debug`;
-  exec.execSync('npm run pod-install');
+
   exec.execSync(`cd ./example/ios &&
             RCT_NO_LAUNCH_PACKAGER=true
             xcodebuild build build-for-testing
             -scheme "NotificationsExampleApp"
-            -workspace NotificationsExampleApp.xcworkspace
+            -project NotificationsExampleApp.xcodeproj
             -sdk iphonesimulator
             -configuration ${conf}
             -derivedDataPath ./example/ios/DerivedData/NotificationsExampleApp
@@ -41,7 +41,7 @@ function runIosUnitTests() {
             RCT_NO_LAUNCH_PACKAGER=true
             xcodebuild test-without-building
             -scheme "NotificationsExampleApp"
-            -workspace NotificationsExampleApp.xcworkspace
+            -project NotificationsExampleApp.xcodeproj
             -sdk iphonesimulator
             -configuration ${conf}
             -destination 'platform=iOS Simulator,name=iPhone 11'

@@ -117,15 +117,6 @@
 
 @end
 
-@implementation RCTConvert (NSDictionary)
-+ (NSDictionary *)NotificationUserInfo:(NSDictionary *)userInfo withIdentifier:(NSString *)identifier {
-    NSMutableDictionary *formattedNotification = [NSMutableDictionary dictionary];
-    formattedNotification[@"identifier"] = identifier;
-    [formattedNotification addEntriesFromDictionary:[NSDictionary dictionaryWithDictionary:RCTNullIfNil(RCTJSONClean(userInfo))]];
-    return formattedNotification;
-}
-@end
-
 @implementation RCTConvert (UNNotificationPresentationOptions)
 
 + (UNNotificationPresentationOptions)UNNotificationPresentationOptions:(id)json {
@@ -141,20 +132,6 @@
     }
     
     return options;
-}
-
-@end
-
-@implementation RCTConvert (UIBackgroundFetchResult)
-
-+ (UIBackgroundFetchResult)UIBackgroundFetchResult:(NSString *)backgroundFetchResult {
-    UIBackgroundFetchResult result = UIBackgroundFetchResultNoData;
-    if ([@"newData" isEqualToString:backgroundFetchResult]) {
-        result = UIBackgroundFetchResultNewData;
-    } else if ([@"failed" isEqualToString:backgroundFetchResult]) {
-        result = UIBackgroundFetchResultFailed;
-    }
-    return result;
 }
 
 @end

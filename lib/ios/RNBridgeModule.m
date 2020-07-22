@@ -30,10 +30,6 @@ RCT_EXPORT_MODULE();
     }
 }
 
-- (dispatch_queue_t)methodQueue {
-    return dispatch_get_main_queue();
-}
-
 #pragma mark - JS interface
 
 RCT_EXPORT_METHOD(requestPermissions) {
@@ -54,10 +50,6 @@ RCT_EXPORT_METHOD(finishHandlingAction:(NSString *)completionKey) {
 
 RCT_EXPORT_METHOD(finishPresentingNotification:(NSString *)completionKey presentingOptions:(NSDictionary *)presentingOptions) {
     [_commandsHandler finishPresentingNotification:completionKey presentingOptions:presentingOptions];
-}
-
-RCT_EXPORT_METHOD(finishHandlingBackgroundAction:(NSString *)completionKey backgroundFetchResult:(NSString *)backgroundFetchResult) {
-    [_commandsHandler finishHandlingBackgroundAction:completionKey backgroundFetchResult:backgroundFetchResult];
 }
 
 RCT_EXPORT_METHOD(abandonPermissions) {
