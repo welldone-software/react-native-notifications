@@ -11,14 +11,6 @@
         <service android:name=".core.ProxyService"/>
 
         <service
-            android:name=".fcm.FcmInstanceIdListenerService">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
-            </intent-filter>
-        </service>
-
-        <service
             android:name=".fcm.FcmInstanceIdRefreshHandlerService"
             android:exported="false" />
     </application>
