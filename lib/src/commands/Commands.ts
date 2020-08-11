@@ -1,29 +1,61 @@
-import * as _ from 'lodash';
-import { NativeCommandsSender } from '../adapters/NativeCommandsSender';
-import { Notification } from '../DTO/Notification';
-import { NotificationCategory } from '../interfaces/NotificationCategory';
-import { NotificationChannel } from '../interfaces/NotificationChannel';
-import { NotificationPermissions } from '../interfaces/NotificationPermissions';
-import { UniqueIdProvider } from '../adapters/UniqueIdProvider';
-import { NotificationFactory } from '../DTO/NotificationFactory';
+import * as _ from "lodash";
+import { NativeCommandsSender } from "../adapters/NativeCommandsSender";
+import { Notification } from "../DTO/Notification";
+import { NotificationCategory } from "../interfaces/NotificationCategory";
+import { NotificationChannel } from "../interfaces/NotificationChannel";
+import { NotificationPermissions } from "../interfaces/NotificationPermissions";
+import { UniqueIdProvider } from "../adapters/UniqueIdProvider";
+import { NotificationFactory } from "../DTO/NotificationFactory";
+import { NotificationActionResponse } from "../interfaces/NotificationActionResponse";
+import { Platform } from "react-native";
 
 export class Commands {
   constructor(
     private readonly nativeCommandsSender: NativeCommandsSender,
     private readonly uniqueIdProvider: UniqueIdProvider,
     private readonly notificationFactory: NotificationFactory
-  ) { }
+  ) {}
 
   public postLocalNotification(notification: Notification, id?: number) {
     const notificationId: number = id ? id : this.uniqueIdProvider.generate();
-    this.nativeCommandsSender.postLocalNotification(notification, notificationId);
+    this.nativeCommandsSender.postLocalNotification(
+      notification,
+      notificationId
+    );
     return notificationId;
   }
 
+  /**
+   * 
+      const action = response.action ? new NotificationActionResponse(response.action) : undefined
+      callback(this.notificationFactory.fromPayload(response.notification), completion, action);
+   */
+
   public async getInitialNotification(): Promise<Notification | undefined> {
-    return this.nativeCommandsSender.getInitialNotification().then((payload) => {
-      if (payload) {
-        return this.notificationFactory.fromPayload(payload);
+    return this.nativeCommandsSender
+      .getInitialNotification()
+      .then((payload) => {
+        if (payload) {
+          return this.notificationFactory.fromPayload(payload);
+        }
+
+        return undefined;
+      });
+  }
+
+  public async getInitialAction(): Promise<Notification | undefined> {
+    if (Platform.OS === "android") {
+      return this.getInitialNotification();
+    }
+    return this.nativeCommandsSender.getInitialAction().then((response) => {
+      if (response.notification) {
+        const action = response.action
+          ? new NotificationActionResponse(response.action).identifier
+          : undefined;
+        return this.notificationFactory.fromPayload({
+          ...response.notification,
+          action,
+        });
       }
 
       return undefined;

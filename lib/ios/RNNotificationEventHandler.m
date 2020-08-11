@@ -3,6 +3,7 @@
 #import "RNNotificationUtils.h"
 #import "RCTConvert+RNNotifications.h"
 #import "RNNotificationParser.h"
+#import "RNNotificationsStore.h"
 
 @implementation RNNotificationEventHandler {
     RNNotificationsStore* _store;
@@ -30,7 +31,9 @@
 
 - (void)didReceiveNotificationResponse:(UNNotificationResponse *)response completionHandler:(void (^)(void))completionHandler {
     [_store setActionCompletionHandler:completionHandler withCompletionKey:response.notification.request.identifier];
-    [RNEventEmitter sendEvent:RNNotificationOpened body:[RNNotificationParser parseNotificationResponse:response]];
+    NSDictionary* responseDict = [RNNotificationParser parseNotificationResponse:response];
+    [[RNNotificationsStore sharedInstance] setInitialAction:responseDict];
+    [RNEventEmitter sendEvent:RNNotificationOpened body:responseDict];
 }
 
 @end

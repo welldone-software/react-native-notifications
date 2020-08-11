@@ -97,6 +97,11 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
     }
 
     @ReactMethod
+    public void getInitialNotification(final Promise promise) {
+        promise.resolve(null);
+    }
+
+    @ReactMethod
     public void postLocalNotification(ReadableMap notificationPropsMap, int notificationId) {
         if (BuildConfig.DEBUG) Log.d(LOGTAG, "Native method invocation: postLocalNotification");
         final Bundle notificationProps = Arguments.toBundle(notificationPropsMap);

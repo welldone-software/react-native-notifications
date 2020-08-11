@@ -1,12 +1,13 @@
-import { NativeModules } from 'react-native';
-import { Notification } from '../DTO/Notification';
-import { NotificationCompletion } from '../interfaces/NotificationCompletion';
-import { NotificationPermissions } from '../interfaces/NotificationPermissions';
-import { NotificationCategory } from '../interfaces/NotificationCategory';
-import { NotificationChannel } from '../interfaces/NotificationChannel';
+import { NativeModules } from "react-native";
+import { Notification } from "../DTO/Notification";
+import { NotificationCompletion } from "../interfaces/NotificationCompletion";
+import { NotificationPermissions } from "../interfaces/NotificationPermissions";
+import { NotificationCategory } from "../interfaces/NotificationCategory";
+import { NotificationChannel } from "../interfaces/NotificationChannel";
 
 interface NativeCommandsModule {
   getInitialNotification(): Promise<Object>;
+  getInitialAction(): Promise<{ notification: any; action: any }>;
   postLocalNotification(notification: Notification, id: number): void;
   requestPermissions(): void;
   abandonPermissions(): void;
@@ -22,7 +23,10 @@ interface NativeCommandsModule {
   removeAllDeliveredNotifications(): void;
   getDeliveredNotifications(): Promise<Notification[]>;
   setCategories(categories: [NotificationCategory?]): void;
-  finishPresentingNotification(notificationId: string, callback: NotificationCompletion): void;
+  finishPresentingNotification(
+    notificationId: string,
+    callback: NotificationCompletion
+  ): void;
   finishHandlingAction(notificationId: string): void;
   setNotificationChannel(notificationChannel: NotificationChannel): void;
 }
@@ -40,7 +44,11 @@ export class NativeCommandsSender {
   getInitialNotification(): Promise<Object> {
     return this.nativeCommandsModule.getInitialNotification();
   }
-  
+
+  getInitialAction(): Promise<{ notification: any; action: any }> {
+    return this.nativeCommandsModule.getInitialAction();
+  }
+
   requestPermissions() {
     return this.nativeCommandsModule.requestPermissions();
   }
@@ -97,8 +105,14 @@ export class NativeCommandsSender {
     return this.nativeCommandsModule.getDeliveredNotifications();
   }
 
-  finishPresentingNotification(notificationId: string, notificationCompletion: NotificationCompletion): void {
-    this.nativeCommandsModule.finishPresentingNotification(notificationId, notificationCompletion);
+  finishPresentingNotification(
+    notificationId: string,
+    notificationCompletion: NotificationCompletion
+  ): void {
+    this.nativeCommandsModule.finishPresentingNotification(
+      notificationId,
+      notificationCompletion
+    );
   }
 
   finishHandlingAction(notificationId: string): void {
