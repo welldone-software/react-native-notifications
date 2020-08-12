@@ -25,12 +25,6 @@ export class Commands {
     return notificationId;
   }
 
-  /**
-   * 
-      const action = response.action ? new NotificationActionResponse(response.action) : undefined
-      callback(this.notificationFactory.fromPayload(response.notification), completion, action);
-   */
-
   public async getInitialNotification(): Promise<Notification | undefined> {
     return this.nativeCommandsSender
       .getInitialNotification()
@@ -48,7 +42,7 @@ export class Commands {
       return this.getInitialNotification();
     }
     return this.nativeCommandsSender.getInitialAction().then((response) => {
-      if (response.notification) {
+      if (response?.notification) {
         const action = response.action
           ? new NotificationActionResponse(response.action).identifier
           : undefined;
