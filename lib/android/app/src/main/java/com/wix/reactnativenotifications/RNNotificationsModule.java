@@ -97,7 +97,7 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
     }
 
     @ReactMethod
-    public void getInitialNotification(final Promise promise) {
+    public void getInitialAction(final Promise promise) {
         promise.resolve(null);
     }
 
