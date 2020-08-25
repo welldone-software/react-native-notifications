@@ -38,7 +38,10 @@ export class NativeCommandsSender {
   }
 
   postLocalNotification(notification: Notification, id: number) {
-    return this.nativeCommandsModule.postLocalNotification(notification, id);
+    return this.nativeCommandsModule.postLocalNotification(
+      { ...notification.payload },
+      id
+    );
   }
 
   getInitialNotification(): Promise<Object> {
