@@ -195,12 +195,17 @@ public class PushNotification implements IPushNotification {
                 notification.setTimeoutAfter(expiredTime);
             }
 
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
+            final NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+            String channelId = mContext.getString(R.string.channel_id);
+            NotificationChannel foundChannel = notificationManager.getNotificationChannel(channelId);
+            if (foundChannel == null) {
+                NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
                     CHANNEL_NAME,
                     NotificationManager.IMPORTANCE_HIGH);
-            final NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.createNotificationChannel(channel);
-            notification.setChannelId(CHANNEL_ID);
+                notificationManager.createNotificationChannel(channel);
+                channelId = CHANNEL_ID;
+            }
+            notification.setChannelId(channelId);
         }
 
         return notification;

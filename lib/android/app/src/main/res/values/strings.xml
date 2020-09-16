@@ -2,4 +2,5 @@
 <resources>
     <string name="fcm_default_title"></string>
     <string name="fcm_actions"></string>
+    <string name="channel_id"></string>
 </resources>
