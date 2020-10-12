@@ -81,19 +81,15 @@ public class NotificationsStorage {
         }
     }
 
-    public String getDeliveredNotifications() {
+    public String getDeliveredNotifications() throws JSONException {
         JSONArray notificationsArrayJson = new JSONArray();
         String rawJson = mPreferences.getString(NOTIFICATIONS, DEFAULT_VALUE);
-        try {
-            JSONObject notificationsJson = new JSONObject(rawJson);
-            Iterator<String> keys = notificationsJson.keys();
-            while(keys.hasNext()) {
-                String key = keys.next();
-                JSONObject notificationJson = notificationsJson.getJSONObject(key);
-                notificationsArrayJson.put(notificationJson);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+        JSONObject notificationsJson = new JSONObject(rawJson);
+        Iterator<String> keys = notificationsJson.keys();
+        while(keys.hasNext()) {
+            String key = keys.next();
+            JSONObject notificationJson = notificationsJson.getJSONObject(key);
+            notificationsArrayJson.put(notificationJson);
         }
         return notificationsArrayJson.toString();
     }
