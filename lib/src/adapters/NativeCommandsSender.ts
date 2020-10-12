@@ -21,7 +21,7 @@ interface NativeCommandsModule {
   checkPermissions(): Promise<NotificationPermissions>;
   removeDeliveredNotifications(identifiers: Array<string>): void;
   removeAllDeliveredNotifications(): void;
-  getDeliveredNotifications(): Promise<Notification[]>;
+  getDeliveredNotifications(): Promise<Notification[] | string>;
   setCategories(categories: [NotificationCategory?]): void;
   finishPresentingNotification(
     notificationId: string,
@@ -104,8 +104,9 @@ export class NativeCommandsSender {
     return this.nativeCommandsModule.removeDeliveredNotifications(identifiers);
   }
 
-  public getDeliveredNotifications(): Promise<Notification[]> {
-    return this.nativeCommandsModule.getDeliveredNotifications();
+  public async getDeliveredNotifications(): Promise<Notification[]> {
+    const result = await this.nativeCommandsModule.getDeliveredNotifications();
+    return typeof result === "string" ? JSON.parse(result) : result;
   }
 
   finishPresentingNotification(

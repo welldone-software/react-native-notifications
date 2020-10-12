@@ -115,6 +115,13 @@ export class NotificationsRoot {
   }
 
   /**
+   * getDeliveredNotifications
+   */
+  public getDeliveredNotifications(): Promise<Notification[]> {
+    return this.commands.getDeliveredNotifications();
+  }
+
+  /**
    * Obtain the events registry instance
    */
   public events(): EventsRegistry {

@@ -2,7 +2,6 @@ package com.wix.reactnativenotifications;
 
 import android.app.Activity;
 import android.app.Application;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,6 +25,7 @@ import com.wix.reactnativenotifications.core.notification.NotificationChannel;
 import com.wix.reactnativenotifications.core.notification.PushNotification;
 import com.wix.reactnativenotifications.core.notification.PushNotificationProps;
 import com.wix.reactnativenotifications.core.notificationdrawer.IPushNotificationsDrawer;
+import com.wix.reactnativenotifications.core.notificationdrawer.NotificationsStorage;
 import com.wix.reactnativenotifications.core.notificationdrawer.PushNotificationsDrawer;
 import com.wix.reactnativenotifications.fcm.FcmInstanceIdRefreshHandlerService;
 
@@ -135,6 +135,17 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
     void removeAllDeliveredNotifications() {
         IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(getReactApplicationContext().getApplicationContext());
         notificationsDrawer.onAllNotificationsClearRequest();
+    }
+
+    @ReactMethod
+    void getDeliveredNotifications(final Promise promise) {
+        NotificationsStorage storage = NotificationsStorage.getInstance(getReactApplicationContext().getApplicationContext());
+        try {
+            promise.resolve(storage.getDeliveredNotifications());
+            storage.clearAll();
+        } catch (Exception error) {
+            promise.reject(error);
+        }
     }
 
     @ReactMethod
