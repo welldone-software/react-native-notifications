@@ -113,6 +113,8 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
     public void cancelLocalNotification(int notificationId) {
         IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(getReactApplicationContext().getApplicationContext());
         notificationsDrawer.onNotificationClearRequest(notificationId);
+        NotificationsStorage storage = NotificationsStorage.getInstance(getReactApplicationContext().getApplicationContext());
+        storage.removeNotification(notificationId);
     }
 
     @ReactMethod
@@ -123,6 +125,8 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
     public void cancelDeliveredNotification(String tag, int notificationId) {
         IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(getReactApplicationContext().getApplicationContext());
         notificationsDrawer.onNotificationClearRequest(tag, notificationId);
+        NotificationsStorage storage = NotificationsStorage.getInstance(getReactApplicationContext().getApplicationContext());
+        storage.removeNotification(notificationId);
     }
 
     @ReactMethod
@@ -135,6 +139,8 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
     void removeAllDeliveredNotifications() {
         IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(getReactApplicationContext().getApplicationContext());
         notificationsDrawer.onAllNotificationsClearRequest();
+        NotificationsStorage storage = NotificationsStorage.getInstance(getReactApplicationContext().getApplicationContext());
+        storage.clearAll();
     }
 
     @ReactMethod
@@ -142,7 +148,6 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
         NotificationsStorage storage = NotificationsStorage.getInstance(getReactApplicationContext().getApplicationContext());
         try {
             promise.resolve(storage.getDeliveredNotifications());
-            storage.clearAll();
         } catch (Exception error) {
             promise.reject(error);
         }
