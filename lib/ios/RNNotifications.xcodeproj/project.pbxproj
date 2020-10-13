@@ -57,6 +57,8 @@
 		50FED76E22D3EBA800DDD516 /* RNNotificationParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 50FED76C22D3EBA800DDD516 /* RNNotificationParser.h */; };
 		50FED76F22D3EBA800DDD516 /* RNNotificationParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 50FED76D22D3EBA800DDD516 /* RNNotificationParser.m */; };
 		D8A2F7551CB57F1A002CC8F5 /* RNNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = D8A2F7541CB57F1A002CC8F5 /* RNNotifications.m */; };
+		EAF6EE2C25349CB9002AA3D9 /* RNNotificationsStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = EAF6EE2B25349CB9002AA3D9 /* RNNotificationsStorage.h */; };
+		EAF6EE2E25349CC9002AA3D9 /* RNNotificationsStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = EAF6EE2D25349CC9002AA3D9 /* RNNotificationsStorage.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -154,6 +156,8 @@
 		50FED76D22D3EBA800DDD516 /* RNNotificationParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNNotificationParser.m; sourceTree = "<group>"; };
 		D8A2F7541CB57F1A002CC8F5 /* RNNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNNotifications.m; sourceTree = "<group>"; };
 		D8A2F7561CB57F28002CC8F5 /* RNNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNNotifications.h; sourceTree = "<group>"; };
+		EAF6EE2B25349CB9002AA3D9 /* RNNotificationsStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNNotificationsStorage.h; sourceTree = "<group>"; };
+		EAF6EE2D25349CC9002AA3D9 /* RNNotificationsStorage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNNotificationsStorage.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -296,6 +300,8 @@
 				508CE82122D1372E00357815 /* RNNotificationUtils.m */,
 				50351F9322CD7FF1000713B3 /* RCTConvert+RNNotifications.h */,
 				50351F9422CD7FF1000713B3 /* RCTConvert+RNNotifications.m */,
+				EAF6EE2B25349CB9002AA3D9 /* RNNotificationsStorage.h */,
+				EAF6EE2D25349CC9002AA3D9 /* RNNotificationsStorage.m */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -349,6 +355,7 @@
 				50FED76E22D3EBA800DDD516 /* RNNotificationParser.h in Headers */,
 				507DCCFA22CE3F04005D4E0B /* RNEventEmitter.h in Headers */,
 				507DCCFB22CE3F04005D4E0B /* RNCommandsHandler.h in Headers */,
+				EAF6EE2C25349CB9002AA3D9 /* RNNotificationsStorage.h in Headers */,
 				507DCCFC22CE3F04005D4E0B /* RCTConvert+RNNotifications.h in Headers */,
 				507DCCF722CE3EF7005D4E0B /* RNBridgeModule.h in Headers */,
 			);
@@ -459,6 +466,7 @@
 			files = (
 				50351F9822CD8604000713B3 /* RNCommandsHandler.m in Sources */,
 				D8A2F7551CB57F1A002CC8F5 /* RNNotifications.m in Sources */,
+				EAF6EE2E25349CC9002AA3D9 /* RNNotificationsStorage.m in Sources */,
 				50351F8F22CD782F000713B3 /* RNEventEmitter.m in Sources */,
 				508CE81A22D130B900357815 /* RNPushKitEventListener.m in Sources */,
 				50351F9222CD7DF4000713B3 /* RNBridgeModule.m in Sources */,

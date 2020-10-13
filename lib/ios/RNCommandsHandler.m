@@ -1,15 +1,18 @@
 #import "RNCommandsHandler.h"
 #import "RNNotifications.h"
 #import "RNNotificationsStore.h"
+#import "RNNotificationsStorage.h"
 #import "RCTConvert+RNNotifications.h"
 
 @implementation RNCommandsHandler {
     RNNotificationCenter* _notificationCenter;
+    RNNotificationsStorage* _notificationStorage;
 }
 
 - (instancetype)init {
     self = [super init];
     _notificationCenter = [RNNotificationCenter new];
+    _notificationStorage = [RNNotificationsStorage new];
     return self;
 }
 
@@ -76,13 +79,16 @@
 
 - (void)removeAllDeliveredNotifications {
     [_notificationCenter removeAllDeliveredNotifications];
+    [_notificationStorage clearAll];
 }
 
 - (void)removeDeliveredNotifications:(NSArray<NSString *> *)identifiers {
     [_notificationCenter removeDeliveredNotifications:identifiers];
+    [_notificationStorage removeDeliveredNotifications:identifiers];
 }
 
 - (void)getDeliveredNotifications:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    [_notificationStorage getDeliveredNotifications:resolve];
     [_notificationCenter getDeliveredNotifications:resolve];
 }
 
