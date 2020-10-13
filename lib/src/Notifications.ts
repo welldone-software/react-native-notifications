@@ -122,6 +122,18 @@ export class NotificationsRoot {
   }
 
   /**
+   * removeDeliveredNotifications
+   * @param identifiers Array of notification identifiers
+   */
+  public removeDeliveredNotifications(identifiers: Array<string | number>) {
+    return this.commands.removeDeliveredNotifications(
+      identifiers.map((value) =>
+        typeof value === "number" ? `${value}` : value
+      )
+    );
+  }
+
+  /**
    * Obtain the events registry instance
    */
   public events(): EventsRegistry {

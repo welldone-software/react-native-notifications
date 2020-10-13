@@ -69,14 +69,6 @@ export class NotificationsIOS {
   }
 
   /**
-   * removeDeliveredNotifications
-   * @param identifiers Array of notification identifiers
-   */
-  public removeDeliveredNotifications(identifiers: Array<string>) {
-    return this.commands.removeDeliveredNotifications(identifiers);
-  }
-
-  /**
    * Obtain the events registry instance
    */
   public events(): EventsRegistryIOS {
