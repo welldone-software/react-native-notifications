@@ -113,8 +113,6 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
     public void cancelLocalNotification(int notificationId) {
         IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(getReactApplicationContext().getApplicationContext());
         notificationsDrawer.onNotificationClearRequest(notificationId);
-        NotificationsStorage storage = NotificationsStorage.getInstance(getReactApplicationContext().getApplicationContext());
-        storage.removeNotification(notificationId);
     }
 
     @ReactMethod
