@@ -123,13 +123,16 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
     }
 
     @ReactMethod
-    public void removeDeliveredNotifications(String tag, String[] notificationIds) {
+    public void removeDeliveredNotifications(ReadableArray notificationIds) {
         IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(getReactApplicationContext().getApplicationContext());
         NotificationsStorage storage = NotificationsStorage.getInstance(getReactApplicationContext().getApplicationContext());
-        for (String id: notificationIds) {
-            int notificationId = Integer.parseInt(id);
-            notificationsDrawer.onNotificationClearRequest(tag, notificationId);
-            storage.removeNotification(notificationId);
+        for (int i = 0; i < notificationIds.size(); i++) {
+            String rawId = notificationIds.getString(i);
+            if (rawId != null) {
+                int notificationId = Integer.parseInt(rawId);
+                notificationsDrawer.onNotificationClearRequest(notificationId);
+                storage.removeNotification(notificationId);
+            }
         }
     }
 
