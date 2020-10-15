@@ -106,7 +106,9 @@ export class NativeCommandsSender {
 
   public async getDeliveredNotifications(): Promise<Notification[]> {
     const result = await this.nativeCommandsModule.getDeliveredNotifications();
-    return typeof result === "string" ? JSON.parse(result) : result;
+    const payloadArray =
+      typeof result === "string" ? JSON.parse(result) : result;
+    return payloadArray.map((payload: object) => new Notification(payload));
   }
 
   finishPresentingNotification(
