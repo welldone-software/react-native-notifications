@@ -67,8 +67,7 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
             Bundle notificationData = intent.getExtras();
             final IPushNotification notification = PushNotification.get(getReactApplicationContext().getApplicationContext(), notificationData);
             if (notification != null) {
-                String action = NotificationIntentAdapter.extractActionFromIntent(intent);
-                notification.onOpened(action);
+                notification.onOpened();
             }
         }
     }

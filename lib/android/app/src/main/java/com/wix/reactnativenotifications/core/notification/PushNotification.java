@@ -81,16 +81,8 @@ public class PushNotification implements IPushNotification {
     }
 
     @Override
-    public void onOpened(String action) {
-        if (action != null) {
-            mNotificationProps.setAction(action);
-        }
-        digestNotification();
-    }
-
-    @Override
     public void onOpened() {
-        onOpened(null);
+        digestNotification();
     }
 
     @Override

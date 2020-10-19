@@ -16,7 +16,6 @@ public interface IPushNotification {
     /**
      * Handle an event where notification has already been dispatched and is not being opened by the device user.
      */
-    void onOpened(String action);
     void onOpened();
 
     /**
