@@ -25,7 +25,6 @@ import com.wix.reactnativenotifications.core.notification.NotificationChannel;
 import com.wix.reactnativenotifications.core.notification.PushNotification;
 import com.wix.reactnativenotifications.core.notification.PushNotificationProps;
 import com.wix.reactnativenotifications.core.notificationdrawer.IPushNotificationsDrawer;
-import com.wix.reactnativenotifications.core.notificationdrawer.NotificationsStorage;
 import com.wix.reactnativenotifications.core.notificationdrawer.PushNotificationsDrawer;
 import com.wix.reactnativenotifications.fcm.FcmInstanceIdRefreshHandlerService;
 

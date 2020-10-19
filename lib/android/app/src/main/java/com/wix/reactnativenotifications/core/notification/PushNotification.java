@@ -26,7 +26,7 @@ import com.wix.reactnativenotifications.core.InitialNotificationHolder;
 import com.wix.reactnativenotifications.core.JsIOHelper;
 import com.wix.reactnativenotifications.core.NotificationIntentAdapter;
 import com.wix.reactnativenotifications.core.ProxyService;
-import com.wix.reactnativenotifications.core.notificationdrawer.NotificationsStorage;
+import com.wix.reactnativenotifications.NotificationsStorage;
 
 import org.json.JSONArray;
 import org.json.JSONException;

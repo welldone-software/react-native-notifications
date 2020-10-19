@@ -7,11 +7,11 @@ import android.os.Bundle;
 
 import com.wix.reactnativenotifications.core.notification.PushNotificationProps;
 
-public class NotificationIntentAdapter {
+import static com.wix.reactnativenotifications.Defs.ACTION_CLICKED_ACTION;
+import static com.wix.reactnativenotifications.Defs.ACTION_EXTRA_NAME;
+import static com.wix.reactnativenotifications.Defs.PUSH_NOTIFICATION_EXTRA_NAME;
 
-    private static final String ACTION_EXTRA_NAME = "action";
-    private static final String ACTION_CLICKED_ACTION = "notification_action_clicked";
-    private static final String PUSH_NOTIFICATION_EXTRA_NAME = "pushNotification";
+public class NotificationIntentAdapter {
 
     public static PendingIntent createPendingNotificationIntent(Context appContext, Intent intent, PushNotificationProps notification) {
         return createPendingNotificationIntent(appContext, intent, notification, null);
