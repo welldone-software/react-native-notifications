@@ -22,10 +22,8 @@ public class NotificationIntentAdapter {
         if (action != null) {
             intent.putExtra(ACTION_EXTRA_NAME, action);
             intent.setAction(ACTION_CLICKED_ACTION);
-            return PendingIntent.getBroadcast(appContext, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
-        } else {
-            return PendingIntent.getService(appContext, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
         }
+        return PendingIntent.getService(appContext, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
     }
 
     public static Bundle extractPendingNotificationDataFromIntent(Intent intent) {
