@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.wix.reactnativenotifications">
 
     <application>
-
-        <!--
-         A proxy-service that gives the library an opportunity to do some work before launching/resuming the actual application task.
-         -->
-        <service android:name=".core.ProxyService"/>
-
+        <service
+            android:name=".core.NotificationActionService"
+            android:enabled="true"
+            android:exported="true"></service>
+        <!--          A proxy-service that gives the library an opportunity to do some work before launching/resuming the actual application task. -->
+        <service android:name=".core.ProxyService" />
         <service
             android:name=".fcm.FcmInstanceIdRefreshHandlerService"
             android:exported="false" />
