@@ -38,6 +38,7 @@ public class NotificationActionService extends HeadlessJsTaskService {
     private void promptUnlock() {
         Intent intent = new Intent(this, UnlockActivity.class);
         intent.setAction(UnlockActivity.PROMPT_UNLOCK_ACTION);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
 
