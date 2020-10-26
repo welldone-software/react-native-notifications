@@ -24,7 +24,7 @@ import com.wix.reactnativenotifications.core.AppLifecycleFacade.AppVisibilityLis
 import com.wix.reactnativenotifications.core.AppLifecycleFacadeHolder;
 import com.wix.reactnativenotifications.core.InitialNotificationHolder;
 import com.wix.reactnativenotifications.core.JsIOHelper;
-import com.wix.reactnativenotifications.core.NotificationActionService;
+import com.wix.reactnativenotifications.core.actions.NotificationActionService;
 import com.wix.reactnativenotifications.core.NotificationIntentAdapter;
 import com.wix.reactnativenotifications.core.ProxyService;
 

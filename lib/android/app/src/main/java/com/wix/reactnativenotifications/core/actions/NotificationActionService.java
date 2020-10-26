@@ -1,5 +1,7 @@
-package com.wix.reactnativenotifications.core;
+package com.wix.reactnativenotifications.core.actions;
 
+import android.app.KeyguardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -28,18 +30,34 @@ public class NotificationActionService extends HeadlessJsTaskService {
         }
     }
 
+    private boolean isLocked() {
+        KeyguardManager myKM = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+        return myKM.inKeyguardRestrictedInputMode();
+    }
+
+    private void promptUnlock() {
+        Intent intent = new Intent(this, UnlockActivity.class);
+        intent.setAction(UnlockActivity.PROMPT_UNLOCK_ACTION);
+        startActivity(intent);
+    }
+
     @Override
     protected @Nullable
     HeadlessJsTaskConfig getTaskConfig(Intent intent) {
         Bundle extras = intent.getExtras();
         if (extras != null) {
-            dismissNotification(extras);
-            return new HeadlessJsTaskConfig(
-                    TASK_NAME,
-                    Arguments.fromBundle(extras),
-                    TASK_TIMEOUT,
-                    TASK_IN_FOREGROUND
-            );
+            if (isLocked()) {
+                ActionPayloadSaver.getInstance(this).saveAwaitingAction(extras);
+                promptUnlock();
+            } else {
+                dismissNotification(extras);
+                return new HeadlessJsTaskConfig(
+                        TASK_NAME,
+                        Arguments.fromBundle(extras),
+                        TASK_TIMEOUT,
+                        TASK_IN_FOREGROUND
+                );
+            }
         }
         return null;
     }
