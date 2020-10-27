@@ -38,7 +38,7 @@ public class ActionPayloadSaver {
         if (bundlePayload != null) {
             JSONObject jsonPayload = new JSONObject();
             for (String key : bundlePayload.keySet()) {
-                Object value = bundle.get(key);
+                Object value = bundlePayload.get(key);
                 if (value instanceof String) {
                     jsonPayload.put(key, (String) value);
                 } else if (value instanceof Integer) {
@@ -84,7 +84,7 @@ public class ActionPayloadSaver {
             Bundle payload = new Bundle();
             for (Iterator<String> it = jsonPayload.keys(); it.hasNext(); ) {
                 String key = it.next();
-                Object value = notificationJson.get(key);
+                Object value = jsonPayload.get(key);
                 if (value instanceof String) {
                     payload.putString(key, (String) value);
                 } else if (value instanceof Integer) {
