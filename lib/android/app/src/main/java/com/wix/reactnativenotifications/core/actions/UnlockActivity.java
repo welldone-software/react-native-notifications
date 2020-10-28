@@ -10,11 +10,20 @@ import android.os.Build;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.WindowManager;
 
 public class UnlockActivity extends AppCompatActivity {
 
     public static final String PROMPT_UNLOCK_ACTION = "prompt_unlock";
+
+    private Handler mHandler;
+    private Runnable mKillActivity = new Runnable() {
+        @Override
+        public void run() {
+            UnlockActivity.this.finish();
+        }
+    };
 
     private BroadcastReceiver mUnlockReceiver = new BroadcastReceiver() {
         @Override
@@ -43,6 +52,7 @@ public class UnlockActivity extends AppCompatActivity {
         intentFilter.addAction(Intent.ACTION_SCREEN_ON);
         intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
         registerReceiver(mUnlockReceiver, intentFilter);
+        startTimeout();
     }
 
     @Override
@@ -55,11 +65,25 @@ public class UnlockActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(mUnlockReceiver);
+        killTimeout();
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
+    }
+
+    private void killTimeout() {
+        if (mHandler != null) {
+            mHandler.removeCallbacks(mKillActivity);
+            mHandler = null;
+        }
+    }
+
+    private void startTimeout() {
+        long timeLeft = ActionPayloadSaver.getInstance(this).getTimeLeft();
+        mHandler = new Handler();
+        mHandler.postDelayed(mKillActivity, timeLeft);
     }
 
     private void onActionAppears(Intent intent) {
@@ -70,8 +94,9 @@ public class UnlockActivity extends AppCompatActivity {
                 km.requestDismissKeyguard(this, null);
             } else {
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
-                UnlockActivity.this.finish();
             }
+        } else {
+            UnlockActivity.this.finish();
         }
     }
 }

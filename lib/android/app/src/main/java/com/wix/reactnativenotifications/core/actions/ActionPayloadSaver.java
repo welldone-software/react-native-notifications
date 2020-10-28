@@ -15,6 +15,7 @@ public class ActionPayloadSaver {
 
     private SharedPreferences mPreferences;
     private static final String PUSH_NOTIFICATION_EXTRA = "pushNotification";
+    private static final String EXPIRED_TIME_EXTRA = "expired_time";
     private static final String ACTION_EXTRA = "action";
     private static final String PREFERENCES_NAME = "react-native";
     private static final String AWAITING_ACTION = "awaiting_action";
@@ -101,6 +102,20 @@ public class ActionPayloadSaver {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public long getTimeLeft() {
+        Bundle notification = getAwaitingAction();
+        if (notification == null) {
+            return 0;
+        }
+        Bundle payload = notification.getBundle(PUSH_NOTIFICATION_EXTRA);
+        if (payload == null) {
+            return 0;
+        }
+        long expiredTime = payload.getLong(EXPIRED_TIME_EXTRA, System.currentTimeMillis());
+        long timeLeft = expiredTime - System.currentTimeMillis();
+        return timeLeft > 0 ? timeLeft : 0;
     }
 
 }
