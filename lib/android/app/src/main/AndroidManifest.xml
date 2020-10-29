@@ -3,11 +3,14 @@
     package="com.wix.reactnativenotifications">
 
     <application>
+        <activity
+            android:name=".core.actions.UnlockActivity"
+            android:theme="@style/Theme.Transparent" />
+
         <service
-            android:name=".core.NotificationActionService"
+            android:name=".core.actions.NotificationActionService"
             android:enabled="true"
-            android:exported="true"></service>
-        <!--          A proxy-service that gives the library an opportunity to do some work before launching/resuming the actual application task. -->
+            android:exported="true" /> <!-- A proxy-service that gives the library an opportunity to do some work before launching/resuming the actual application task. -->
         <service android:name=".core.ProxyService" />
         <service
             android:name=".fcm.FcmInstanceIdRefreshHandlerService"
