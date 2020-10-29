@@ -113,7 +113,11 @@ public class ActionPayloadSaver {
         if (payload == null) {
             return 0;
         }
-        long expiredTime = payload.getLong(EXPIRED_TIME_EXTRA, System.currentTimeMillis());
+        String rawExpiredTime = payload.getString(EXPIRED_TIME_EXTRA);
+        if (rawExpiredTime == null) {
+            return 0;
+        }
+        long expiredTime = Long.parseLong(rawExpiredTime);
         long timeLeft = expiredTime - System.currentTimeMillis();
         return timeLeft > 0 ? timeLeft : 0;
     }
