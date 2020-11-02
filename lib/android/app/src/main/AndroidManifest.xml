@@ -8,10 +8,13 @@
             android:name=".core.actions.UnlockActivity" />
 
         <service
-            android:name=".core.actions.NotificationActionService"
+            android:name=".core.NotificationBackgroundService"
             android:enabled="true"
             android:exported="true" /> <!-- A proxy-service that gives the library an opportunity to do some work before launching/resuming the actual application task. -->
         <service android:name=".core.ProxyService" />
+        <service
+            android:name=".fcm.FcmInstanceIdListenerService"
+            android:exported="false" />
         <service
             android:name=".fcm.FcmInstanceIdRefreshHandlerService"
             android:exported="false" />

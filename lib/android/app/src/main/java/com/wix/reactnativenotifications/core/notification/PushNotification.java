@@ -24,7 +24,7 @@ import com.wix.reactnativenotifications.core.AppLifecycleFacade.AppVisibilityLis
 import com.wix.reactnativenotifications.core.AppLifecycleFacadeHolder;
 import com.wix.reactnativenotifications.core.InitialNotificationHolder;
 import com.wix.reactnativenotifications.core.JsIOHelper;
-import com.wix.reactnativenotifications.core.actions.NotificationActionService;
+import com.wix.reactnativenotifications.core.NotificationBackgroundService;
 import com.wix.reactnativenotifications.core.NotificationIntentAdapter;
 import com.wix.reactnativenotifications.core.ProxyService;
 
@@ -302,7 +302,8 @@ public class PushNotification implements IPushNotification {
                     continue;
                 }
 
-                Intent actionIntent = new Intent(mContext, NotificationActionService.class);
+                Intent actionIntent = new Intent(mContext, NotificationBackgroundService.class);
+                actionIntent.setAction(NotificationBackgroundService.NOTIFICATION_ACTION_CLICK);
                 PendingIntent pendingActionIntent = NotificationIntentAdapter.createPendingNotificationIntent(mContext, actionIntent, mNotificationProps, actionName);
 
                 Spanned actionStyle = HtmlCompat.fromHtml(
