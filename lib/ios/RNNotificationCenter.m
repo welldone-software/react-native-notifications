@@ -45,9 +45,37 @@
     [center removeAllDeliveredNotifications];
 }
 
-- (void)removeDeliveredNotifications:(NSArray<NSString *> *)identifiers {
+- (void)removeDeliveredNotifications:(NSArray<NSString *> *)requestIds {
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-    [center removeDeliveredNotificationsWithIdentifiers:identifiers];
+    [center getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
+        NSMutableArray<NSString *> *notificationIds = [NSMutableArray new];
+        for (UNNotification *notification in notifications) {
+            NSDictionary * parsedNotification = [RCTConvert UNNotificationPayload:notification];
+            NSString * identifier = [parsedNotification valueForKey:@"identifier"];
+            NSString * mfaRequestId = [parsedNotification valueForKey:@"mfa_request_id"];
+            if ([requestIds containsObject:mfaRequestId]) {
+                [notificationIds addObject:identifier];
+            }
+        }
+        [center removeDeliveredNotificationsWithIdentifiers:notificationIds];
+    }];
+}
+
+- (void)dismissNotification:(NSString *)requestId {
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    [center getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
+        for (UNNotification *notification in notifications) {
+            NSDictionary * parsedNotification = [RCTConvert UNNotificationPayload:notification];
+            NSString * identifier = [parsedNotification valueForKey:@"identifier"];
+            NSString * mfaRequestId = [parsedNotification valueForKey:@"mfa_request_id"];
+            if ([requestId isEqualToString:mfaRequestId]) {
+                NSMutableArray<NSString *> *notificationIds = [NSMutableArray new];
+                [notificationIds addObject:identifier];
+                [center removeDeliveredNotificationsWithIdentifiers:notificationIds];
+                break;
+            }
+        }
+    }];
 }
 
 - (void)getDeliveredNotifications:(RCTResponseSenderBlock)callback {

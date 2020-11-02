@@ -5,6 +5,7 @@
 #import "RNNotificationCenterListener.h"
 #import "RNPushKit.h"
 #import "RNNotificationCenterMulticast.h"
+#import "RNNotificationsStorage.h"
 
 @implementation RNNotifications {
     RNPushKit* _pushKit;
@@ -13,11 +14,13 @@
     RNPushKitEventHandler* _pushKitEventHandler;
     RNEventEmitter* _eventEmitter;
     RNNotificationCenterMulticast* _notificationCenterMulticast;
+    RNNotificationsStorage* _storage;
 }
 
 - (instancetype)init {
     self = [super init];
     _notificationEventHandler = [[RNNotificationEventHandler alloc] initWithStore:[RNNotificationsStore new]];
+    _storage = [RNNotificationsStorage new];
     return self;
 }
 
@@ -33,6 +36,10 @@
 
 + (void)startMonitorNotifications {
     [[self sharedInstance] startMonitorNotifications];
+}
+
++ (void)startMonitorBackgroundNotifications:(NSDictionary *)payload {
+    [[self sharedInstance] startMonitorBackgroundNotifications:payload];
 }
 
 + (void)startMonitorPushKitNotifications {
@@ -62,6 +69,12 @@
     [[UNUserNotificationCenter currentNotificationCenter] setDelegate:_notificationCenterMulticast];
     
     [_notificationCenterMulticast addNativeDelegate:_notificationCenterListener];
+}
+
+- (void)startMonitorBackgroundNotifications:(NSDictionary *)payload {
+    if([[UIApplication sharedApplication] applicationState] != UIApplicationStateActive) {
+        [_storage saveNotification:payload];
+    }
 }
 
 - (void)startMonitorPushKitNotifications {

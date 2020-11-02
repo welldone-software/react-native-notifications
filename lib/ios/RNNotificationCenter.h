@@ -22,7 +22,9 @@ typedef void (^RCTPromiseRejectBlock)(NSString *code, NSString *message, NSError
 
 - (void)removeAllDeliveredNotifications;
 
-- (void)removeDeliveredNotifications:(NSArray<NSString *> *)identifiers;
+- (void)removeDeliveredNotifications:(NSArray<NSString *> *)requestIds;
+
+- (void)dismissNotification:(NSString *)requestId;
 
 - (void)getDeliveredNotifications:(RCTPromiseResolveBlock)resolve;
 

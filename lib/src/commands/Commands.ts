@@ -86,6 +86,10 @@ export class Commands {
     this.nativeCommandsSender.cancelLocalNotification(notificationId);
   }
 
+  public dismissNotification(notificationId: string) {
+    this.nativeCommandsSender.dismissNotification(notificationId);
+  }
+
   public cancelAllLocalNotifications() {
     this.nativeCommandsSender.cancelAllLocalNotifications();
   }

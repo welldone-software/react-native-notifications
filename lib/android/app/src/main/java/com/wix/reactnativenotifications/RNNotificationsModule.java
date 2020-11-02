@@ -114,6 +114,12 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
     }
 
     @ReactMethod
+    public void dismissNotification(int notificationId) {
+        IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(getReactApplicationContext().getApplicationContext());
+        notificationsDrawer.onNotificationClearRequest(notificationId);
+    }
+
+    @ReactMethod
     public void setCategories(ReadableArray categories) {
 
     }

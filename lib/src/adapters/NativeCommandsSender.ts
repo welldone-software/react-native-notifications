@@ -16,6 +16,7 @@ interface NativeCommandsModule {
   getBadgeCount(): Promise<number>;
   setBadgeCount(count: number): void;
   cancelLocalNotification(notificationId: string): void;
+  dismissNotification(notificationId: string): void;
   cancelAllLocalNotifications(): void;
   isRegisteredForRemoteNotifications(): Promise<boolean>;
   checkPermissions(): Promise<NotificationPermissions>;
@@ -82,6 +83,10 @@ export class NativeCommandsSender {
 
   cancelLocalNotification(notificationId: string) {
     this.nativeCommandsModule.cancelLocalNotification(notificationId);
+  }
+
+  dismissNotification(notificationId: string) {
+    this.nativeCommandsModule.dismissNotification(notificationId);
   }
 
   cancelAllLocalNotifications() {

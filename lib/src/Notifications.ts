@@ -94,6 +94,13 @@ export class NotificationsRoot {
   }
 
   /**
+   * dismissNotification
+   */
+  public dismissNotification(notificationId: string) {
+    return this.commands.dismissNotification(notificationId);
+  }
+
+  /**
    * removeAllDeliveredNotifications
    */
   public removeAllDeliveredNotifications() {

@@ -7,6 +7,7 @@
 + (instancetype)sharedInstance;
 
 + (void)startMonitorNotifications;
++ (void)startMonitorBackgroundNotifications:(NSDictionary *)payload;
 + (void)startMonitorPushKitNotifications;
 
 + (void)didRegisterForRemoteNotificationsWithDeviceToken:(id)deviceToken;

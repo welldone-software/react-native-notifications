@@ -13,11 +13,13 @@ NSString *notificationsKey = @"Notifications";
     return self;
 }
 
-- (void)saveNotification:(UNNotification *)notification {
-    NSDictionary* notificationDict = [RNNotificationParser parseNotification:notification];
+- (void)saveNotification:(NSDictionary *)notification{
     NSMutableDictionary* notificationsDict = [[userDefaults dictionaryForKey:notificationsKey] mutableCopy];
-    NSString* notificationId = [notificationDict valueForKey:@"identifier"];
-    [notificationsDict setObject:notificationDict forKey:notificationId];
+    if (notificationsDict == nil) {
+        notificationsDict = [NSMutableDictionary new];
+    }
+    NSString* notificationId = [notification valueForKey:@"mfa_request_id"];
+    [notificationsDict setObject:notification forKey:notificationId];
     [userDefaults setObject:notificationsDict forKey:notificationsKey];
     [userDefaults synchronize];
 }

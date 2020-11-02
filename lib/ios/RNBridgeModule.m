@@ -99,8 +99,12 @@ RCT_EXPORT_METHOD(removeAllDeliveredNotifications) {
     [_commandsHandler removeAllDeliveredNotifications];
 }
 
-RCT_EXPORT_METHOD(removeDeliveredNotifications:(NSArray<NSString *> *)identifiers) {
-    [_commandsHandler removeDeliveredNotifications:identifiers];
+RCT_EXPORT_METHOD(removeDeliveredNotifications:(NSArray<NSString *> *)requestIds) {
+    [_commandsHandler removeDeliveredNotifications:requestIds];
+}
+
+RCT_EXPORT_METHOD(dismissNotification:(NSString *)requestId) {
+    [_commandsHandler dismissNotification:requestId];
 }
 
 RCT_EXPORT_METHOD(getDeliveredNotifications:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
