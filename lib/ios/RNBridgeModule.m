@@ -52,8 +52,8 @@ RCT_EXPORT_METHOD(finishHandlingAction:(NSString *)completionKey) {
     [_commandsHandler finishHandlingAction:completionKey];
 }
 
-RCT_EXPORT_METHOD(finishPresentingNotification:(NSString *)completionKey presentingOptions:(NSDictionary *)presentingOptions) {
-    [_commandsHandler finishPresentingNotification:completionKey presentingOptions:presentingOptions];
+RCT_EXPORT_METHOD(finishPresentingNotification:(NSDictionary *)notification presentingOptions:(NSDictionary *)presentingOptions) {
+    [_commandsHandler finishPresentingNotification:notification presentingOptions:presentingOptions];
 }
 
 RCT_EXPORT_METHOD(abandonPermissions) {

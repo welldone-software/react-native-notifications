@@ -36,8 +36,13 @@
     [[RNNotificationsStore sharedInstance] completeAction:completionKey];
 }
 
-- (void)finishPresentingNotification:(NSString *)completionKey presentingOptions:(NSDictionary *)presentingOptions {
+- (void)finishPresentingNotification:(NSDictionary *)notification presentingOptions:(NSDictionary *)presentingOptions {
+    NSString *completionKey = [notification valueForKey:@"identifier"];
     [[RNNotificationsStore sharedInstance] completePresentation:completionKey withPresentationOptions:[RCTConvert UNNotificationPresentationOptions:presentingOptions]];
+    if ([presentingOptions valueForKey:@"alert"]) {
+        NSDictionary *payload = [notification valueForKey:@"payload"];
+        [_notificationStorage saveNotification:payload];
+    }
 }
 
 - (void)abandonPermissions {

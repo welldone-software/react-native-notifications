@@ -25,7 +25,7 @@ interface NativeCommandsModule {
   getDeliveredNotifications(): Promise<Notification[] | string>;
   setCategories(categories: [NotificationCategory?]): void;
   finishPresentingNotification(
-    notificationId: string,
+    notification: Notification,
     callback: NotificationCompletion
   ): void;
   finishHandlingAction(notificationId: string): void;
@@ -117,11 +117,11 @@ export class NativeCommandsSender {
   }
 
   finishPresentingNotification(
-    notificationId: string,
+    notification: Notification,
     notificationCompletion: NotificationCompletion
   ): void {
     this.nativeCommandsModule.finishPresentingNotification(
-      notificationId,
+      notification,
       notificationCompletion
     );
   }

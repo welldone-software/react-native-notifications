@@ -15,7 +15,7 @@
 
 - (void)finishHandlingAction:(NSString *)completionKey;
 
-- (void)finishPresentingNotification:(NSString *)completionKey presentingOptions:(NSDictionary *)presentingOptions;
+- (void)finishPresentingNotification:(NSDictionary *)notification presentingOptions:(NSDictionary *)presentingOptions;
 
 - (void)abandonPermissions;
 
