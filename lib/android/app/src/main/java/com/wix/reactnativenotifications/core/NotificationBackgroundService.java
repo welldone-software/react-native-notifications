@@ -1,4 +1,4 @@
-package com.wix.reactnativenotifications.core.actions;
+package com.wix.reactnativenotifications.core;
 
 import android.app.KeyguardManager;
 import android.content.Context;
@@ -11,16 +11,20 @@ import com.facebook.react.HeadlessJsTaskService;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.jstasks.HeadlessJsTaskConfig;
 import com.wix.reactnativenotifications.NotificationsStorage;
+import com.wix.reactnativenotifications.core.actions.ActionPayloadSaver;
+import com.wix.reactnativenotifications.core.actions.UnlockActivity;
 import com.wix.reactnativenotifications.core.notificationdrawer.IPushNotificationsDrawer;
 import com.wix.reactnativenotifications.core.notificationdrawer.PushNotificationsDrawer;
 
-public class NotificationActionService extends HeadlessJsTaskService {
+public class NotificationBackgroundService extends HeadlessJsTaskService {
 
-    private static final String TASK_NAME = "notificationActionClick";
     private static final String PUSH_NOTIFICATION_EXTRA = "pushNotification";
     private static final String ID_EXTRA = "id";
     private static final int TASK_TIMEOUT = 1000 * 15;
     private static final boolean TASK_IN_FOREGROUND = true;
+
+    public static final String NOTIFICATION_ACTION_CLICK = "notification_action_click";
+    public static final String NOTIFICATION_ARRIVED = "notification_arrived";
 
     private void dismissNotification(Bundle notification) {
         Bundle payload = notification.getBundle(PUSH_NOTIFICATION_EXTRA);
@@ -48,18 +52,29 @@ public class NotificationActionService extends HeadlessJsTaskService {
     protected @Nullable
     HeadlessJsTaskConfig getTaskConfig(Intent intent) {
         Bundle extras = intent.getExtras();
-        if (extras != null) {
-            if (isLocked()) {
-                ActionPayloadSaver.getInstance(this).saveAwaitingAction(extras);
-                promptUnlock();
-            } else {
-                dismissNotification(extras);
-                return new HeadlessJsTaskConfig(
-                        TASK_NAME,
-                        Arguments.fromBundle(extras),
-                        TASK_TIMEOUT,
-                        TASK_IN_FOREGROUND
-                );
+        String action = intent.getAction();
+        if (extras != null && action != null) {
+            switch (action) {
+                case NOTIFICATION_ACTION_CLICK:
+                    if (isLocked()) {
+                        ActionPayloadSaver.getInstance(this).saveAwaitingAction(extras);
+                        promptUnlock();
+                    } else {
+                        dismissNotification(extras);
+                        return new HeadlessJsTaskConfig(
+                                NOTIFICATION_ACTION_CLICK,
+                                Arguments.fromBundle(extras),
+                                TASK_TIMEOUT,
+                                TASK_IN_FOREGROUND
+                        );
+                    }
+                case NOTIFICATION_ARRIVED:
+                    return new HeadlessJsTaskConfig(
+                            NOTIFICATION_ARRIVED,
+                            Arguments.fromBundle(extras),
+                            TASK_TIMEOUT,
+                            TASK_IN_FOREGROUND
+                    );
             }
         }
         return null;
