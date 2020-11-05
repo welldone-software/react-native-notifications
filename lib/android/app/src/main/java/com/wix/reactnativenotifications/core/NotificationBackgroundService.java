@@ -20,7 +20,7 @@ public class NotificationBackgroundService extends HeadlessJsTaskService {
 
     private static final String PUSH_NOTIFICATION_EXTRA = "pushNotification";
     private static final String ID_EXTRA = "id";
-    private static final int TASK_TIMEOUT = 1000 * 15;
+    private static final int TASK_TIMEOUT = 1000 * 60;
     private static final boolean TASK_IN_FOREGROUND = true;
 
     public static final String NOTIFICATION_ACTION_CLICK = "notification_action_click";
