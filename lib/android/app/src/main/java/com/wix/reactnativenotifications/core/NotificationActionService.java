@@ -12,7 +12,7 @@ import com.facebook.react.jstasks.HeadlessJsTaskConfig;
 public class NotificationActionService extends HeadlessJsTaskService {
 
     private static final String TASK_NAME = "notificationActionClick";
-    private static final int TASK_TIMEOUT = 1000 * 15;
+    private static final int TASK_TIMEOUT = 1000 * 60;
     private static final boolean TASK_IN_FOREGROUND = true;
 
     @Override

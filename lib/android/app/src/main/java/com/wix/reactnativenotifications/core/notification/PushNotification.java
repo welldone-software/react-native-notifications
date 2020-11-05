@@ -196,8 +196,8 @@ public class PushNotification implements IPushNotification {
             NotificationChannel foundChannel = notificationManager.getNotificationChannel(channelId);
             if (foundChannel == null) {
                 NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
-                    CHANNEL_NAME,
-                    NotificationManager.IMPORTANCE_HIGH);
+                        CHANNEL_NAME,
+                        NotificationManager.IMPORTANCE_HIGH);
                 notificationManager.createNotificationChannel(channel);
                 channelId = CHANNEL_ID;
             }
@@ -299,9 +299,9 @@ public class PushNotification implements IPushNotification {
                     continue;
                 }
 
-                Intent actionIntent = new Intent(mContext, NotificationBackgroundService.class);
+                Intent actionIntent = new Intent(mContext.getApplicationContext(), NotificationBackgroundService.class);
                 actionIntent.setAction(NotificationBackgroundService.NOTIFICATION_ACTION_CLICK);
-                PendingIntent pendingActionIntent = NotificationIntentAdapter.createPendingNotificationIntent(mContext, actionIntent, mNotificationProps, actionName);
+                PendingIntent pendingActionIntent = NotificationIntentAdapter.createPendingNotificationIntent(mContext.getApplicationContext(), actionIntent, mNotificationProps, actionName);
 
                 Spanned actionStyle = HtmlCompat.fromHtml(
                         "<font color=\"" + Color.parseColor(actionColor) + "\">" + actionName,
