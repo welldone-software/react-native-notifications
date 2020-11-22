@@ -19,7 +19,6 @@ import com.wix.reactnativenotifications.core.notificationdrawer.PushNotification
 public class NotificationBackgroundService extends HeadlessJsTaskService {
 
     private static final String PUSH_NOTIFICATION_EXTRA = "pushNotification";
-    private static final String ID_EXTRA = "id";
     private static final int TASK_TIMEOUT = 1000 * 60;
     private static final boolean TASK_IN_FOREGROUND = true;
 
@@ -29,10 +28,10 @@ public class NotificationBackgroundService extends HeadlessJsTaskService {
     private void dismissNotification(Bundle notification) {
         Bundle payload = notification.getBundle(PUSH_NOTIFICATION_EXTRA);
         if (payload != null) {
-            int notificationId = payload.getInt(ID_EXTRA);
+            String mfaRequestId = payload.getString(NotificationsStorage.MFA_REQUEST_ID);
+            int notificationId = NotificationsStorage.getInstance(this).removeNotification(mfaRequestId);
             IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(this);
             notificationsDrawer.onNotificationClearRequest(notificationId);
-            NotificationsStorage.getInstance(this).removeNotification(notificationId);
         }
     }
 

@@ -20,6 +20,7 @@ public class NotificationsStorage {
     private static final String PREFERENCES_NAME = "react-native";
     private static final String NOTIFICATIONS = "notifications";
     private static final String DEFAULT_VALUE = "{}";
+    public static final String MFA_REQUEST_ID = "mfa_request_id";
 
     private NotificationsStorage(Context context) {
         mPreferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
@@ -61,23 +62,38 @@ public class NotificationsStorage {
         try {
             JSONObject notificationsJson = new JSONObject(rawJson);
             JSONObject notificationJson = getNotificationJson(notificationProps);
-            String jsonNotificationId = Integer.toString(notificationProps.getId());
-            notificationsJson.put(jsonNotificationId, notificationJson);
+            String mfaRequestId = notificationProps.asBundle().getString(MFA_REQUEST_ID);
+            notificationsJson.put(mfaRequestId, notificationJson);
             saveNotifications(notificationsJson);
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    public void removeNotification(int notificationId) {
+    public int removeNotification(String mfaRequestId) {
         String rawJson = mPreferences.getString(NOTIFICATIONS, DEFAULT_VALUE);
+        int id = -1;
         try {
             JSONObject notificationsJson = new JSONObject(rawJson);
-            String jsonNotificationId = Integer.toString(notificationId);
-            notificationsJson.remove(jsonNotificationId);
+            JSONObject notificationJson = notificationsJson.getJSONObject(mfaRequestId);
+            id = Integer.parseInt(notificationJson.getString(PushNotificationProps.ID));
+            notificationsJson.remove(mfaRequestId);
             saveNotifications(notificationsJson);
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+        return id;
+    }
+
+    public int getNotificationId(String mfaRequestId) {
+        String rawJson = mPreferences.getString(NOTIFICATIONS, DEFAULT_VALUE);
+        try {
+            JSONObject notificationsJson = new JSONObject(rawJson);
+            JSONObject notificationJson = notificationsJson.getJSONObject(mfaRequestId);
+            return Integer.parseInt(notificationJson.getString(PushNotificationProps.ID));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return -1;
         }
     }
 

@@ -234,7 +234,7 @@ public class PushNotification implements IPushNotification {
 
     protected void cancelNotification(int id) {
         final NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-        mStorage.removeNotification(mNotificationProps.getId());
+        mStorage.removeNotification(mNotificationProps.asBundle().getString(NotificationsStorage.MFA_REQUEST_ID));
         notificationManager.cancel(id);
     }
 

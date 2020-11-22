@@ -114,9 +114,10 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
     }
 
     @ReactMethod
-    public void dismissNotification(int notificationId) {
+    public void dismissNotification(String mfaRequestId) {
+        NotificationsStorage storage = NotificationsStorage.getInstance(getReactApplicationContext().getApplicationContext());
         IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(getReactApplicationContext().getApplicationContext());
-        notificationsDrawer.onNotificationClearRequest(notificationId);
+        notificationsDrawer.onNotificationClearRequest(storage.getNotificationId(mfaRequestId));
     }
 
     @ReactMethod
@@ -125,15 +126,14 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
     }
 
     @ReactMethod
-    public void removeDeliveredNotifications(ReadableArray notificationIds) {
+    public void removeDeliveredNotifications(ReadableArray mfaRequestIds) {
         IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(getReactApplicationContext().getApplicationContext());
         NotificationsStorage storage = NotificationsStorage.getInstance(getReactApplicationContext().getApplicationContext());
-        for (int i = 0; i < notificationIds.size(); i++) {
-            String rawId = notificationIds.getString(i);
-            if (rawId != null) {
-                int notificationId = Integer.parseInt(rawId);
+        for (int i = 0; i < mfaRequestIds.size(); i++) {
+            String mfaRequestId = mfaRequestIds.getString(i);
+            if (mfaRequestId != null) {
+                int notificationId = storage.removeNotification(mfaRequestId);
                 notificationsDrawer.onNotificationClearRequest(notificationId);
-                storage.removeNotification(notificationId);
             }
         }
     }
@@ -141,7 +141,7 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
     @ReactMethod
     public void isRegisteredForRemoteNotifications(Promise promise) {
         boolean hasPermission = NotificationManagerCompatFacade.from(getReactApplicationContext()).areNotificationsEnabled();
-        promise.resolve(new Boolean(hasPermission));
+        promise.resolve(hasPermission);
     }
 
     @ReactMethod

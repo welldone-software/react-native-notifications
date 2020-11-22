@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 public class PushNotificationProps {
 
-    private final static String ID = "id";
+    public final static String ID = "id";
     protected Bundle mBundle;
 
     public PushNotificationProps(Bundle bundle) {
