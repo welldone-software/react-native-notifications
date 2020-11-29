@@ -1,8 +1,9 @@
-import { Notification } from '../DTO/Notification';
-import { NotificationActionResponse } from './NotificationActionResponse';
+import {Notification} from "../DTO/Notification";
+import {NotificationActionResponse} from "./NotificationActionResponse";
 
 export interface Registered {
-  deviceToken: string;
+  fcmToken: string;
+  apnsToken: string;
 }
 
 export interface RegistrationError {
@@ -18,5 +19,5 @@ export interface RegisteredPushKit {
 export interface NotificationResponse {
   identifier: string;
   notification: Notification;
-  action?: NotificationActionResponse
+  action?: NotificationActionResponse;
 }

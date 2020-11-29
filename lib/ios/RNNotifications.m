@@ -46,8 +46,8 @@
     [[self sharedInstance] startMonitorPushKitNotifications];
 }
 
-+ (void)didRegisterForRemoteNotificationsWithDeviceToken:(id)deviceToken {
-    [[self sharedInstance] didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
++ (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSDictionary *)tokens {
+    [[self sharedInstance] didRegisterForRemoteNotificationsWithDeviceToken:tokens];
 }
 
 + (void)didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
