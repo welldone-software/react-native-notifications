@@ -62,6 +62,11 @@
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:count];
 }
 
+- (void)increaseBadgeCount {
+    NSInteger count = [UIApplication sharedApplication].applicationIconBadgeNumber;
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber: count + 1];
+}
+
 - (void)postLocalNotification:(NSDictionary *)notification withId:(NSNumber *)notificationId {
     [_notificationCenter postLocalNotification:notification withId:notificationId];
 }

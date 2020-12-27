@@ -1,6 +1,7 @@
 
 #import <UIKit/UIKit.h>
 #import <PushKit/PushKit.h>
+#import "RNCommandsHandler.h"
 #import "RNNotifications.h"
 #import "RNNotificationCenterListener.h"
 #import "RNPushKit.h"
@@ -15,12 +16,14 @@
     RNEventEmitter* _eventEmitter;
     RNNotificationCenterMulticast* _notificationCenterMulticast;
     RNNotificationsStorage* _storage;
+    RNCommandsHandler* _commandsHandler;
 }
 
 - (instancetype)init {
     self = [super init];
     _notificationEventHandler = [[RNNotificationEventHandler alloc] initWithStore:[RNNotificationsStore new]];
     _storage = [RNNotificationsStorage new];
+    _commandsHandler = [[RNCommandsHandler alloc] init];
     return self;
 }
 
@@ -72,6 +75,9 @@
 }
 
 - (void)startMonitorBackgroundNotifications:(NSDictionary *)payload {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self->_commandsHandler increaseBadgeCount];
+    });
     if([[UIApplication sharedApplication] applicationState] != UIApplicationStateActive) {
         [_storage saveNotification:payload];
     }
