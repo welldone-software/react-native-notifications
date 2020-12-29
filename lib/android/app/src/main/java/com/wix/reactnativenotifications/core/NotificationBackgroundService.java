@@ -16,14 +16,13 @@ import com.wix.reactnativenotifications.core.actions.UnlockActivity;
 import com.wix.reactnativenotifications.core.notificationdrawer.IPushNotificationsDrawer;
 import com.wix.reactnativenotifications.core.notificationdrawer.PushNotificationsDrawer;
 
+import com.wix.reactnativenotifications.Defs;
+
 public class NotificationBackgroundService extends HeadlessJsTaskService {
 
     private static final String PUSH_NOTIFICATION_EXTRA = "pushNotification";
     private static final int TASK_TIMEOUT = 1000 * 60;
     private static final boolean TASK_IN_FOREGROUND = true;
-
-    public static final String NOTIFICATION_ACTION_CLICK = "notification_action_click";
-    public static final String NOTIFICATION_ARRIVED = "notification_arrived";
 
     private void dismissNotification(Bundle notification) {
         Bundle payload = notification.getBundle(PUSH_NOTIFICATION_EXTRA);
@@ -54,22 +53,22 @@ public class NotificationBackgroundService extends HeadlessJsTaskService {
         String action = intent.getAction();
         if (extras != null && action != null) {
             switch (action) {
-                case NOTIFICATION_ACTION_CLICK:
+                case Defs.NOTIFICATION_ACTION_CLICK:
                     if (isLocked()) {
                         ActionPayloadSaver.getInstance(this).saveAwaitingAction(extras);
                         promptUnlock();
                     } else {
                         dismissNotification(extras);
                         return new HeadlessJsTaskConfig(
-                                NOTIFICATION_ACTION_CLICK,
+                                Defs.NOTIFICATION_ACTION_CLICK,
                                 Arguments.fromBundle(extras),
                                 TASK_TIMEOUT,
                                 TASK_IN_FOREGROUND
                         );
                     }
-                case NOTIFICATION_ARRIVED:
+                case Defs.NOTIFICATION_ARRIVED:
                     return new HeadlessJsTaskConfig(
-                            NOTIFICATION_ARRIVED,
+                            Defs.NOTIFICATION_ARRIVED,
                             Arguments.fromBundle(extras),
                             TASK_TIMEOUT,
                             TASK_IN_FOREGROUND

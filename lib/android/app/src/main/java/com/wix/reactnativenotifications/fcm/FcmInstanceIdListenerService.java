@@ -7,6 +7,7 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.wix.reactnativenotifications.BuildConfig;
+import com.wix.reactnativenotifications.Defs;
 import com.wix.reactnativenotifications.core.NotificationBackgroundService;
 import com.wix.reactnativenotifications.core.notification.IPushNotification;
 import com.wix.reactnativenotifications.core.notification.PushNotification;
@@ -27,7 +28,7 @@ public class FcmInstanceIdListenerService extends FirebaseMessagingService {
 
         if (bundle != null) {
             Intent serviceIntent = new Intent(this, NotificationBackgroundService.class);
-            serviceIntent.setAction(NotificationBackgroundService.NOTIFICATION_ARRIVED);
+            serviceIntent.setAction(Defs.NOTIFICATION_ARRIVED);
             serviceIntent.putExtras(bundle);
             startService(serviceIntent);
         }

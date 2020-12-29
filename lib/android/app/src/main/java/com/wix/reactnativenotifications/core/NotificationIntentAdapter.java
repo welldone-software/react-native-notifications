@@ -7,7 +7,7 @@ import android.os.Bundle;
 
 import com.wix.reactnativenotifications.core.notification.PushNotificationProps;
 
-import static com.wix.reactnativenotifications.Defs.ACTION_CLICKED_ACTION;
+import static com.wix.reactnativenotifications.Defs.NOTIFICATION_ACTION_CLICK;
 import static com.wix.reactnativenotifications.Defs.ACTION_EXTRA_NAME;
 import static com.wix.reactnativenotifications.Defs.PUSH_NOTIFICATION_EXTRA_NAME;
 
@@ -21,7 +21,7 @@ public class NotificationIntentAdapter {
         intent.putExtra(PUSH_NOTIFICATION_EXTRA_NAME, notification.asBundle());
         if (action != null) {
             intent.putExtra(ACTION_EXTRA_NAME, action);
-            intent.setAction(ACTION_CLICKED_ACTION);
+            intent.setAction(NOTIFICATION_ACTION_CLICK);
         }
         return PendingIntent.getService(appContext, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
     }
