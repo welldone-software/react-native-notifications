@@ -4,7 +4,7 @@
 
     <application>
         <activity
-            android:name=".core.actions.UnlockActivity"
+            android:name=".core.actions.BackgroundAuthActivity"
             android:theme="@style/Theme.Transparent" />
 
         <service

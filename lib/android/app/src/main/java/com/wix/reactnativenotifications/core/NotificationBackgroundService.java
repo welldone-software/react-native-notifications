@@ -12,7 +12,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.jstasks.HeadlessJsTaskConfig;
 import com.wix.reactnativenotifications.NotificationsStorage;
 import com.wix.reactnativenotifications.core.actions.ActionPayloadSaver;
-import com.wix.reactnativenotifications.core.actions.UnlockActivity;
+import com.wix.reactnativenotifications.core.actions.BackgroundAuthActivity;
 import com.wix.reactnativenotifications.core.notificationdrawer.IPushNotificationsDrawer;
 import com.wix.reactnativenotifications.core.notificationdrawer.PushNotificationsDrawer;
 
@@ -39,11 +39,24 @@ public class NotificationBackgroundService extends HeadlessJsTaskService {
         return myKM.inKeyguardRestrictedInputMode();
     }
 
-    private void promptUnlock() {
-        Intent intent = new Intent(this, UnlockActivity.class);
-        intent.setAction(UnlockActivity.PROMPT_UNLOCK_ACTION);
+    private void promptUnlock(boolean withBiometrics) {
+        Intent intent = new Intent(this, BackgroundAuthActivity.class);
+        intent.setAction(withBiometrics ? BackgroundAuthActivity.PROMPT_BIOMETRIC_ACTION : BackgroundAuthActivity.PROMPT_UNLOCK_ACTION);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+    }
+
+    private void promptUnlock() {
+        promptUnlock(false);
+    }
+
+    private HeadlessJsTaskConfig sendJSTask(String event, Bundle extras) {
+        return new HeadlessJsTaskConfig(
+                event,
+                Arguments.fromBundle(extras),
+                TASK_TIMEOUT,
+                TASK_IN_FOREGROUND
+        );
     }
 
     @Override
@@ -58,21 +71,17 @@ public class NotificationBackgroundService extends HeadlessJsTaskService {
                         ActionPayloadSaver.getInstance(this).saveAwaitingAction(extras);
                         promptUnlock();
                     } else {
-                        dismissNotification(extras);
-                        return new HeadlessJsTaskConfig(
-                                Defs.NOTIFICATION_ACTION_CLICK,
-                                Arguments.fromBundle(extras),
-                                TASK_TIMEOUT,
-                                TASK_IN_FOREGROUND
-                        );
+                        boolean authRequired = extras.getBoolean(Defs.PUSH_NOTIFICATION_EXTRA_AUTH_REQUIRED, true);
+                        boolean authenticated = extras.getBoolean(Defs.PUSH_NOTIFICATION_EXTRA_AUTHENTICATED, false);
+                        if (authRequired && !authenticated) {
+                            promptUnlock(true);
+                        } else {
+                            dismissNotification(extras);
+                            return sendJSTask(Defs.NOTIFICATION_ACTION_CLICK, extras);
+                        }
                     }
                 case Defs.NOTIFICATION_ARRIVED:
-                    return new HeadlessJsTaskConfig(
-                            Defs.NOTIFICATION_ARRIVED,
-                            Arguments.fromBundle(extras),
-                            TASK_TIMEOUT,
-                            TASK_IN_FOREGROUND
-                    );
+                    return sendJSTask(Defs.NOTIFICATION_ARRIVED, extras);
             }
         }
         return null;

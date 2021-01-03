@@ -4,6 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".core.actions.UnlockActivity">
+    tools:context=".core.actions.BackgroundAuthActivity">
 
 </android.support.constraint.ConstraintLayout>
