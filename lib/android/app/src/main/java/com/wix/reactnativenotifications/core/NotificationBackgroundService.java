@@ -42,7 +42,7 @@ public class NotificationBackgroundService extends HeadlessJsTaskService {
     private void promptUnlock(boolean withBiometrics) {
         Intent intent = new Intent(this, BackgroundAuthActivity.class);
         intent.setAction(withBiometrics ? BackgroundAuthActivity.PROMPT_BIOMETRIC_ACTION : BackgroundAuthActivity.PROMPT_UNLOCK_ACTION);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         startActivity(intent);
     }
 
@@ -74,6 +74,7 @@ public class NotificationBackgroundService extends HeadlessJsTaskService {
                         boolean authRequired = extras.getBoolean(Defs.PUSH_NOTIFICATION_EXTRA_AUTH_REQUIRED, true);
                         boolean authenticated = extras.getBoolean(Defs.PUSH_NOTIFICATION_EXTRA_AUTHENTICATED, false);
                         if (authRequired && !authenticated) {
+                            ActionPayloadSaver.getInstance(this).saveAwaitingAction(extras);
                             promptUnlock(true);
                         } else {
                             dismissNotification(extras);
