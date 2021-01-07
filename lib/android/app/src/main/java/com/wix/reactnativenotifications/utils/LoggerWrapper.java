@@ -46,7 +46,7 @@ public class LoggerWrapper {
     private String getTag(LogLevel level, String tag) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
         String time = simpleDateFormat.format(new Date());
-        return "[" + time + "] [" + level + "] " + Defs.LOGTAG + ": " + tag;
+        return "[" + level.mLabel + "] [" + time + "] " + Defs.LOGTAG + ": " + tag;
     }
 
     private void saveLog(@NotNull LogLevel level, @NotNull String tag, String message) {
@@ -160,10 +160,10 @@ public class LoggerWrapper {
     }
 
     private enum LogLevel {
-        d("DEBUG"),
+        d("LOG"),
         e("ERROR"),
-        i("INFO"),
-        v("VERBOSE"),
+        i("LOG"),
+        v("LOG"),
         w("WARN"),
         wtf("WTF");
 
