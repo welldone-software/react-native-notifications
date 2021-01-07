@@ -14,6 +14,7 @@ import com.wix.reactnativenotifications.core.actions.ActionPayloadSaver;
 import com.wix.reactnativenotifications.core.actions.UnlockActivity;
 import com.wix.reactnativenotifications.core.notificationdrawer.IPushNotificationsDrawer;
 import com.wix.reactnativenotifications.core.notificationdrawer.PushNotificationsDrawer;
+import com.wix.reactnativenotifications.utils.LoggerWrapper;
 
 public class NotificationBackgroundService extends HeadlessJsTaskService {
 
@@ -21,6 +22,7 @@ public class NotificationBackgroundService extends HeadlessJsTaskService {
     private static final String ID_EXTRA = "id";
     private static final int TASK_TIMEOUT = 1000 * 15;
     private static final boolean TASK_IN_FOREGROUND = true;
+    private static final String TAG = NotificationBackgroundService.class.getSimpleName();
 
     public static final String NOTIFICATION_ACTION_CLICK = "notification_action_click";
     public static final String NOTIFICATION_ARRIVED = "notification_arrived";
@@ -49,15 +51,20 @@ public class NotificationBackgroundService extends HeadlessJsTaskService {
     @Override
     protected @Nullable
     HeadlessJsTaskConfig getTaskConfig(Intent intent) {
+        LoggerWrapper logger = LoggerWrapper.getInstance(this);
         Bundle extras = intent.getExtras();
         String action = intent.getAction();
+
+        logger.i(TAG, "Intent arrived: " + action);
         if (extras != null && action != null) {
             switch (action) {
                 case NOTIFICATION_ACTION_CLICK:
                     if (isLocked()) {
+                        logger.i(TAG, "Device is locked, prompting unlock");
                         ActionPayloadSaver.getInstance(this).saveAwaitingAction(extras);
                         promptUnlock();
                     } else {
+                        logger.i(TAG, "Device is unlocked, notifying JS");
                         dismissNotification(extras);
                         return new HeadlessJsTaskConfig(
                                 NOTIFICATION_ACTION_CLICK,
@@ -67,6 +74,7 @@ public class NotificationBackgroundService extends HeadlessJsTaskService {
                         );
                     }
                 case NOTIFICATION_ARRIVED:
+                    logger.i(TAG, "Notification arrived, notifying JS");
                     return new HeadlessJsTaskConfig(
                             NOTIFICATION_ARRIVED,
                             Arguments.fromBundle(extras),

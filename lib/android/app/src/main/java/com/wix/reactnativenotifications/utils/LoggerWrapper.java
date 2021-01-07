@@ -104,9 +104,19 @@ public class LoggerWrapper {
         Log.d(tag, message);
     }
 
+    public void d(@NotNull String tag) {
+        saveLog(LogLevel.d, tag, "");
+        Log.d(tag, "");
+    }
+
     public void e(@NotNull String tag, String message) {
         saveLog(LogLevel.e, tag, message);
         Log.e(tag, message);
+    }
+
+    public void e(@NotNull String tag) {
+        saveLog(LogLevel.e, tag, "");
+        Log.e(tag, "");
     }
 
     public void i(@NotNull String tag, String message) {
@@ -114,9 +124,19 @@ public class LoggerWrapper {
         Log.i(tag, message);
     }
 
+    public void i(@NotNull String tag) {
+        saveLog(LogLevel.i, tag, "");
+        Log.i(tag, "");
+    }
+
     public void v(@NotNull String tag, String message) {
         saveLog(LogLevel.v, tag, message);
         Log.v(tag, message);
+    }
+
+    public void v(@NotNull String tag) {
+        saveLog(LogLevel.v, tag, "");
+        Log.v(tag, "");
     }
 
     public void w(@NotNull String tag, String message) {
@@ -124,9 +144,19 @@ public class LoggerWrapper {
         Log.w(tag, message);
     }
 
+    public void w(@NotNull String tag) {
+        saveLog(LogLevel.w, tag, "");
+        Log.w(tag, "");
+    }
+
     public void wtf(@NotNull String tag, String message) {
         saveLog(LogLevel.wtf, tag, message);
         Log.wtf(tag, message);
+    }
+
+    public void wtf(@NotNull String tag) {
+        saveLog(LogLevel.wtf, tag, "");
+        Log.wtf(tag, "");
     }
 
     private enum LogLevel {
