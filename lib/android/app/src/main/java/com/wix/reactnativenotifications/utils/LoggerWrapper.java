@@ -49,8 +49,6 @@ public class LoggerWrapper {
     }
 
     private void saveLog(@NotNull LogLevel level, @NotNull String tag, String message) {
-        String logTag = getTag(level, tag);
-        String log = logTag + " " + message;
         File folder = new File(mLogsFilesUrl);
         folder.mkdirs();
 
@@ -66,8 +64,9 @@ public class LoggerWrapper {
         try {
             OutputStreamWriter fileWriter = new OutputStreamWriter(new FileOutputStream(file, true));
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            String rawLog = log + " " + message + "\n";
-            bufferedWriter.write(rawLog);
+            String logTag = getTag(level, tag);
+            String log = logTag + " " + message + "\n";
+            bufferedWriter.write(log);
             bufferedWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
