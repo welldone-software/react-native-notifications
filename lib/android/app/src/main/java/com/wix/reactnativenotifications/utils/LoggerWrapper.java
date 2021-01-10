@@ -51,7 +51,7 @@ public class LoggerWrapper {
 
     private void saveLog(@NotNull LogLevel level, @NotNull String tag, String message) {
         String logTag = getTag(level, tag);
-        String log = logTag + " " + message;
+        String log = logTag + " " + message + "\n";
         File folder = new File(mLogsFilesUrl);
         folder.mkdirs();
 
