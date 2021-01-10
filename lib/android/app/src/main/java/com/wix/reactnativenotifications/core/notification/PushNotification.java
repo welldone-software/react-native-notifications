@@ -39,6 +39,7 @@ import static com.wix.reactnativenotifications.Defs.NOTIFICATION_RECEIVED_EVENT_
 public class PushNotification implements IPushNotification {
 
     private final LoggerWrapper mLogger;
+    private static final String TAG = PushNotification.class.getSimpleName();
 
     final protected Context mContext;
     final protected AppLifecycleFacade mAppLifecycleFacade;
@@ -77,10 +78,10 @@ public class PushNotification implements IPushNotification {
     @Override
     public void onReceived() throws InvalidNotificationException {
         if (!mAppLifecycleFacade.isAppVisible()) {
-            mLogger.i("onReceived", "App is not visible, posting notification");
+            mLogger.i(TAG, "App is not visible, posting notification");
             postNotification(null);
         } else {
-            mLogger.i("onReceived", "App is visible, notifying JS");
+            mLogger.i(TAG, "App is visible, notifying JS");
         }
         notifyReceivedToJS();
     }

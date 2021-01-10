@@ -3,8 +3,6 @@ package com.wix.reactnativenotifications.utils;
 import android.content.Context;
 import android.util.Log;
 
-import com.wix.reactnativenotifications.Defs;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedWriter;
@@ -19,6 +17,7 @@ import java.util.Locale;
 public class LoggerWrapper {
 
     private static final String TAG = LoggerWrapper.class.getSimpleName();
+    private static final String RN_NOTIFICATIONS = "react-native-notifications";
     private static final String DATE_FORMAT = "MMMM dd yyyy, h:mm:ss a";
     private static final int LOGS_SIZE_LIMIT = 24 * 1024 * 1000;
 
@@ -46,7 +45,7 @@ public class LoggerWrapper {
     private String getTag(LogLevel level, String tag) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
         String time = simpleDateFormat.format(new Date());
-        return "[" + level.mLabel + "] [" + time + "] " + Defs.LOGTAG + ": " + tag;
+        return "[" + level.mLabel + "] [" + time + "] [" + RN_NOTIFICATIONS + "] " + tag + ": ";
     }
 
     private void saveLog(@NotNull LogLevel level, @NotNull String tag, String message) {
