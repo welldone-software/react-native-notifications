@@ -59,7 +59,7 @@ public class LoggerWrapper {
     private String getTag(LogLevel level, String tag) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
         String time = simpleDateFormat.format(new Date());
-        return "[" + level.mLabel + "] [" + time + "] " + tag + ": ";
+        return "[" + level.mLabel + "] [" + time + "] " + tag;
     }
 
     private void saveLog(@NotNull LogLevel level, @NotNull String tag, String message) {
@@ -79,7 +79,7 @@ public class LoggerWrapper {
             OutputStreamWriter fileWriter = new OutputStreamWriter(new FileOutputStream(file, true));
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
             String logTag = getTag(level, tag);
-            String log = logTag + " " + message + "\n";
+            String log = logTag + ": " + message + "\n";
             bufferedWriter.write(log);
             bufferedWriter.close();
         } catch (IOException e) {
