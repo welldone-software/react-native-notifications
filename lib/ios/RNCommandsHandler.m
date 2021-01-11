@@ -1,15 +1,18 @@
 #import "RNCommandsHandler.h"
 #import "RNNotifications.h"
 #import "RNNotificationsStore.h"
+#import "RNNotificationsStorage.h"
 #import "RCTConvert+RNNotifications.h"
 
 @implementation RNCommandsHandler {
     RNNotificationCenter* _notificationCenter;
+    RNNotificationsStorage* _notificationStorage;
 }
 
 - (instancetype)init {
     self = [super init];
     _notificationCenter = [RNNotificationCenter new];
+    _notificationStorage = [RNNotificationsStorage new];
     return self;
 }
 
@@ -33,8 +36,13 @@
     [[RNNotificationsStore sharedInstance] completeAction:completionKey];
 }
 
-- (void)finishPresentingNotification:(NSString *)completionKey presentingOptions:(NSDictionary *)presentingOptions {
+- (void)finishPresentingNotification:(NSDictionary *)notification presentingOptions:(NSDictionary *)presentingOptions {
+    NSString *completionKey = [notification valueForKey:@"identifier"];
     [[RNNotificationsStore sharedInstance] completePresentation:completionKey withPresentationOptions:[RCTConvert UNNotificationPresentationOptions:presentingOptions]];
+    if ([presentingOptions valueForKey:@"alert"]) {
+        NSDictionary *payload = [notification valueForKey:@"payload"];
+        [_notificationStorage saveNotification:payload];
+    }
 }
 
 - (void)abandonPermissions {
@@ -76,14 +84,20 @@
 
 - (void)removeAllDeliveredNotifications {
     [_notificationCenter removeAllDeliveredNotifications];
+    [_notificationStorage clearAll];
 }
 
-- (void)removeDeliveredNotifications:(NSArray<NSString *> *)identifiers {
-    [_notificationCenter removeDeliveredNotifications:identifiers];
+- (void)removeDeliveredNotifications:(NSArray<NSString *> *)requestIds {
+    [_notificationCenter removeDeliveredNotifications:requestIds];
+    [_notificationStorage removeDeliveredNotifications:requestIds];
+}
+
+- (void)dismissNotification:(NSString *)requestId {
+    [_notificationCenter dismissNotification:requestId];
 }
 
 - (void)getDeliveredNotifications:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-    [_notificationCenter getDeliveredNotifications:resolve];
+    [_notificationStorage getDeliveredNotifications:resolve];
 }
 
 @end

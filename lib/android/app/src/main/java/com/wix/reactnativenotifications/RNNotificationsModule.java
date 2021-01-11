@@ -2,7 +2,6 @@ package com.wix.reactnativenotifications;
 
 import android.app.Activity;
 import android.app.Application;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -67,8 +66,7 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
             Bundle notificationData = intent.getExtras();
             final IPushNotification notification = PushNotification.get(getReactApplicationContext().getApplicationContext(), notificationData);
             if (notification != null) {
-                String action = NotificationIntentAdapter.extractActionFromIntent(intent);
-                notification.onOpened(action);
+                notification.onOpened();
             }
         }
     }
@@ -116,25 +114,52 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
     }
 
     @ReactMethod
+    public void dismissNotification(String mfaRequestId) {
+        NotificationsStorage storage = NotificationsStorage.getInstance(getReactApplicationContext().getApplicationContext());
+        IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(getReactApplicationContext().getApplicationContext());
+        notificationsDrawer.onNotificationClearRequest(storage.getNotificationId(mfaRequestId));
+    }
+
+    @ReactMethod
     public void setCategories(ReadableArray categories) {
 
     }
 
-    public void cancelDeliveredNotification(String tag, int notificationId) {
+    @ReactMethod
+    public void removeDeliveredNotifications(ReadableArray mfaRequestIds) {
         IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(getReactApplicationContext().getApplicationContext());
-        notificationsDrawer.onNotificationClearRequest(tag, notificationId);
+        NotificationsStorage storage = NotificationsStorage.getInstance(getReactApplicationContext().getApplicationContext());
+        for (int i = 0; i < mfaRequestIds.size(); i++) {
+            String mfaRequestId = mfaRequestIds.getString(i);
+            if (mfaRequestId != null) {
+                int notificationId = storage.removeNotification(mfaRequestId);
+                notificationsDrawer.onNotificationClearRequest(notificationId);
+            }
+        }
     }
 
     @ReactMethod
     public void isRegisteredForRemoteNotifications(Promise promise) {
         boolean hasPermission = NotificationManagerCompatFacade.from(getReactApplicationContext()).areNotificationsEnabled();
-        promise.resolve(new Boolean(hasPermission));
+        promise.resolve(hasPermission);
     }
 
     @ReactMethod
     void removeAllDeliveredNotifications() {
         IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(getReactApplicationContext().getApplicationContext());
         notificationsDrawer.onAllNotificationsClearRequest();
+        NotificationsStorage storage = NotificationsStorage.getInstance(getReactApplicationContext().getApplicationContext());
+        storage.clearAll();
+    }
+
+    @ReactMethod
+    void getDeliveredNotifications(final Promise promise) {
+        NotificationsStorage storage = NotificationsStorage.getInstance(getReactApplicationContext().getApplicationContext());
+        try {
+            promise.resolve(storage.getDeliveredNotifications());
+        } catch (Exception error) {
+            promise.reject(error);
+        }
     }
 
     @ReactMethod

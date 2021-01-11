@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.WindowManager;
 
+import com.wix.reactnativenotifications.Defs;
 import com.wix.reactnativenotifications.core.NotificationBackgroundService;
 
 public class UnlockActivity extends AppCompatActivity {
@@ -36,7 +37,7 @@ public class UnlockActivity extends AppCompatActivity {
                 Bundle bundle = saver.getAwaitingAction();
                 if (bundle != null) {
                     Intent serviceIntent = new Intent(context, NotificationBackgroundService.class);
-                    serviceIntent.setAction(NotificationBackgroundService.NOTIFICATION_ACTION_CLICK);
+                    serviceIntent.setAction(Defs.NOTIFICATION_ACTION_CLICK);
                     serviceIntent.putExtras(bundle);
                     context.startService(serviceIntent);
                     NotificationBackgroundService.acquireWakeLockNow(context);

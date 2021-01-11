@@ -7,7 +7,7 @@
 
 - (instancetype)initWithStore:(RNNotificationsStore *)store;
 
-- (void)didRegisterForRemoteNotificationsWithDeviceToken:(id)deviceToken;
+- (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSDictionary *)tokens;
 - (void)didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;
 
 - (void)didReceiveForegroundNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler;

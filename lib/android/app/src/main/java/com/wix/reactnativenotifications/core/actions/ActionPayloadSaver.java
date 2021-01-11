@@ -41,7 +41,7 @@ public class ActionPayloadSaver {
             for (String key : bundlePayload.keySet()) {
                 Object value = bundlePayload.get(key);
                 if (value instanceof String) {
-                    jsonPayload.put(key, (String) value);
+                    jsonPayload.put(key, value);
                 } else if (value instanceof Integer) {
                     jsonPayload.put(key, (int) value);
                 } else if (value instanceof Long) {

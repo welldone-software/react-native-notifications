@@ -15,7 +15,7 @@
 
 - (void)finishHandlingAction:(NSString *)completionKey;
 
-- (void)finishPresentingNotification:(NSString *)completionKey presentingOptions:(NSDictionary *)presentingOptions;
+- (void)finishPresentingNotification:(NSDictionary *)notification presentingOptions:(NSDictionary *)presentingOptions;
 
 - (void)abandonPermissions;
 
@@ -39,7 +39,9 @@
 
 - (void)removeAllDeliveredNotifications;
 
-- (void)removeDeliveredNotifications:(NSArray<NSString *> *)identifiers;
+- (void)removeDeliveredNotifications:(NSArray<NSString *> *)requestIds;
+
+- (void)dismissNotification:(NSString *)requestId;
 
 - (void)getDeliveredNotifications:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
 

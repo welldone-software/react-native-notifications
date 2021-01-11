@@ -10,28 +10,28 @@ import androidx.annotation.Nullable;
 import com.facebook.react.HeadlessJsTaskService;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.jstasks.HeadlessJsTaskConfig;
+import com.wix.reactnativenotifications.NotificationsStorage;
 import com.wix.reactnativenotifications.core.actions.ActionPayloadSaver;
 import com.wix.reactnativenotifications.core.actions.UnlockActivity;
 import com.wix.reactnativenotifications.core.notificationdrawer.IPushNotificationsDrawer;
 import com.wix.reactnativenotifications.core.notificationdrawer.PushNotificationsDrawer;
 import com.wix.reactnativenotifications.utils.LoggerWrapper;
 
+import com.wix.reactnativenotifications.Defs;
+
 public class NotificationBackgroundService extends HeadlessJsTaskService {
 
     private static final String PUSH_NOTIFICATION_EXTRA = "pushNotification";
-    private static final String ID_EXTRA = "id";
-    private static final int TASK_TIMEOUT = 1000 * 15;
+    private static final int TASK_TIMEOUT = 1000 * 60;
     private static final boolean TASK_IN_FOREGROUND = true;
     private static final String TAG = NotificationBackgroundService.class.getSimpleName();
-
-    public static final String NOTIFICATION_ACTION_CLICK = "notification_action_click";
-    public static final String NOTIFICATION_ARRIVED = "notification_arrived";
 
     private void dismissNotification(Bundle notification) {
         Bundle payload = notification.getBundle(PUSH_NOTIFICATION_EXTRA);
         if (payload != null) {
-            int notificationId = payload.getInt(ID_EXTRA);
-            IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(getApplicationContext());
+            String mfaRequestId = payload.getString(NotificationsStorage.MFA_REQUEST_ID);
+            int notificationId = NotificationsStorage.getInstance(this).removeNotification(mfaRequestId);
+            IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(this);
             notificationsDrawer.onNotificationClearRequest(notificationId);
         }
     }
@@ -58,7 +58,7 @@ public class NotificationBackgroundService extends HeadlessJsTaskService {
         logger.i(TAG, "Intent arrived: " + action);
         if (extras != null && action != null) {
             switch (action) {
-                case NOTIFICATION_ACTION_CLICK:
+                case Defs.NOTIFICATION_ACTION_CLICK:
                     if (isLocked()) {
                         logger.i(TAG, "Device is locked, prompting unlock");
                         ActionPayloadSaver.getInstance(this).saveAwaitingAction(extras);
@@ -67,16 +67,16 @@ public class NotificationBackgroundService extends HeadlessJsTaskService {
                         logger.i(TAG, "Device is unlocked, notifying JS");
                         dismissNotification(extras);
                         return new HeadlessJsTaskConfig(
-                                NOTIFICATION_ACTION_CLICK,
+                                Defs.NOTIFICATION_ACTION_CLICK,
                                 Arguments.fromBundle(extras),
                                 TASK_TIMEOUT,
                                 TASK_IN_FOREGROUND
                         );
                     }
-                case NOTIFICATION_ARRIVED:
+                case Defs.NOTIFICATION_ARRIVED:
                     logger.i(TAG, "Notification arrived, notifying JS");
                     return new HeadlessJsTaskConfig(
-                            NOTIFICATION_ARRIVED,
+                            Defs.NOTIFICATION_ARRIVED,
                             Arguments.fromBundle(extras),
                             TASK_TIMEOUT,
                             TASK_IN_FOREGROUND

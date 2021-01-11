@@ -1,54 +1,70 @@
-import { NativeCommandsSender } from './NativeCommandsSender';
-import { NotificationCompletion } from '../interfaces/NotificationCompletion';
-import { Platform, AppState } from 'react-native';
-import {NotificationIOS} from "../DTO/NotificationIOS";
-import {Notification} from "..";
-import { NotificationActionResponse } from '../interfaces/NotificationActionResponse';
+import { NativeCommandsSender } from "./NativeCommandsSender";
+import { NotificationCompletion } from "../interfaces/NotificationCompletion";
+import { Platform, AppState } from "react-native";
+import { NotificationIOS } from "../DTO/NotificationIOS";
+import { Notification } from "..";
+import { NotificationActionResponse } from "../interfaces/NotificationActionResponse";
 
 export class CompletionCallbackWrapper {
-  constructor(
-    private readonly nativeCommandsSender: NativeCommandsSender
-  ) {}
+  constructor(private readonly nativeCommandsSender: NativeCommandsSender) {}
 
-  public wrapReceivedBackgroundCallback(callback: Function): (notification: Notification) => void {
+  public wrapReceivedBackgroundCallback(
+    callback: Function
+  ): (notification: Notification) => void {
     return (notification) => {
       if (!this.applicationIsVisible()) {
         this.wrapReceivedAndInvoke(callback, notification);
       }
-    }
+    };
   }
 
-  public wrapReceivedForegroundCallback(callback: Function): (notification: Notification) => void {
+  public wrapReceivedForegroundCallback(
+    callback: Function
+  ): (notification: Notification) => void {
     return (notification) => {
       if (this.applicationIsVisible()) {
         this.wrapReceivedAndInvoke(callback, notification);
       }
-    }
+    };
   }
 
-  private wrapReceivedAndInvoke(callback: Function, notification: Notification) {
+  private wrapReceivedAndInvoke(
+    callback: Function,
+    notification: Notification
+  ) {
     const completion = (response: NotificationCompletion) => {
-      if (Platform.OS === 'ios') {
-        this.nativeCommandsSender.finishPresentingNotification((notification as unknown as NotificationIOS).identifier, response);
+      if (Platform.OS === "ios") {
+        this.nativeCommandsSender.finishPresentingNotification(
+          notification,
+          response
+        );
       }
     };
 
     callback(notification, completion);
   }
 
-  public wrapOpenedCallback(callback: Function): (notification: Notification, completion: () => void, actionResponse?: NotificationActionResponse) => void {
+  public wrapOpenedCallback(
+    callback: Function
+  ): (
+    notification: Notification,
+    completion: () => void,
+    actionResponse?: NotificationActionResponse
+  ) => void {
     return (notification, _completion, actionResponse) => {
       const completion = () => {
-        if (Platform.OS === 'ios') {
-          this.nativeCommandsSender.finishHandlingAction((notification as unknown as NotificationIOS).identifier);
+        if (Platform.OS === "ios") {
+          this.nativeCommandsSender.finishHandlingAction(
+            ((notification as unknown) as NotificationIOS).identifier
+          );
         }
       };
 
       callback(notification, completion, actionResponse);
-    }
+    };
   }
 
   private applicationIsVisible(): Boolean {
-    return AppState.currentState !== 'background';
+    return AppState.currentState !== "background";
   }
 }

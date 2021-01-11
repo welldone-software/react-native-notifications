@@ -4,8 +4,8 @@
 
     <application>
         <activity
-            android:theme="@style/Theme.Transparent"
-            android:name=".core.actions.UnlockActivity" />
+            android:name=".core.actions.UnlockActivity"
+            android:theme="@style/Theme.Transparent" />
 
         <service
             android:name=".core.NotificationBackgroundService"

@@ -15,9 +15,10 @@
     return self;
 }
 
-- (void)didRegisterForRemoteNotificationsWithDeviceToken:(id)deviceToken {
-    NSString *tokenRepresentation = [deviceToken isKindOfClass:[NSString class]] ? deviceToken : [RNNotificationUtils deviceTokenToString:deviceToken];
-    [RNEventEmitter sendEvent:RNRegistered body:@{@"deviceToken": tokenRepresentation}];
+- (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSDictionary *)tokens {
+    NSString *fcmTokenRepresentation = [[tokens valueForKey:@"fcm"] isKindOfClass:[NSString class]] ? [tokens valueForKey:@"fcm"] : [RNNotificationUtils deviceTokenToString:[tokens valueForKey:@"fcm"]];
+    NSString *apnsTokenRepresentation = [[tokens valueForKey:@"apns"] isKindOfClass:[NSString class]] ? [tokens valueForKey:@"apns"] : [RNNotificationUtils deviceTokenToString:[tokens valueForKey:@"apns"]];
+    [RNEventEmitter sendEvent:RNRegistered body:@{@"fcmToken": fcmTokenRepresentation, @"apnsToken": apnsTokenRepresentation}];
 }
 
 - (void)didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {

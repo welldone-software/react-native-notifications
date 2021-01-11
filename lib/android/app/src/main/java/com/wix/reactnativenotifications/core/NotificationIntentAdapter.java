@@ -7,10 +7,11 @@ import android.os.Bundle;
 
 import com.wix.reactnativenotifications.core.notification.PushNotificationProps;
 
-public class NotificationIntentAdapter {
+import static com.wix.reactnativenotifications.Defs.NOTIFICATION_ACTION_CLICK;
+import static com.wix.reactnativenotifications.Defs.ACTION_EXTRA_NAME;
+import static com.wix.reactnativenotifications.Defs.PUSH_NOTIFICATION_EXTRA_NAME;
 
-    private static final String ACTION_EXTRA_NAME = "action";
-    private static final String PUSH_NOTIFICATION_EXTRA_NAME = "pushNotification";
+public class NotificationIntentAdapter {
 
     public static PendingIntent createPendingNotificationIntent(Context appContext, Intent intent, PushNotificationProps notification) {
         return createPendingNotificationIntent(appContext, intent, notification, null);
@@ -20,16 +21,13 @@ public class NotificationIntentAdapter {
         intent.putExtra(PUSH_NOTIFICATION_EXTRA_NAME, notification.asBundle());
         if (action != null) {
             intent.putExtra(ACTION_EXTRA_NAME, action);
+            intent.setAction(NOTIFICATION_ACTION_CLICK);
         }
         return PendingIntent.getService(appContext, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
     }
 
     public static Bundle extractPendingNotificationDataFromIntent(Intent intent) {
         return intent.getBundleExtra(PUSH_NOTIFICATION_EXTRA_NAME);
-    }
-
-    public static String extractActionFromIntent(Intent intent) {
-        return intent.getStringExtra(ACTION_EXTRA_NAME);
     }
 
     public static boolean canHandleIntent(Intent intent) {

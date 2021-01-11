@@ -16,15 +16,16 @@ interface NativeCommandsModule {
   getBadgeCount(): Promise<number>;
   setBadgeCount(count: number): void;
   cancelLocalNotification(notificationId: string): void;
+  dismissNotification(notificationId: string): void;
   cancelAllLocalNotifications(): void;
   isRegisteredForRemoteNotifications(): Promise<boolean>;
   checkPermissions(): Promise<NotificationPermissions>;
   removeDeliveredNotifications(identifiers: Array<string>): void;
   removeAllDeliveredNotifications(): void;
-  getDeliveredNotifications(): Promise<Notification[]>;
+  getDeliveredNotifications(): Promise<Notification[] | string>;
   setCategories(categories: [NotificationCategory?]): void;
   finishPresentingNotification(
-    notificationId: string,
+    notification: Notification,
     callback: NotificationCompletion
   ): void;
   finishHandlingAction(notificationId: string): void;
@@ -84,6 +85,10 @@ export class NativeCommandsSender {
     this.nativeCommandsModule.cancelLocalNotification(notificationId);
   }
 
+  dismissNotification(notificationId: string) {
+    this.nativeCommandsModule.dismissNotification(notificationId);
+  }
+
   cancelAllLocalNotifications() {
     this.nativeCommandsModule.cancelAllLocalNotifications();
   }
@@ -104,16 +109,19 @@ export class NativeCommandsSender {
     return this.nativeCommandsModule.removeDeliveredNotifications(identifiers);
   }
 
-  public getDeliveredNotifications(): Promise<Notification[]> {
-    return this.nativeCommandsModule.getDeliveredNotifications();
+  public async getDeliveredNotifications(): Promise<Notification[]> {
+    const result = await this.nativeCommandsModule.getDeliveredNotifications();
+    const payloadArray =
+      typeof result === "string" ? JSON.parse(result) : result;
+    return payloadArray.map((payload: object) => new Notification(payload));
   }
 
   finishPresentingNotification(
-    notificationId: string,
+    notification: Notification,
     notificationCompletion: NotificationCompletion
   ): void {
     this.nativeCommandsModule.finishPresentingNotification(
-      notificationId,
+      notification,
       notificationCompletion
     );
   }

@@ -8,8 +8,7 @@ import org.json.JSONObject;
 
 public class PushNotificationProps {
 
-    private final static String ACTION = "action";
-    private final static String ID = "id";
+    public final static String ID = "id";
     protected Bundle mBundle;
 
     public PushNotificationProps(Bundle bundle) {
@@ -22,10 +21,6 @@ public class PushNotificationProps {
 
     public String getBody(String defaultBody) {
         return getBundleStringFirstNotNull("gcm.notification.body", defaultBody);
-    }
-
-    public void setAction(String action) {
-        mBundle.putString(ACTION, action);
     }
 
     public void setId(int id) {

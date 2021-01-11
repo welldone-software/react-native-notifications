@@ -17,6 +17,7 @@ import android.util.Log;
 import androidx.core.text.HtmlCompat;
 
 import com.facebook.react.bridge.ReactContext;
+import com.wix.reactnativenotifications.Defs;
 import com.wix.reactnativenotifications.R;
 import com.wix.reactnativenotifications.core.AppLaunchHelper;
 import com.wix.reactnativenotifications.core.AppLifecycleFacade;
@@ -28,6 +29,7 @@ import com.wix.reactnativenotifications.core.NotificationBackgroundService;
 import com.wix.reactnativenotifications.core.NotificationIntentAdapter;
 import com.wix.reactnativenotifications.core.ProxyService;
 import com.wix.reactnativenotifications.utils.LoggerWrapper;
+import com.wix.reactnativenotifications.NotificationsStorage;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,6 +48,7 @@ public class PushNotification implements IPushNotification {
     final protected AppLaunchHelper mAppLaunchHelper;
     final protected JsIOHelper mJsIOHelper;
     final protected PushNotificationProps mNotificationProps;
+    final protected NotificationsStorage mStorage;
     final protected AppVisibilityListener mAppVisibilityListener = new AppVisibilityListener() {
         @Override
         public void onAppVisible() {
@@ -73,6 +76,7 @@ public class PushNotification implements IPushNotification {
         mJsIOHelper = JsIOHelper;
         mNotificationProps = createProps(bundle);
         mLogger = LoggerWrapper.getInstance(context);
+        mStorage = NotificationsStorage.getInstance(context);
     }
 
     @Override
@@ -87,16 +91,8 @@ public class PushNotification implements IPushNotification {
     }
 
     @Override
-    public void onOpened(String action) {
-        if (action != null) {
-            mNotificationProps.setAction(action);
-        }
-        digestNotification();
-    }
-
-    @Override
     public void onOpened() {
-        onOpened(null);
+        digestNotification();
     }
 
     @Override
@@ -209,8 +205,8 @@ public class PushNotification implements IPushNotification {
             NotificationChannel foundChannel = notificationManager.getNotificationChannel(channelId);
             if (foundChannel == null) {
                 NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
-                    CHANNEL_NAME,
-                    NotificationManager.IMPORTANCE_HIGH);
+                        CHANNEL_NAME,
+                        NotificationManager.IMPORTANCE_HIGH);
                 notificationManager.createNotificationChannel(channel);
                 channelId = CHANNEL_ID;
             }
@@ -241,11 +237,13 @@ public class PushNotification implements IPushNotification {
 
     protected void postNotification(int id, Notification notification) {
         final NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        mStorage.saveNotification(mNotificationProps);
         notificationManager.notify(id, notification);
     }
 
     protected void cancelNotification(int id) {
         final NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        mStorage.removeNotification(mNotificationProps.asBundle().getString(NotificationsStorage.MFA_REQUEST_ID));
         notificationManager.cancel(id);
     }
 
@@ -310,9 +308,8 @@ public class PushNotification implements IPushNotification {
                     continue;
                 }
 
-                Intent actionIntent = new Intent(mContext, NotificationBackgroundService.class);
-                actionIntent.setAction(NotificationBackgroundService.NOTIFICATION_ACTION_CLICK);
-                PendingIntent pendingActionIntent = NotificationIntentAdapter.createPendingNotificationIntent(mContext, actionIntent, mNotificationProps, actionName);
+                Intent actionIntent = new Intent(mContext.getApplicationContext(), NotificationBackgroundService.class);
+                PendingIntent pendingActionIntent = NotificationIntentAdapter.createPendingNotificationIntent(mContext.getApplicationContext(), actionIntent, mNotificationProps, actionName);
 
                 Spanned actionStyle = HtmlCompat.fromHtml(
                         "<font color=\"" + Color.parseColor(actionColor) + "\">" + actionName,

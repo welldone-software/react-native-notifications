@@ -94,6 +94,13 @@ export class NotificationsRoot {
   }
 
   /**
+   * dismissNotification
+   */
+  public dismissNotification(notificationId: string) {
+    return this.commands.dismissNotification(notificationId);
+  }
+
+  /**
    * removeAllDeliveredNotifications
    */
   public removeAllDeliveredNotifications() {
@@ -112,6 +119,25 @@ export class NotificationsRoot {
    */
   public setNotificationChannel(notificationChannel: NotificationChannel) {
     return this.android.setNotificationChannel(notificationChannel);
+  }
+
+  /**
+   * getDeliveredNotifications
+   */
+  public getDeliveredNotifications(): Promise<Notification[]> {
+    return this.commands.getDeliveredNotifications();
+  }
+
+  /**
+   * removeDeliveredNotifications
+   * @param identifiers Array of notification identifiers
+   */
+  public removeDeliveredNotifications(identifiers: Array<string | number>) {
+    return this.commands.removeDeliveredNotifications(
+      identifiers.map((value) =>
+        typeof value === "number" ? `${value}` : value
+      )
+    );
   }
 
   /**
