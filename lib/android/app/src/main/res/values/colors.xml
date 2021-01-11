@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="set_lock_dialog_text">#545457</color>
+    <color name="set_lock_dialog_button">#188ded</color>
+</resources>

@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,16 +36,14 @@ public class SetLockDialog extends DialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Button settingsButton = view.findViewById(R.id.set_lock_title);
-        settingsButton.setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.set_lock_settings).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openLockSettings();
             }
         });
 
-        Button cancelButton = view.findViewById(R.id.set_lock_cancel);
-        cancelButton.setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.set_lock_cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 safelyDismiss();
@@ -56,12 +53,8 @@ public class SetLockDialog extends DialogFragment {
 
     private void openLockSettings() {
         Intent intent = new Intent(DevicePolicyManager.ACTION_SET_NEW_PASSWORD);
-        Activity activity = getActivity();
-        if (activity != null) {
-            activity.startActivity(intent);
-            dismiss();
-            activity.finish();
-        }
+        startActivity(intent);
+        safelyDismiss();
     }
 
     private void safelyDismiss() {
