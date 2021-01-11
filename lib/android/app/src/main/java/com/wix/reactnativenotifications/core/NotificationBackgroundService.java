@@ -12,7 +12,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.jstasks.HeadlessJsTaskConfig;
 import com.wix.reactnativenotifications.NotificationsStorage;
 import com.wix.reactnativenotifications.core.actions.ActionPayloadSaver;
-import com.wix.reactnativenotifications.core.actions.BackgroundAuthActivity;
+import com.wix.reactnativenotifications.background.BackgroundAuthActivity;
 import com.wix.reactnativenotifications.core.notificationdrawer.IPushNotificationsDrawer;
 import com.wix.reactnativenotifications.core.notificationdrawer.PushNotificationsDrawer;
 

@@ -1,4 +1,4 @@
-package com.wix.reactnativenotifications.core.actions;
+package com.wix.reactnativenotifications.background;
 
 import android.app.KeyguardManager;
 import android.content.BroadcastReceiver;
@@ -19,6 +19,7 @@ import android.view.WindowManager;
 import com.wix.reactnativenotifications.Defs;
 import com.wix.reactnativenotifications.R;
 import com.wix.reactnativenotifications.core.NotificationBackgroundService;
+import com.wix.reactnativenotifications.core.actions.ActionPayloadSaver;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -131,22 +132,27 @@ public class BackgroundAuthActivity extends AppCompatActivity {
 
         boolean authRequired = bundle.getBoolean(Defs.PUSH_NOTIFICATION_EXTRA_AUTH_REQUIRED, true);
         if (authRequired) {
-            Executor executor = Executors.newSingleThreadExecutor();
-            BiometricPrompt biometricPrompt = new BiometricPrompt(this, executor, mAuthCallback);
-            BiometricPrompt.PromptInfo.Builder promptInfoBuilder = new BiometricPrompt.PromptInfo.Builder()
-                    .setDeviceCredentialAllowed(true)
-                    .setTitle(getString(R.string.biometric_title))
-                    .setSubtitle(getString(R.string.biometric_subtitle))
-                    .setDescription(getString(R.string.biometric_description));
-            BiometricPrompt.PromptInfo promptInfo = promptInfoBuilder.build();
-            biometricPrompt.authenticate(promptInfo);
+            boolean deviceHasLock = isDeviceHasLock();
+            if (deviceHasLock) {
+                Executor executor = Executors.newSingleThreadExecutor();
+                BiometricPrompt biometricPrompt = new BiometricPrompt(this, executor, mAuthCallback);
+                BiometricPrompt.PromptInfo.Builder promptInfoBuilder = new BiometricPrompt.PromptInfo.Builder()
+                        .setDeviceCredentialAllowed(true)
+                        .setTitle(getString(R.string.biometric_title))
+                        .setSubtitle(getString(R.string.biometric_subtitle))
+                        .setDescription(getString(R.string.biometric_description));
+                BiometricPrompt.PromptInfo promptInfo = promptInfoBuilder.build();
+                biometricPrompt.authenticate(promptInfo);
+            } else {
+                SetLockDialog.newInstance().show(getSupportFragmentManager(), SetLockDialog.TAG);
+            }
         } else {
             finishActivity();
         }
     }
 
     private void promptUnlock() {
-        KeyguardManager km = (KeyguardManager)getSystemService(Context.KEYGUARD_SERVICE);
+        KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             km.requestDismissKeyguard(this, null);
         } else {
@@ -157,7 +163,7 @@ public class BackgroundAuthActivity extends AppCompatActivity {
     private void onActionAppears(Intent intent) {
         String action = intent.getAction();
         if (action != null) {
-            switch(action) {
+            switch (action) {
                 case PROMPT_UNLOCK_ACTION:
                     promptUnlock();
                     break;
@@ -171,5 +177,11 @@ public class BackgroundAuthActivity extends AppCompatActivity {
         } else {
             BackgroundAuthActivity.this.finish();
         }
+    }
+
+    private boolean isDeviceHasLock() {
+        KeyguardManager keyguardManager = (KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE);
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ?
+                keyguardManager.isDeviceSecure() : keyguardManager.isKeyguardSecure();
     }
 }
