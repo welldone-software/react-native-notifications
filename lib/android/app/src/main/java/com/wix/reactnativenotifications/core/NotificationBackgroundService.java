@@ -24,13 +24,14 @@ public class NotificationBackgroundService extends HeadlessJsTaskService {
     private static final int TASK_TIMEOUT = 1000 * 60;
     private static final boolean TASK_IN_FOREGROUND = true;
 
-    private void dismissNotification(Bundle notification) {
+    private void dismissNotification(Bundle notification, boolean delete) {
         Bundle payload = notification.getBundle(PUSH_NOTIFICATION_EXTRA);
         if (payload != null) {
             String mfaRequestId = payload.getString(NotificationsStorage.MFA_REQUEST_ID);
-            int notificationId = NotificationsStorage.getInstance(this).removeNotification(mfaRequestId);
+            NotificationsStorage storage = NotificationsStorage.getInstance(this);
+            int notificationId = delete ? storage.removeNotification(mfaRequestId) : storage.getNotificationId(mfaRequestId);
             IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(this);
-            notificationsDrawer.onNotificationClearRequest(notificationId);
+            PushNotificationsDrawer.get(this).onNotificationClearRequest(notificationId);
         }
     }
 
@@ -68,16 +69,21 @@ public class NotificationBackgroundService extends HeadlessJsTaskService {
             switch (action) {
                 case Defs.NOTIFICATION_ACTION_CLICK:
                     if (isLocked()) {
+                        dismissNotification(extras, false);
                         ActionPayloadSaver.getInstance(this).saveAwaitingAction(extras);
                         promptUnlock();
                     } else {
+                        Intent closeIntent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+                        sendBroadcast(closeIntent);
+
                         boolean authRequired = extras.getBoolean(Defs.PUSH_NOTIFICATION_EXTRA_AUTH_REQUIRED, true);
                         boolean authenticated = extras.getBoolean(Defs.PUSH_NOTIFICATION_EXTRA_AUTHENTICATED, false);
                         if (authRequired && !authenticated) {
+                            dismissNotification(extras, false);
                             ActionPayloadSaver.getInstance(this).saveAwaitingAction(extras);
                             promptUnlock(true);
                         } else {
-                            dismissNotification(extras);
+                            dismissNotification(extras, true);
                             return sendJSTask(Defs.NOTIFICATION_ACTION_CLICK, extras);
                         }
                     }
