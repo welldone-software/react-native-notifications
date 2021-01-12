@@ -1,7 +1,7 @@
 package com.wix.reactnativenotifications.background;
 
-import android.app.Activity;
 import android.app.admin.DevicePolicyManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -46,22 +46,20 @@ public class SetLockDialog extends DialogFragment {
         view.findViewById(R.id.set_lock_cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                safelyDismiss();
+                dismiss();
             }
         });
+    }
+
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+        getActivity().finish();
     }
 
     private void openLockSettings() {
         Intent intent = new Intent(DevicePolicyManager.ACTION_SET_NEW_PASSWORD);
         startActivity(intent);
-        safelyDismiss();
-    }
-
-    private void safelyDismiss() {
-        Activity activity = getActivity();
-        if (activity != null) {
-            dismiss();
-            activity.finish();
-        }
+        dismiss();
     }
 }
