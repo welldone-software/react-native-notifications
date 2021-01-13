@@ -30,7 +30,6 @@ public class NotificationBackgroundService extends HeadlessJsTaskService {
             String mfaRequestId = payload.getString(NotificationsStorage.MFA_REQUEST_ID);
             NotificationsStorage storage = NotificationsStorage.getInstance(this);
             int notificationId = delete ? storage.removeNotification(mfaRequestId) : storage.getNotificationId(mfaRequestId);
-            IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(this);
             PushNotificationsDrawer.get(this).onNotificationClearRequest(notificationId);
         }
     }
