@@ -40,17 +40,17 @@ public class BackgroundAuthActivity extends AppCompatActivity {
     private final BiometricPrompt.AuthenticationCallback mAuthCallback = new BiometricPrompt.AuthenticationCallback() {
         @Override
         public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
-            finishActivity();
+            endActivityWithResponse(true);
         }
 
         @Override
         public void onAuthenticationFailed() {
-            finishActivity();
+            endActivity();
         }
 
         @Override
         public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
-            finishActivity();
+            endActivity();
         }
     };
 
@@ -59,17 +59,7 @@ public class BackgroundAuthActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             KeyguardManager myKM = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
             if (!myKM.inKeyguardRestrictedInputMode()) {
-                ActionPayloadSaver saver = ActionPayloadSaver.getInstance(context);
-                Bundle bundle = saver.getAwaitingAction();
-                if (bundle != null) {
-                    Intent serviceIntent = new Intent(context, NotificationBackgroundService.class);
-                    serviceIntent.setAction(Defs.NOTIFICATION_ACTION_CLICK);
-                    serviceIntent.putExtras(bundle);
-                    context.startService(serviceIntent);
-                    NotificationBackgroundService.acquireWakeLockNow(context);
-                }
-                saver.clearAwaitingAction();
-                BackgroundAuthActivity.this.finish();
+                endActivityWithResponse(false);
             }
         }
     };
@@ -117,11 +107,19 @@ public class BackgroundAuthActivity extends AppCompatActivity {
         mHandler.postDelayed(mKillActivity, timeLeft);
     }
 
-    private void finishActivity() {
+    private void endActivity() {
+        endActivity(false, false);
+    }
+
+    private void endActivityWithResponse(boolean authenticated) {
+        endActivity(true, authenticated);
+    }
+
+    private void endActivity(boolean withResponse, boolean authenticated) {
         ActionPayloadSaver saver = ActionPayloadSaver.getInstance(this);
         Bundle bundle = saver.getAwaitingAction();
-        if (bundle != null) {
-            bundle.putBoolean(Defs.PUSH_NOTIFICATION_EXTRA_AUTHENTICATED, true);
+        if (bundle != null && withResponse) {
+            bundle.putBoolean(Defs.PUSH_NOTIFICATION_EXTRA_AUTHENTICATED, authenticated);
             Intent serviceIntent = new Intent(this, NotificationBackgroundService.class);
             serviceIntent.setAction(Defs.NOTIFICATION_ACTION_CLICK);
             serviceIntent.putExtras(bundle);
@@ -140,24 +138,19 @@ public class BackgroundAuthActivity extends AppCompatActivity {
             return;
         }
 
-        boolean authRequired = bundle.getBoolean(Defs.PUSH_NOTIFICATION_EXTRA_AUTH_REQUIRED, true);
-        if (authRequired) {
-            boolean deviceHasLock = isDeviceHasLock();
-            if (deviceHasLock) {
-                Executor executor = Executors.newSingleThreadExecutor();
-                BiometricPrompt biometricPrompt = new BiometricPrompt(this, executor, mAuthCallback);
-                BiometricPrompt.PromptInfo.Builder promptInfoBuilder = new BiometricPrompt.PromptInfo.Builder()
-                        .setDeviceCredentialAllowed(true)
-                        .setTitle(getString(R.string.biometric_title))
-                        .setSubtitle(getString(R.string.biometric_subtitle))
-                        .setDescription(getString(R.string.biometric_description));
-                BiometricPrompt.PromptInfo promptInfo = promptInfoBuilder.build();
-                biometricPrompt.authenticate(promptInfo);
-            } else {
-                SetLockDialog.newInstance().show(getSupportFragmentManager(), SetLockDialog.TAG);
-            }
+        boolean deviceHasLock = isDeviceHasLock();
+        if (deviceHasLock) {
+            Executor executor = Executors.newSingleThreadExecutor();
+            BiometricPrompt biometricPrompt = new BiometricPrompt(this, executor, mAuthCallback);
+            BiometricPrompt.PromptInfo.Builder promptInfoBuilder = new BiometricPrompt.PromptInfo.Builder()
+                    .setDeviceCredentialAllowed(true)
+                    .setTitle(getString(R.string.biometric_title))
+                    .setSubtitle(getString(R.string.biometric_subtitle))
+                    .setDescription(getString(R.string.biometric_description));
+            BiometricPrompt.PromptInfo promptInfo = promptInfoBuilder.build();
+            biometricPrompt.authenticate(promptInfo);
         } else {
-            finishActivity();
+            SetLockDialog.newInstance().show(getSupportFragmentManager(), SetLockDialog.TAG);
         }
     }
 
