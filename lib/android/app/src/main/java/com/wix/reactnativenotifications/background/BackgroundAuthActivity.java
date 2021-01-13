@@ -42,6 +42,16 @@ public class BackgroundAuthActivity extends AppCompatActivity {
         public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
             finishActivity();
         }
+
+        @Override
+        public void onAuthenticationFailed() {
+            finishActivity();
+        }
+
+        @Override
+        public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
+            finishActivity();
+        }
     };
 
     private final BroadcastReceiver mUnlockReceiver = new BroadcastReceiver() {
