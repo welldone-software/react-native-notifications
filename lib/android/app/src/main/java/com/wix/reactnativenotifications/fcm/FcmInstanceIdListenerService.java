@@ -11,6 +11,7 @@ import com.wix.reactnativenotifications.Defs;
 import com.wix.reactnativenotifications.core.NotificationBackgroundService;
 import com.wix.reactnativenotifications.core.notification.IPushNotification;
 import com.wix.reactnativenotifications.core.notification.PushNotification;
+import com.wix.reactnativenotifications.utils.LoggerWrapper;
 
 import static com.wix.reactnativenotifications.Defs.LOGTAG;
 
@@ -21,10 +22,14 @@ import static com.wix.reactnativenotifications.Defs.LOGTAG;
  */
 public class FcmInstanceIdListenerService extends FirebaseMessagingService {
 
+    private static final String TAG = FcmInstanceIdListenerService.class.getSimpleName();
+
     @Override
     public void onMessageReceived(RemoteMessage message){
+        LoggerWrapper logger = LoggerWrapper.getInstance(this);
+
         Bundle bundle = message.toIntent().getExtras();
-        if(BuildConfig.DEBUG) Log.d(LOGTAG, "New message from FCM: " + bundle);
+        if(BuildConfig.DEBUG) logger.d(TAG, "New message from FCM: " + bundle);
 
         if (bundle != null) {
             Intent serviceIntent = new Intent(this, NotificationBackgroundService.class);
@@ -38,7 +43,7 @@ public class FcmInstanceIdListenerService extends FirebaseMessagingService {
             notification.onReceived();
         } catch (IPushNotification.InvalidNotificationException e) {
             // An FCM message, yes - but not the kind we know how to work with.
-            if(BuildConfig.DEBUG) Log.v(LOGTAG, "FCM message handling aborted", e);
+            if(BuildConfig.DEBUG) logger.v(TAG, "FCM message handling aborted: " + e.getMessage());
         }
     }
 }
