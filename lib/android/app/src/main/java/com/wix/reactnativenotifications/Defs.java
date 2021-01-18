@@ -1,7 +1,7 @@
 package com.wix.reactnativenotifications;
 
 public interface Defs {
-    String LOGTAG = "ReactNativeNotifs";
+    String LOGTAG = "ReactNativeNotifications";
 
     String TOKEN_RECEIVED_EVENT_NAME = "remoteNotificationsRegistered";
 

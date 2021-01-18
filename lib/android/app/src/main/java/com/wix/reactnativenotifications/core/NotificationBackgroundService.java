@@ -15,6 +15,7 @@ import com.wix.reactnativenotifications.core.actions.ActionPayloadSaver;
 import com.wix.reactnativenotifications.background.BackgroundAuthActivity;
 import com.wix.reactnativenotifications.core.notificationdrawer.IPushNotificationsDrawer;
 import com.wix.reactnativenotifications.core.notificationdrawer.PushNotificationsDrawer;
+import com.wix.reactnativenotifications.utils.LoggerWrapper;
 
 import com.wix.reactnativenotifications.Defs;
 
@@ -23,6 +24,7 @@ public class NotificationBackgroundService extends HeadlessJsTaskService {
     private static final String PUSH_NOTIFICATION_EXTRA = "pushNotification";
     private static final int TASK_TIMEOUT = 1000 * 60;
     private static final boolean TASK_IN_FOREGROUND = true;
+    private static final String TAG = NotificationBackgroundService.class.getSimpleName();
 
     private void dismissNotification(Bundle notification, boolean delete) {
         Bundle payload = notification.getBundle(PUSH_NOTIFICATION_EXTRA);
@@ -62,16 +64,21 @@ public class NotificationBackgroundService extends HeadlessJsTaskService {
     @Override
     protected @Nullable
     HeadlessJsTaskConfig getTaskConfig(Intent intent) {
+        LoggerWrapper logger = LoggerWrapper.getInstance(this);
         Bundle extras = intent.getExtras();
         String action = intent.getAction();
+
+        logger.i(TAG, "Intent arrived: " + action);
         if (extras != null && action != null) {
             switch (action) {
                 case Defs.NOTIFICATION_ACTION_CLICK:
                     if (isLocked()) {
+                        logger.i(TAG, "Device is locked, prompting unlock");
                         dismissNotification(extras, false);
                         ActionPayloadSaver.getInstance(this).saveAwaitingAction(extras);
                         promptUnlock();
                     } else {
+                        logger.i(TAG, "Device is unlocked, notifying JS");
                         Intent closeIntent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
                         sendBroadcast(closeIntent);
 

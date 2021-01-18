@@ -28,6 +28,7 @@ import com.wix.reactnativenotifications.core.JsIOHelper;
 import com.wix.reactnativenotifications.core.NotificationBackgroundService;
 import com.wix.reactnativenotifications.core.NotificationIntentAdapter;
 import com.wix.reactnativenotifications.core.ProxyService;
+import com.wix.reactnativenotifications.utils.LoggerWrapper;
 import com.wix.reactnativenotifications.NotificationsStorage;
 
 import org.json.JSONArray;
@@ -38,6 +39,9 @@ import static com.wix.reactnativenotifications.Defs.NOTIFICATION_OPENED_EVENT_NA
 import static com.wix.reactnativenotifications.Defs.NOTIFICATION_RECEIVED_EVENT_NAME;
 
 public class PushNotification implements IPushNotification {
+
+    private final LoggerWrapper mLogger;
+    private static final String TAG = PushNotification.class.getSimpleName();
 
     final protected Context mContext;
     final protected AppLifecycleFacade mAppLifecycleFacade;
@@ -71,13 +75,17 @@ public class PushNotification implements IPushNotification {
         mAppLaunchHelper = appLaunchHelper;
         mJsIOHelper = JsIOHelper;
         mNotificationProps = createProps(bundle);
+        mLogger = LoggerWrapper.getInstance(context);
         mStorage = NotificationsStorage.getInstance(context);
     }
 
     @Override
     public void onReceived() throws InvalidNotificationException {
         if (!mAppLifecycleFacade.isAppVisible()) {
+            mLogger.i(TAG, "App is not visible, posting notification");
             postNotification(null);
+        } else {
+            mLogger.i(TAG, "App is visible, notifying JS");
         }
         notifyReceivedToJS();
     }
