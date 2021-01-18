@@ -98,7 +98,6 @@ dependencies {
     implementation 'androidx.biometric:biometric:1.0.1'
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
     implementation "androidx.cardview:cardview:1.0.0"
-    implementation 'org.jetbrains:annotations-java5:15.0'
 
     // tests
     testImplementation 'junit:junit:4.12'
