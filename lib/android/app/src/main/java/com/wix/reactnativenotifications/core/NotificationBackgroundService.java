@@ -13,7 +13,6 @@ import com.facebook.react.jstasks.HeadlessJsTaskConfig;
 import com.wix.reactnativenotifications.NotificationsStorage;
 import com.wix.reactnativenotifications.core.actions.ActionPayloadSaver;
 import com.wix.reactnativenotifications.background.BackgroundAuthActivity;
-import com.wix.reactnativenotifications.core.notificationdrawer.IPushNotificationsDrawer;
 import com.wix.reactnativenotifications.core.notificationdrawer.PushNotificationsDrawer;
 import com.wix.reactnativenotifications.utils.LoggerWrapper;
 
@@ -21,13 +20,12 @@ import com.wix.reactnativenotifications.Defs;
 
 public class NotificationBackgroundService extends HeadlessJsTaskService {
 
-    private static final String PUSH_NOTIFICATION_EXTRA = "pushNotification";
     private static final int TASK_TIMEOUT = 1000 * 60;
     private static final boolean TASK_IN_FOREGROUND = true;
     private static final String TAG = NotificationBackgroundService.class.getSimpleName();
 
     private void dismissNotification(Bundle notification, boolean delete) {
-        Bundle payload = notification.getBundle(PUSH_NOTIFICATION_EXTRA);
+        Bundle payload = notification.getBundle(Defs.EXTRA_PAYLOAD);
         if (payload != null) {
             String mfaRequestId = payload.getString(NotificationsStorage.MFA_REQUEST_ID);
             NotificationsStorage storage = NotificationsStorage.getInstance(this);
@@ -79,12 +77,13 @@ public class NotificationBackgroundService extends HeadlessJsTaskService {
                         promptUnlock();
                     } else {
                         logger.i(TAG, "Device is unlocked, notifying JS");
-                        Intent closeIntent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-                        sendBroadcast(closeIntent);
+                        Intent closeDrawerIntent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+                        sendBroadcast(closeDrawerIntent);
 
-                        boolean authRequired = extras.getBoolean(Defs.PUSH_NOTIFICATION_EXTRA_AUTH_REQUIRED, true);
-                        boolean authenticated = extras.getBoolean(Defs.PUSH_NOTIFICATION_EXTRA_AUTHENTICATED, false);
-                        if (authRequired && !authenticated) {
+                        boolean authRequired = extras.getBoolean(Defs.EXTRA_AUTH_REQUIRED, true);
+                        boolean authenticated = extras.getBoolean(Defs.EXTRA_AUTHENTICATED, false);
+                        String mfaAction = extras.getString(Defs.EXTRA_ACTION_NAME);
+                        if (authRequired && !authenticated && Defs.APPROVE_ACTION.equals(mfaAction)) {
                             dismissNotification(extras, false);
                             ActionPayloadSaver.getInstance(this).saveAwaitingAction(extras);
                             promptUnlock(true);

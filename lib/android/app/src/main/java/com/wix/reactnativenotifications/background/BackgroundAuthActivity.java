@@ -119,7 +119,7 @@ public class BackgroundAuthActivity extends AppCompatActivity {
         ActionPayloadSaver saver = ActionPayloadSaver.getInstance(this);
         Bundle bundle = saver.getAwaitingAction();
         if (bundle != null && withResponse) {
-            bundle.putBoolean(Defs.PUSH_NOTIFICATION_EXTRA_AUTHENTICATED, authenticated);
+            bundle.putBoolean(Defs.EXTRA_AUTHENTICATED, authenticated);
             Intent serviceIntent = new Intent(this, NotificationBackgroundService.class);
             serviceIntent.setAction(Defs.NOTIFICATION_ACTION_CLICK);
             serviceIntent.putExtras(bundle);
