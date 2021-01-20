@@ -14,6 +14,6 @@ public interface Defs {
 
     String EXTRA_ACTION_NAME = "action";
     String EXTRA_PAYLOAD = "pushNotification";
-    String EXTRA_AUTH_REQUIRED = "auth_required";
+    String EXTRA_SECURED = "secured";
     String EXTRA_AUTHENTICATED = "authenticated";
 }

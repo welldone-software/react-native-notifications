@@ -80,7 +80,7 @@ public class NotificationBackgroundService extends HeadlessJsTaskService {
                         Intent closeDrawerIntent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
                         sendBroadcast(closeDrawerIntent);
 
-                        boolean authRequired = extras.getBoolean(Defs.EXTRA_AUTH_REQUIRED, true);
+                        boolean authRequired = extras.getBoolean(Defs.EXTRA_SECURED, true);
                         boolean authenticated = extras.getBoolean(Defs.EXTRA_AUTHENTICATED, false);
                         String mfaAction = extras.getString(Defs.EXTRA_ACTION_NAME);
                         if (authRequired && !authenticated && Defs.APPROVE_ACTION.equals(mfaAction)) {
