@@ -5,8 +5,7 @@ import android.os.FileObserver;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
-
-import org.jetbrains.annotations.NotNull;
+import androidx.annotation.NonNull;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -62,7 +61,7 @@ public class LoggerWrapper {
         return "[" + level.mLabel + "] [" + time + "] " + tag;
     }
 
-    private void saveLog(@NotNull LogLevel level, @NotNull String tag, String message) {
+    private void saveLog(@NonNull LogLevel level, @NonNull String tag, String message) {
         File folder = new File(mLogsFilesUrl);
         folder.mkdirs();
 
@@ -111,62 +110,62 @@ public class LoggerWrapper {
         return mLogFileUrl;
     }
 
-    public void d(@NotNull String tag, String message) {
+    public void d(@NonNull String tag, String message) {
         saveLog(LogLevel.d, tag, message);
         Log.d(tag, message);
     }
 
-    public void d(@NotNull String tag) {
+    public void d(@NonNull String tag) {
         saveLog(LogLevel.d, tag, "");
         Log.d(tag, "");
     }
 
-    public void e(@NotNull String tag, String message) {
+    public void e(@NonNull String tag, String message) {
         saveLog(LogLevel.e, tag, message);
         Log.e(tag, message);
     }
 
-    public void e(@NotNull String tag) {
+    public void e(@NonNull String tag) {
         saveLog(LogLevel.e, tag, "");
         Log.e(tag, "");
     }
 
-    public void i(@NotNull String tag, String message) {
+    public void i(@NonNull String tag, String message) {
         saveLog(LogLevel.i, tag, message);
         Log.i(tag, message);
     }
 
-    public void i(@NotNull String tag) {
+    public void i(@NonNull String tag) {
         saveLog(LogLevel.i, tag, "");
         Log.i(tag, "");
     }
 
-    public void v(@NotNull String tag, String message) {
+    public void v(@NonNull String tag, String message) {
         saveLog(LogLevel.v, tag, message);
         Log.v(tag, message);
     }
 
-    public void v(@NotNull String tag) {
+    public void v(@NonNull String tag) {
         saveLog(LogLevel.v, tag, "");
         Log.v(tag, "");
     }
 
-    public void w(@NotNull String tag, String message) {
+    public void w(@NonNull String tag, String message) {
         saveLog(LogLevel.w, tag, message);
         Log.w(tag, message);
     }
 
-    public void w(@NotNull String tag) {
+    public void w(@NonNull String tag) {
         saveLog(LogLevel.w, tag, "");
         Log.w(tag, "");
     }
 
-    public void wtf(@NotNull String tag, String message) {
+    public void wtf(@NonNull String tag, String message) {
         saveLog(LogLevel.wtf, tag, message);
         Log.wtf(tag, message);
     }
 
-    public void wtf(@NotNull String tag) {
+    public void wtf(@NonNull String tag) {
         saveLog(LogLevel.wtf, tag, "");
         Log.wtf(tag, "");
     }
