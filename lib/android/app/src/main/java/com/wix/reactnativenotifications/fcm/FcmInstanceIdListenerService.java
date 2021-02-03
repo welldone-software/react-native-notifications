@@ -26,13 +26,6 @@ public class FcmInstanceIdListenerService extends FirebaseMessagingService {
         Bundle bundle = message.toIntent().getExtras();
         if(BuildConfig.DEBUG) Log.d(LOGTAG, "New message from FCM: " + bundle);
 
-        if (bundle != null) {
-            Intent serviceIntent = new Intent(this, NotificationBackgroundService.class);
-            serviceIntent.setAction(Defs.NOTIFICATION_ARRIVED);
-            serviceIntent.putExtras(bundle);
-            startService(serviceIntent);
-        }
-
         try {
             final IPushNotification notification = PushNotification.get(getApplicationContext(), bundle);
             notification.onReceived();

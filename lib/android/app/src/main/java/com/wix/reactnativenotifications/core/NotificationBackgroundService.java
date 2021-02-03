@@ -51,28 +51,18 @@ public class NotificationBackgroundService extends HeadlessJsTaskService {
     HeadlessJsTaskConfig getTaskConfig(Intent intent) {
         Bundle extras = intent.getExtras();
         String action = intent.getAction();
-        if (extras != null && action != null) {
-            switch (action) {
-                case Defs.NOTIFICATION_ACTION_CLICK:
-                    if (isLocked()) {
-                        ActionPayloadSaver.getInstance(this).saveAwaitingAction(extras);
-                        promptUnlock();
-                    } else {
-                        dismissNotification(extras);
-                        return new HeadlessJsTaskConfig(
-                                Defs.NOTIFICATION_ACTION_CLICK,
-                                Arguments.fromBundle(extras),
-                                TASK_TIMEOUT,
-                                TASK_IN_FOREGROUND
-                        );
-                    }
-                case Defs.NOTIFICATION_ARRIVED:
-                    return new HeadlessJsTaskConfig(
-                            Defs.NOTIFICATION_ARRIVED,
-                            Arguments.fromBundle(extras),
-                            TASK_TIMEOUT,
-                            TASK_IN_FOREGROUND
-                    );
+        if (extras != null && Defs.NOTIFICATION_ACTION_CLICK.equals(action)) {
+            if (isLocked()) {
+                ActionPayloadSaver.getInstance(this).saveAwaitingAction(extras);
+                promptUnlock();
+            } else {
+                dismissNotification(extras);
+                return new HeadlessJsTaskConfig(
+                        Defs.NOTIFICATION_ACTION_CLICK,
+                        Arguments.fromBundle(extras),
+                        TASK_TIMEOUT,
+                        TASK_IN_FOREGROUND
+                );
             }
         }
         return null;
