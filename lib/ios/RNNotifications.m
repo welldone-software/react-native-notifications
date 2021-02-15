@@ -6,6 +6,7 @@
 #import "RNPushKit.h"
 #import "RNNotificationCenterMulticast.h"
 #import "RNNotificationsStorage.h"
+#import "RNLogger.h"
 
 @implementation RNNotifications {
     RNPushKit* _pushKit;
@@ -15,12 +16,14 @@
     RNEventEmitter* _eventEmitter;
     RNNotificationCenterMulticast* _notificationCenterMulticast;
     RNNotificationsStorage* _storage;
+    RNLogger* _logger;
 }
 
 - (instancetype)init {
     self = [super init];
     _notificationEventHandler = [[RNNotificationEventHandler alloc] initWithStore:[RNNotificationsStore new]];
     _storage = [RNNotificationsStorage new];
+    _logger = [RNLogger new];
     return self;
 }
 
@@ -72,6 +75,14 @@
 }
 
 - (void)startMonitorBackgroundNotifications:(NSDictionary *)payload {
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:payload options:NSJSONWritingPrettyPrinted error:&error];
+    if (! jsonData) {
+        [_logger saveLog:@"ERROR" tag:@"RNNotifications" message:@"Could not parse arrived payload"];
+    } else {
+        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        [_logger saveLog:@"LOG" tag:@"RNNotifications" message:[NSString stringWithFormat:@"MFA arrived: %@", jsonString]];
+    }
     if([[UIApplication sharedApplication] applicationState] != UIApplicationStateActive) {
         [_storage saveNotification:payload];
     }

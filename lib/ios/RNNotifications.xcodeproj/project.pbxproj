@@ -57,6 +57,8 @@
 		50FED76E22D3EBA800DDD516 /* RNNotificationParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 50FED76C22D3EBA800DDD516 /* RNNotificationParser.h */; };
 		50FED76F22D3EBA800DDD516 /* RNNotificationParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 50FED76D22D3EBA800DDD516 /* RNNotificationParser.m */; };
 		D8A2F7551CB57F1A002CC8F5 /* RNNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = D8A2F7541CB57F1A002CC8F5 /* RNNotifications.m */; };
+		EA4B73B725DA7D6F00624F9B /* RNLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = EA4B73B625DA7D6F00624F9B /* RNLogger.m */; };
+		EA4B73BB25DA7D8600624F9B /* RNLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = EA4B73BA25DA7D8600624F9B /* RNLogger.h */; };
 		EAF6EE2C25349CB9002AA3D9 /* RNNotificationsStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = EAF6EE2B25349CB9002AA3D9 /* RNNotificationsStorage.h */; };
 		EAF6EE2E25349CC9002AA3D9 /* RNNotificationsStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = EAF6EE2D25349CC9002AA3D9 /* RNNotificationsStorage.m */; };
 /* End PBXBuildFile section */
@@ -156,6 +158,8 @@
 		50FED76D22D3EBA800DDD516 /* RNNotificationParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNNotificationParser.m; sourceTree = "<group>"; };
 		D8A2F7541CB57F1A002CC8F5 /* RNNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNNotifications.m; sourceTree = "<group>"; };
 		D8A2F7561CB57F28002CC8F5 /* RNNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNNotifications.h; sourceTree = "<group>"; };
+		EA4B73B625DA7D6F00624F9B /* RNLogger.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNLogger.m; sourceTree = "<group>"; };
+		EA4B73BA25DA7D8600624F9B /* RNLogger.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNLogger.h; sourceTree = "<group>"; };
 		EAF6EE2B25349CB9002AA3D9 /* RNNotificationsStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNNotificationsStorage.h; sourceTree = "<group>"; };
 		EAF6EE2D25349CC9002AA3D9 /* RNNotificationsStorage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNNotificationsStorage.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -302,6 +306,8 @@
 				50351F9422CD7FF1000713B3 /* RCTConvert+RNNotifications.m */,
 				EAF6EE2B25349CB9002AA3D9 /* RNNotificationsStorage.h */,
 				EAF6EE2D25349CC9002AA3D9 /* RNNotificationsStorage.m */,
+				EA4B73BA25DA7D8600624F9B /* RNLogger.h */,
+				EA4B73B625DA7D6F00624F9B /* RNLogger.m */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -349,6 +355,7 @@
 				50FED76622D3E06500DDD516 /* RNNotificationCenter.h in Headers */,
 				508CE81922D130B900357815 /* RNPushKitEventListener.h in Headers */,
 				50E49F0722D1E4E0007160C1 /* RNNotificationsStore.h in Headers */,
+				EA4B73BB25DA7D8600624F9B /* RNLogger.h in Headers */,
 				508CE81622D12FF600357815 /* RNNotificationCenterListener.h in Headers */,
 				507DCCF922CE3F04005D4E0B /* RNNotifications.h in Headers */,
 				508CE82222D1372E00357815 /* RNNotificationUtils.h in Headers */,
@@ -479,6 +486,7 @@
 				508CE82322D1372E00357815 /* RNNotificationUtils.m in Sources */,
 				50351F9522CD7FF1000713B3 /* RCTConvert+RNNotifications.m in Sources */,
 				50AD1FCB22D13ADB00E12362 /* RNPushKitEventHandler.m in Sources */,
+				EA4B73B725DA7D6F00624F9B /* RNLogger.m in Sources */,
 				508CE81422D12FC700357815 /* RNNotificationCenterListener.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
