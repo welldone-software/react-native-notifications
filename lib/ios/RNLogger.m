@@ -35,7 +35,7 @@
 }
 
 - (NSString *)getPathForDirectory {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
     return [NSString stringWithFormat:@"%@/silverfort/logs/notifications_logs.txt", [paths firstObject]];
 }
 
