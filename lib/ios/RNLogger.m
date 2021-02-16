@@ -7,7 +7,7 @@
     NSString *filepath = [self getPathForDirectory];
     NSString *log = [self parseLog:type tag:tag message:message];
     
-    NSData *data = [[NSData alloc] initWithBase64EncodedString:log options:NSDataBase64DecodingIgnoreUnknownCharacters];
+    NSData *data = [log dataUsingEncoding:NSUTF8StringEncoding];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:filepath]) {
         BOOL success = [[NSFileManager defaultManager] createFileAtPath:filepath contents:data attributes:nil];
@@ -44,7 +44,18 @@
     [formatter setDateFormat:@"MMMM DD YYYY, h:mm:ss a"];
     NSDate *currentDate = [NSDate date];
     NSString *dateString = [formatter stringFromDate:currentDate];
-    return [NSString stringWithFormat:@"[%@] [%@] %@: %@", type, dateString, tag, message];
+    return [NSString stringWithFormat:@"[%@] [%@] %@: %@\n", type, dateString, tag, message];
+}
+
+- (NSString *)parseDictionaryToJSON: (NSDictionary *)object {
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:object options:NSJSONWritingPrettyPrinted error:&error];
+    if (! jsonData) {
+        return nil;
+    } else {
+        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        return [NSString stringWithFormat:@"MFA arrived in background: %@", jsonString];
+    }
 }
 
 @end

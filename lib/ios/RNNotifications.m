@@ -75,13 +75,11 @@
 }
 
 - (void)startMonitorBackgroundNotifications:(NSDictionary *)payload {
-    NSError *error;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:payload options:NSJSONWritingPrettyPrinted error:&error];
-    if (! jsonData) {
-        [_logger saveLog:@"ERROR" tag:@"RNNotifications" message:@"Could not parse arrived payload"];
+    NSString * mfaJson = [_logger parseDictionaryToJSON:payload];
+    if (! mfaJson) {
+        [_logger saveLog:@"ERROR" tag:@"RNNotifications" message:@"Background MFA: Could not parse MFA"];
     } else {
-        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-        [_logger saveLog:@"LOG" tag:@"RNNotifications" message:[NSString stringWithFormat:@"MFA arrived: %@", jsonString]];
+        [_logger saveLog:@"LOG" tag:@"RNNotifications" message:[NSString stringWithFormat:@"Background MFA: %@", mfaJson]];
     }
     if([[UIApplication sharedApplication] applicationState] != UIApplicationStateActive) {
         [_storage saveNotification:payload];
