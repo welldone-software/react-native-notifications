@@ -53,8 +53,7 @@
     if (! jsonData) {
         return nil;
     } else {
-        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-        return [NSString stringWithFormat:@"MFA arrived in background: %@", jsonString];
+        return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     }
 }
 
