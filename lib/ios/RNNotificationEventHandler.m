@@ -4,17 +4,14 @@
 #import "RCTConvert+RNNotifications.h"
 #import "RNNotificationParser.h"
 #import "RNNotificationsStore.h"
-#import "RNLogger.h"
 
 @implementation RNNotificationEventHandler {
     RNNotificationsStore* _store;
-    RNLogger* _logger;
 }
 
 - (instancetype)initWithStore:(RNNotificationsStore *)store {
     self = [super init];
     _store = store;
-    _logger = [RNLogger new];
     return self;
 }
 
@@ -30,15 +27,7 @@
 
 - (void)didReceiveForegroundNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
     [_store setPresentationCompletionHandler:completionHandler withCompletionKey:notification.request.identifier];
-    NSDictionary *payload = [RNNotificationParser parseNotification:notification];
-    NSString * mfaJson = [_logger parseDictionaryToJSON:payload];
-    if (! mfaJson) {
-        [_logger saveLog:@"ERROR" tag:@"RNNotifications" message:@"Foreground MFA: Could not parse MFA"];
-    } else {
-        [_logger saveLog:@"LOG" tag:@"RNNotifications" message:[NSString stringWithFormat:@"Foreground MFA: %@", mfaJson]];
-    }
-    
-    [RNEventEmitter sendEvent:RNNotificationReceived body:payload];
+    [RNEventEmitter sendEvent:RNNotificationReceived body:[RNNotificationParser parseNotification:notification]];
 }
 
 - (void)didReceiveNotificationResponse:(UNNotificationResponse *)response completionHandler:(void (^)(void))completionHandler {
