@@ -4,14 +4,17 @@
 #import "RCTConvert+RNNotifications.h"
 #import "RNNotificationParser.h"
 #import "RNNotificationsStore.h"
+#import "RNLogger.h"
 
 @implementation RNNotificationEventHandler {
     RNNotificationsStore* _store;
+    RNLogger* _logger;
 }
 
 - (instancetype)initWithStore:(RNNotificationsStore *)store {
     self = [super init];
     _store = store;
+    _logger = [RNLogger new];
     return self;
 }
 
@@ -27,6 +30,7 @@
 
 - (void)didReceiveForegroundNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
     [_store setPresentationCompletionHandler:completionHandler withCompletionKey:notification.request.identifier];
+    [_logger saveLog:@"LOG" tag:@"RNNotificationEventHandler" message:@"Notification recevied on foreground"];
     [RNEventEmitter sendEvent:RNNotificationReceived body:[RNNotificationParser parseNotification:notification]];
 }
 
