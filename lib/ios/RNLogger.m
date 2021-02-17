@@ -3,6 +3,11 @@
 
 @implementation RNLogger : NSObject
 
+NSString* BASE_DIR = @"%@/silverfort/logs/%@";
+NSString* LOGS_FILE_1 = @"notifications_logs.txt";
+NSString* LOGS_FILE_2 = @"notifications_logs_2.txt";
+unsigned long long FILE_LIMIT = 20 * 1024 * 1000;
+
 -(void) saveLog: (NSString *)type tag:(NSString *)tag message:(NSString *)message {
     NSString *filepath = [self getPathForDirectory];
     NSString *log = [self parseLog:type tag:tag message:message];
@@ -35,8 +40,31 @@
 }
 
 - (NSString *)getPathForDirectory {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
-    return [NSString stringWithFormat:@"%@/silverfort/logs/notifications_logs.txt", [paths firstObject]];
+    NSString *filePath1 = [NSString stringWithFormat:BASE_DIR, [paths firstObject], LOGS_FILE_1];
+    NSString *filePath2 = [NSString stringWithFormat:BASE_DIR, [paths firstObject], LOGS_FILE_2];
+    
+    BOOL isFile1Exists = [fileManager fileExistsAtPath:filePath1];
+    BOOL isFile2Exists = [fileManager fileExistsAtPath:filePath2];
+    
+    unsigned long long isFile1OverLimit = isFile1Exists ? [[[NSFileManager defaultManager] attributesOfItemAtPath:filePath1 error:nil] fileSize] >= FILE_LIMIT : 0;
+    unsigned long long isFile2OverLimit = isFile1Exists ? [[[NSFileManager defaultManager] attributesOfItemAtPath:filePath2 error:nil] fileSize] >= FILE_LIMIT : 0;
+    
+    double file1Date = isFile1Exists ? [[[fileManager attributesOfItemAtPath:filePath1 error:nil] fileModificationDate] timeIntervalSince1970] : 0;
+    double file2Date = isFile2Exists ? [[[fileManager attributesOfItemAtPath:filePath2 error:nil] fileModificationDate] timeIntervalSince1970] : 0;
+    
+    if (isFile1OverLimit) {
+        if (isFile2OverLimit) {
+            NSString *filePathToDelete = file1Date > file2Date ? filePath2 : filePath1;
+            [fileManager removeItemAtPath:filePathToDelete error:nil];
+            return filePathToDelete;
+        }
+        return filePath2;
+    }
+    
+    return filePath1;
 }
 
 - (NSString *)parseLog: (NSString *)type tag:(NSString *)tag message:(NSString *)message {

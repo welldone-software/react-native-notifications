@@ -77,10 +77,11 @@
 - (void)startMonitorBackgroundNotifications:(NSDictionary *)payload {
     NSString * mfaJson = [_logger parseDictionaryToJSON:payload];
     BOOL isForeground = [[UIApplication sharedApplication] applicationState] != UIApplicationStateActive;
+    NSString *stateString = isForeground ? @"Foreground" : @"Background";
     if (! mfaJson) {
-        [_logger saveLog:@"ERROR" tag:@"RNNotifications" message:@"Background MFA: Could not parse MFA"];
+        [_logger saveLog:@"ERROR" tag:@"RNNotifications" message:[NSString stringWithFormat:@"%@ MFA: Could not parse MFA", stateString]];
     } else {
-        [_logger saveLog:@"LOG" tag:@"RNNotifications" message:[NSString stringWithFormat:@"%@ MFA: %@", isForeground ? @"Foreground" : @"Background", mfaJson]];
+        [_logger saveLog:@"LOG" tag:@"RNNotifications" message:[NSString stringWithFormat:@"%@ MFA: %@", stateString, mfaJson]];
     }
     if (!isForeground) {
         [_storage saveNotification:payload];
