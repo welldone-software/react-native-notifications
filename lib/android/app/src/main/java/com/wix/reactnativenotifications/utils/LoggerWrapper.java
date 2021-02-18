@@ -92,17 +92,14 @@ public class LoggerWrapper {
 
         boolean biggerFile1 = file1.length() > LOGS_SIZE_LIMIT;
         boolean biggerFile2 = file2.length() > LOGS_SIZE_LIMIT;
-
-        if (biggerFile1 && biggerFile2) {
-            if (file1.exists()) {
-                file1.delete();
-            }
-            return mLogFileUrl;
-        }
+        long file1LastModified = file1.lastModified();
+        long file2LastModified = file2.lastModified();
 
         if (biggerFile1) {
-            if (file2.exists()) {
-                file2.delete();
+            if (biggerFile2) {
+                File fileToDelete = file1LastModified < file2LastModified ? file2 : file1;
+                fileToDelete.delete();
+                return file1LastModified < file2LastModified ? mLogFileUrl2 : mLogFileUrl;
             }
             return mLogFileUrl2;
         }
