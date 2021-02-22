@@ -6,7 +6,7 @@
 NSString* BASE_DIR = @"%@/silverfort/logs/%@";
 NSString* LOGS_FILE_1 = @"notifications_logs.txt";
 NSString* LOGS_FILE_2 = @"notifications_logs_2.txt";
-unsigned long long FILE_LIMIT = 15 * 1024 * 1000;
+unsigned long long FILE_LIMIT = 6 * 1024 * 1000;
 
 -(void) saveLog: (NSString *)type tag:(NSString *)tag message:(NSString *)message {
     NSString *filepath = [self getPathForDirectory];
