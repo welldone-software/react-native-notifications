@@ -23,7 +23,7 @@ public class LoggerWrapper {
     private static final String SUB_FOLDER = "silverfort/logs";
     private static final String FILENAME_1 = "notifications_logs.txt";
     private static final String FILENAME_2 = "notifications_logs_2.txt";
-    private static final int LOGS_SIZE_LIMIT = 24 * 1024 * 1000;
+    private static final int LOGS_SIZE_LIMIT = 6 * 1024 * 1000;
 
     private static LoggerWrapper mLogger;
 
