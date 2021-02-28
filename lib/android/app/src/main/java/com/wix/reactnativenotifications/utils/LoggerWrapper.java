@@ -23,7 +23,7 @@ public class LoggerWrapper {
     private static final String SUB_FOLDER = "silverfort/logs";
     private static final String FILENAME_1 = "notifications_logs.txt";
     private static final String FILENAME_2 = "notifications_logs_2.txt";
-    private static final int LOGS_SIZE_LIMIT = 24 * 1024 * 1000;
+    private static final int LOGS_SIZE_LIMIT = 6 * 1024 * 1000;
 
     private static LoggerWrapper mLogger;
 
@@ -92,17 +92,14 @@ public class LoggerWrapper {
 
         boolean biggerFile1 = file1.length() > LOGS_SIZE_LIMIT;
         boolean biggerFile2 = file2.length() > LOGS_SIZE_LIMIT;
-
-        if (biggerFile1 && biggerFile2) {
-            if (file1.exists()) {
-                file1.delete();
-            }
-            return mLogFileUrl;
-        }
+        long file1LastModified = file1.lastModified();
+        long file2LastModified = file2.lastModified();
 
         if (biggerFile1) {
-            if (file2.exists()) {
-                file2.delete();
+            if (biggerFile2) {
+                File fileToDelete = file1LastModified < file2LastModified ? file2 : file1;
+                fileToDelete.delete();
+                return file1LastModified < file2LastModified ? mLogFileUrl2 : mLogFileUrl;
             }
             return mLogFileUrl2;
         }
