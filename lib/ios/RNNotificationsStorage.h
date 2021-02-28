@@ -7,7 +7,7 @@
 
 - (void) saveNotification:(NSDictionary *) notification;
 - (void) removeDeliveredNotifications:(NSArray<NSString *> *)identifiers;
-- (void) getDeliveredNotifications:(RCTPromiseResolveBlock) resolve;
+- (NSMutableArray <NSDictionary *> *) getDeliveredNotifications;
 - (void) clearAll;
 
 @end
