@@ -33,13 +33,13 @@ NSString *notificationsKey = @"Notifications";
     [userDefaults synchronize];
 }
 
-- (void) getDeliveredNotifications:(RCTPromiseResolveBlock)resolve {
+- (NSMutableArray <NSDictionary *> *) getDeliveredNotifications {
     NSMutableDictionary* notificationsDict = [[userDefaults dictionaryForKey:notificationsKey] mutableCopy];
-    NSMutableArray *deliveredNotifications = [[NSMutableArray alloc] init];
+    NSMutableArray <NSDictionary *> *deliveredNotifications = [[NSMutableArray alloc] init];
     [notificationsDict enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL* stop) {
         [deliveredNotifications addObject:value];
     }];
-    resolve(deliveredNotifications);
+    return deliveredNotifications;
 }
 
 - (void) clearAll {
