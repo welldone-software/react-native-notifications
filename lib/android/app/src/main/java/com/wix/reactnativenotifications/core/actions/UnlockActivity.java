@@ -24,7 +24,8 @@ public class UnlockActivity extends AppCompatActivity {
     private Runnable mKillActivity = new Runnable() {
         @Override
         public void run() {
-            UnlockActivity.this.finish();
+            moveTaskToBack(true);
+            finish();
         }
     };
 
@@ -43,7 +44,7 @@ public class UnlockActivity extends AppCompatActivity {
                     NotificationBackgroundService.acquireWakeLockNow(context);
                 }
                 saver.clearAwaitingAction();
-                UnlockActivity.this.finish();
+                finish();
             }
         }
     };
@@ -100,7 +101,8 @@ public class UnlockActivity extends AppCompatActivity {
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
             }
         } else {
-            UnlockActivity.this.finish();
+            finish();
         }
+        moveTaskToBack(true);
     }
 }
