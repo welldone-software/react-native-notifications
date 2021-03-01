@@ -2,10 +2,16 @@ package com.wix.reactnativenotifications;
 
 import android.app.Activity;
 import android.app.Application;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
@@ -172,10 +178,12 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
         notificationsDrawer.setNotificationChannel();
     }
 
-    protected void startFcmIntentService(String extraFlag) {
+    protected void startFcmIntentService(int jobId) {
         final Context appContext = getReactApplicationContext().getApplicationContext();
-        final Intent tokenFetchIntent = new Intent(appContext, FcmInstanceIdRefreshHandlerService.class);
-        tokenFetchIntent.putExtra(extraFlag, true);
-        appContext.startService(tokenFetchIntent);
+        ComponentName serviceComponent = new ComponentName(appContext, FcmInstanceIdRefreshHandlerService.class);
+        JobInfo.Builder builder = new JobInfo.Builder(jobId, serviceComponent);
+        builder.setOverrideDeadline(3 * 1000);
+        JobScheduler jobScheduler = (JobScheduler) appContext.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        jobScheduler.schedule(builder.build());
     }
 }
