@@ -17,7 +17,6 @@ import android.util.Log;
 import androidx.core.text.HtmlCompat;
 
 import com.facebook.react.bridge.ReactContext;
-import com.wix.reactnativenotifications.Defs;
 import com.wix.reactnativenotifications.R;
 import com.wix.reactnativenotifications.core.AppLaunchHelper;
 import com.wix.reactnativenotifications.core.AppLifecycleFacade;
@@ -80,14 +79,18 @@ public class PushNotification implements IPushNotification {
     }
 
     @Override
-    public void onReceived() throws InvalidNotificationException {
-        if (!mAppLifecycleFacade.isAppVisible()) {
+    public void onReceived() {
+        ReactContext reactContext = mAppLifecycleFacade.getRunningReactContext();
+        boolean hasActiveCatalystInstance = reactContext != null && reactContext.hasActiveCatalystInstance();
+        if (!mAppLifecycleFacade.isAppVisible() || !hasActiveCatalystInstance) {
             mLogger.i(TAG, "App is not visible, posting notification");
             postNotification(null);
         } else {
             mLogger.i(TAG, "App is visible, notifying JS");
         }
-        notifyReceivedToJS();
+        if (hasActiveCatalystInstance) {
+            notifyReceivedToJS();
+        }
     }
 
     @Override
@@ -147,15 +150,11 @@ public class PushNotification implements IPushNotification {
     }
 
     protected void dispatchUponVisibility() {
-        mAppLifecycleFacade.addVisibilityListener(getIntermediateAppVisibilityListener());
+        mAppLifecycleFacade.addVisibilityListener(mAppVisibilityListener);
 
         // Make the app visible so that we'll dispatch the notification opening when visibility changes to 'true' (see
         // above listener registration).
         launchOrResumeApp();
-    }
-
-    protected AppVisibilityListener getIntermediateAppVisibilityListener() {
-        return mAppVisibilityListener;
     }
 
     protected PendingIntent getCTAPendingIntent(int notificationId) {
