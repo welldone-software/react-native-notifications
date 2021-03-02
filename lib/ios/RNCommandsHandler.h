@@ -39,7 +39,7 @@
 
 - (void)removeAllDeliveredNotifications;
 
-- (void)removeDeliveredNotifications:(NSArray<NSString *> *)requestIds;
+- (void)removeDeliveredNotifications:(NSArray<NSString *> *)requestIds resolve:(RCTPromiseResolveBlock)resolve;
 
 - (void)dismissNotification:(NSString *)requestId;
 

@@ -54,33 +54,21 @@ public class NotificationBackgroundService extends HeadlessJsTaskService {
         LoggerWrapper logger = LoggerWrapper.getInstance(this);
         Bundle extras = intent.getExtras();
         String action = intent.getAction();
-
         logger.i(TAG, "Intent arrived: " + action);
-        if (extras != null && action != null) {
-            switch (action) {
-                case Defs.NOTIFICATION_ACTION_CLICK:
-                    if (isLocked()) {
-                        logger.i(TAG, "Device is locked, prompting unlock");
-                        ActionPayloadSaver.getInstance(this).saveAwaitingAction(extras);
-                        promptUnlock();
-                    } else {
-                        logger.i(TAG, "Device is unlocked, notifying JS");
-                        dismissNotification(extras);
-                        return new HeadlessJsTaskConfig(
-                                Defs.NOTIFICATION_ACTION_CLICK,
-                                Arguments.fromBundle(extras),
-                                TASK_TIMEOUT,
-                                TASK_IN_FOREGROUND
-                        );
-                    }
-                case Defs.NOTIFICATION_ARRIVED:
-                    logger.i(TAG, "Notification arrived, notifying JS");
-                    return new HeadlessJsTaskConfig(
-                            Defs.NOTIFICATION_ARRIVED,
-                            Arguments.fromBundle(extras),
-                            TASK_TIMEOUT,
-                            TASK_IN_FOREGROUND
-                    );
+        if (extras != null && Defs.NOTIFICATION_ACTION_CLICK.equals(action)) {
+            if (isLocked()) {
+                logger.i(TAG, "Device is locked, prompting unlock");
+                ActionPayloadSaver.getInstance(this).saveAwaitingAction(extras);
+                promptUnlock();
+            } else {
+                logger.i(TAG, "Device is unlocked, notifying JS");
+                dismissNotification(extras);
+                return new HeadlessJsTaskConfig(
+                        Defs.NOTIFICATION_ACTION_CLICK,
+                        Arguments.fromBundle(extras),
+                        TASK_TIMEOUT,
+                        TASK_IN_FOREGROUND
+                );
             }
         }
         return null;

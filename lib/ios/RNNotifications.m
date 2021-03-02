@@ -6,6 +6,7 @@
 #import "RNPushKit.h"
 #import "RNNotificationCenterMulticast.h"
 #import "RNNotificationsStorage.h"
+#import "RNLogger.h"
 
 @implementation RNNotifications {
     RNPushKit* _pushKit;
@@ -15,12 +16,14 @@
     RNEventEmitter* _eventEmitter;
     RNNotificationCenterMulticast* _notificationCenterMulticast;
     RNNotificationsStorage* _storage;
+    RNLogger* _logger;
 }
 
 - (instancetype)init {
     self = [super init];
     _notificationEventHandler = [[RNNotificationEventHandler alloc] initWithStore:[RNNotificationsStore new]];
     _storage = [RNNotificationsStorage new];
+    _logger = [RNLogger new];
     return self;
 }
 
@@ -72,7 +75,15 @@
 }
 
 - (void)startMonitorBackgroundNotifications:(NSDictionary *)payload {
-    if([[UIApplication sharedApplication] applicationState] != UIApplicationStateActive) {
+    NSString * mfaJson = [_logger parseDictionaryToJSON:payload];
+    BOOL isForeground = [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive;
+    NSString *stateString = isForeground ? @"Foreground" : @"Background";
+    if (! mfaJson) {
+        [_logger saveLog:@"ERROR" tag:@"RNNotifications" message:[NSString stringWithFormat:@"%@ MFA: Could not parse MFA", stateString]];
+    } else {
+        [_logger saveLog:@"LOG" tag:@"RNNotifications" message:[NSString stringWithFormat:@"%@ MFA: %@", stateString, mfaJson]];
+    }
+    if (!isForeground) {
         [_storage saveNotification:payload];
     }
 }

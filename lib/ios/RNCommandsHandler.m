@@ -87,8 +87,8 @@
     [_notificationStorage clearAll];
 }
 
-- (void)removeDeliveredNotifications:(NSArray<NSString *> *)requestIds {
-    [_notificationCenter removeDeliveredNotifications:requestIds];
+- (void)removeDeliveredNotifications:(NSArray<NSString *> *)requestIds resolve:(RCTPromiseResolveBlock)resolve {
+    [_notificationCenter removeDeliveredNotifications:requestIds withResolve:resolve];
     [_notificationStorage removeDeliveredNotifications:requestIds];
 }
 
@@ -97,7 +97,7 @@
 }
 
 - (void)getDeliveredNotifications:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-    [_notificationStorage getDeliveredNotifications:resolve];
+    [_notificationCenter getDeliveredNotifications:resolve];
 }
 
 @end

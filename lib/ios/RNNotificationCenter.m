@@ -1,5 +1,6 @@
 #import "RNNotificationCenter.h"
 #import "RCTConvert+RNNotifications.h"
+#import "RNNotificationsStorage.h"
 
 @implementation RNNotificationCenter
 
@@ -45,7 +46,7 @@
     [center removeAllDeliveredNotifications];
 }
 
-- (void)removeDeliveredNotifications:(NSArray<NSString *> *)requestIds {
+- (void)removeDeliveredNotifications:(NSArray<NSString *> *)requestIds withResolve:(RCTPromiseResolveBlock)resolve {
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     [center getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
         NSMutableArray<NSString *> *notificationIds = [NSMutableArray new];
@@ -58,6 +59,7 @@
             }
         }
         [center removeDeliveredNotificationsWithIdentifiers:notificationIds];
+        resolve(@"success");
     }];
 }
 
@@ -78,15 +80,15 @@
     }];
 }
 
-- (void)getDeliveredNotifications:(RCTResponseSenderBlock)callback {
+- (void)getDeliveredNotifications:(RCTPromiseResolveBlock)resolve {
+    RNNotificationsStorage *notificationStorage = [RNNotificationsStorage new];
+    NSMutableArray<NSDictionary *> *formattedNotifications = [notificationStorage getDeliveredNotifications];
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     [center getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
-        NSMutableArray<NSDictionary *> *formattedNotifications = [NSMutableArray new];
-        
         for (UNNotification *notification in notifications) {
             [formattedNotifications addObject:[RCTConvert UNNotificationPayload:notification]];
         }
-        callback(@[formattedNotifications]);
+        resolve(formattedNotifications);
     }];
 }
 
