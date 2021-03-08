@@ -7,11 +7,13 @@
 
 NSUserDefaults *userDefaults;
 NSString *NOTIFICATIONS_KEY = @"Notifications";
+NSString *MFA_ORDER_KEY = @"MFA Order";
 NSString *ANSWER_KEY = @"answer";
 NSString *EXPIRED_TIME_KEY = @"expired_time";
 NSString *REQUEST_ID_KEY = @"mfa_request_id";
 NSString *IDENTIFIER_KEY = @"identifier";
-int MFA_SAVE_LIMIT = 256;
+
+int MFA_SAVE_LIMIT = 2;
 
 - (instancetype) init {
     self = [super init];
@@ -19,18 +21,18 @@ int MFA_SAVE_LIMIT = 256;
     return self;
 }
 
-- (NSMutableDictionary*)clearLimit:(NSMutableDictionary*) mfas {
+- (NSMutableDictionary*)clearLimit:(NSMutableDictionary*) mfas order:(NSMutableArray*) order {
     int overLimitCount = (int)[mfas count] - MFA_SAVE_LIMIT;
     if (overLimitCount > 0) {
-        __block int deletedCount = 0;
-        [mfas enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL* stop) {
-            [mfas removeObjectForKey:key];
+        int deletedCount = 0;
+        for (NSString *requestId in order) {
+            [mfas removeObjectForKey:requestId];
+            [order removeObject:requestId];
             deletedCount = deletedCount + 1;
             if (overLimitCount <= deletedCount) {
-                *stop =YES;
-                return;
+                break;
             }
-        }];
+        }
     }
     return mfas;
 }
@@ -57,16 +59,25 @@ int MFA_SAVE_LIMIT = 256;
     if (mfasDict == nil) {
         mfasDict = [NSMutableDictionary new];
     }
+    
+    NSMutableArray* mfaOrder = [[userDefaults dictionaryForKey:MFA_ORDER_KEY] mutableCopy];
+    if (mfaOrder == nil) {
+        mfaOrder = [NSMutableArray new];
+    }
+    
     NSString* requestId = [mfa valueForKey:REQUEST_ID_KEY];
+    [mfaOrder addObject:requestId];
     [mfasDict setObject:mfa forKey:requestId];
-    [userDefaults setObject:[self clearLimit:mfasDict] forKey:NOTIFICATIONS_KEY];
+    
+    [userDefaults setObject:[self clearLimit:mfasDict order:mfaOrder] forKey:NOTIFICATIONS_KEY];
+    [userDefaults setObject:mfaOrder forKey:MFA_ORDER_KEY];
     [userDefaults synchronize];
 }
 
 - (void) updateMFA:(NSString *) requestId answer:(BOOL *) answer; {
     NSMutableDictionary* mfasDict = [[userDefaults dictionaryForKey:NOTIFICATIONS_KEY] mutableCopy];
-    NSMutableDictionary* mfa = [mfasDict valueForKey:requestId];
-    [mfa setValue:[NSNumber numberWithBool:*answer] forKey:ANSWER_KEY];
+    NSMutableDictionary* mfa = [[mfasDict valueForKey:requestId] mutableCopy];
+    [mfa setObject:[NSNumber numberWithBool:answer] forKey:ANSWER_KEY];
     [mfasDict setObject:mfa forKey:requestId];
     [userDefaults setObject:mfasDict forKey:NOTIFICATIONS_KEY];
     [userDefaults synchronize];
@@ -77,6 +88,15 @@ int MFA_SAVE_LIMIT = 256;
 - (void)saveFetchedMFAs:(NSArray<NSDictionary *> *)fetchedMFAs {
     __block BOOL hasSavedAny = NO;
     NSMutableDictionary* mfasDict = [[userDefaults dictionaryForKey:NOTIFICATIONS_KEY] mutableCopy];
+    if (mfasDict == nil) {
+        mfasDict = [NSMutableDictionary new];
+    }
+    
+    NSMutableArray* mfaOrder = [[userDefaults dictionaryForKey:MFA_ORDER_KEY] mutableCopy];
+    if (mfaOrder == nil) {
+        mfaOrder = [NSMutableArray new];
+    }
+    
     [fetchedMFAs enumerateObjectsUsingBlock:^(NSDictionary * value, NSUInteger idx, BOOL *stop) {
         NSString *requestId = [value valueForKey:REQUEST_ID_KEY];
         if ([mfasDict objectForKey:requestId] == nil) {
@@ -84,14 +104,19 @@ int MFA_SAVE_LIMIT = 256;
             [mfasDict setObject:value forKey:requestId];
         }
     }];
+    
     if (hasSavedAny) {
-        [userDefaults setObject:[self clearLimit:mfasDict] forKey:NOTIFICATIONS_KEY];
+        [userDefaults setObject:[self clearLimit:mfasDict order:mfaOrder] forKey:NOTIFICATIONS_KEY];
+        [userDefaults setObject:mfaOrder forKey:MFA_ORDER_KEY];
         [userDefaults synchronize];
     }
 }
 
 - (NSMutableArray <NSDictionary *> *) getPendingMFAs {
     NSMutableDictionary* mfasDict = [[userDefaults dictionaryForKey:NOTIFICATIONS_KEY] mutableCopy];
+    if (mfasDict == nil) {
+        mfasDict = [NSMutableDictionary new];
+    }
     NSMutableArray <NSDictionary *> *pendingMFAs = [[NSMutableArray alloc] init];
     NSMutableArray <NSString *> *requestIdsToDismiss = [[NSMutableArray alloc] init];
     
