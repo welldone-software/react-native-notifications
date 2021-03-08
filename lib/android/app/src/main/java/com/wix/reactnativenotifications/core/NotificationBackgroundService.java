@@ -29,7 +29,7 @@ public class NotificationBackgroundService extends HeadlessJsTaskService {
     private void dismissNotification(Bundle notification) {
         Bundle payload = notification.getBundle(PUSH_NOTIFICATION_EXTRA);
         if (payload != null) {
-            String mfaRequestId = payload.getString(MFAStorage.MFA_REQUEST_ID);
+            String mfaRequestId = payload.getString(MFAStorage.REQUEST_ID_KEY);
             int notificationId = MFAStorage.getInstance(this).getNotificationId(mfaRequestId);
             IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(this);
             notificationsDrawer.onNotificationClearRequest(notificationId);

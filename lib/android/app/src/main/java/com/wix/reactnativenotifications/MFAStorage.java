@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.wix.reactnativenotifications.core.notification.PushNotificationProps;
+import com.wix.reactnativenotifications.core.notificationdrawer.IPushNotificationsDrawer;
+import com.wix.reactnativenotifications.core.notificationdrawer.PushNotificationsDrawer;
 import com.wix.reactnativenotifications.utils.JsonConverter;
 
 import org.json.JSONArray;
@@ -17,7 +19,6 @@ public class MFAStorage {
 
     private static MFAStorage mInstance;
 
-    private final SharedPreferences mPreferences;
     private static final String PREFERENCES_NAME = "react-native";
     private static final String NOTIFICATIONS = "notifications";
     private static final String DEFAULT_VALUE = "{}";
@@ -25,10 +26,15 @@ public class MFAStorage {
     private static final String EXPIRED_TIME_KEY = "expired_time";
     private static final int MFA_SAVE_LIMIT = 200;
 
-    public static final String MFA_REQUEST_ID = "mfa_request_id";
+    public static final String REQUEST_ID_KEY = "mfa_request_id";
+
+
+    private final SharedPreferences mPreferences;
+    private final IPushNotificationsDrawer mNotificationsDrawer;
 
     private MFAStorage(Context context) {
         mPreferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
+        mNotificationsDrawer = PushNotificationsDrawer.get(context.getApplicationContext());
     }
 
     public static MFAStorage getInstance(Context context) {
@@ -66,10 +72,18 @@ public class MFAStorage {
         return json;
     }
 
+    public void dismissNotification(JSONObject json) throws JSONException {
+        dismissNotification(json.getString(REQUEST_ID_KEY));
+    }
+
+    public void dismissNotification(String requestId) {
+        mNotificationsDrawer.onNotificationClearRequest(getNotificationId(requestId));
+    }
+
     public void saveMFA(PushNotificationProps notificationProps) {
         try {
             JSONObject mfasJson = getPendingMFAsJson();
-            String mfaRequestId = notificationProps.asBundle().getString(MFA_REQUEST_ID);
+            String mfaRequestId = notificationProps.asBundle().getString(REQUEST_ID_KEY);
             if (!mfasJson.has(mfaRequestId)) {
                 JSONObject mfaJson = JsonConverter.convertBundleToJson(notificationProps.asBundle());
                 mfasJson.put(mfaRequestId, mfaJson);
@@ -88,7 +102,7 @@ public class MFAStorage {
             if (mfaToAdd == null) {
                 continue;
             }
-            String requestId = mfaToAdd.getString(MFA_REQUEST_ID);
+            String requestId = mfaToAdd.getString(REQUEST_ID_KEY);
             if (!mfasJson.has(requestId)) {
                 mfasJson.put(requestId, mfaToAdd);
             }
@@ -103,6 +117,7 @@ public class MFAStorage {
             mfaJson.put(ANSWER_KEY, answer);
             mfasJson.put(mfaRequestId, mfaJson);
             saveNotifications(clearOverLimit(mfasJson));
+            dismissNotification(mfaJson);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -126,11 +141,16 @@ public class MFAStorage {
         while(keys.hasNext()) {
             String key = keys.next();
             JSONObject mfaJson = mfasJson.getJSONObject(key);
+            if (mfaJson == null) {
+                continue;
+            }
 
             boolean hasNotAnswered = !mfaJson.has(ANSWER_KEY);
             boolean isRelevant = mfaJson.getLong(EXPIRED_TIME_KEY) < System.currentTimeMillis();
             if (hasNotAnswered && isRelevant) {
                 notificationsArrayJson.put(mfaJson);
+            } else {
+                dismissNotification(mfaJson);
             }
         }
         return notificationsArrayJson.toString();

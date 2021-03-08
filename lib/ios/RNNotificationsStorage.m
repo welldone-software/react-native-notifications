@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import "RCTConvert+RNNotifications.h"
 #import "RNNotificationsStorage.h"
 #import "RNNotificationParser.h"
 
@@ -9,6 +10,7 @@ NSString *NOTIFICATIONS_KEY = @"Notifications";
 NSString *ANSWER_KEY = @"answer";
 NSString *EXPIRED_TIME_KEY = @"expired_time";
 NSString *REQUEST_ID_KEY = @"mfa_request_id";
+NSString *IDENTIFIER_KEY = @"identifier";
 int MFA_SAVE_LIMIT = 256;
 
 - (instancetype) init {
@@ -33,6 +35,23 @@ int MFA_SAVE_LIMIT = 256;
     return mfas;
 }
 
+-(void)dismissNotificaitons:(NSArray <NSString *> *)requestIds {
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    [center getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
+        for (UNNotification *notification in notifications) {
+            NSDictionary * parsedNotification = [RCTConvert UNNotificationPayload:notification];
+            NSString * identifier = [parsedNotification valueForKey:IDENTIFIER_KEY];
+            NSString * requestId = [parsedNotification valueForKey:REQUEST_ID_KEY];
+            if ([requestIds containsObject:requestId]) {
+                NSMutableArray<NSString *> *notificationIds = [NSMutableArray new];
+                [notificationIds addObject:identifier];
+                [center removeDeliveredNotificationsWithIdentifiers:notificationIds];
+                break;
+            }
+        }
+    }];
+}
+
 - (void)saveMFA:(NSDictionary *)mfa{
     NSMutableDictionary* mfasDict = [[userDefaults dictionaryForKey:NOTIFICATIONS_KEY] mutableCopy];
     if (mfasDict == nil) {
@@ -51,6 +70,8 @@ int MFA_SAVE_LIMIT = 256;
     [mfasDict setObject:mfa forKey:requestId];
     [userDefaults setObject:mfasDict forKey:NOTIFICATIONS_KEY];
     [userDefaults synchronize];
+    
+    [self dismissNotificaitons:@[requestId]];
 }
 
 - (void)saveFetchedMFAs:(NSArray<NSDictionary *> *)fetchedMFAs {
@@ -72,6 +93,8 @@ int MFA_SAVE_LIMIT = 256;
 - (NSMutableArray <NSDictionary *> *) getPendingMFAs {
     NSMutableDictionary* mfasDict = [[userDefaults dictionaryForKey:NOTIFICATIONS_KEY] mutableCopy];
     NSMutableArray <NSDictionary *> *pendingMFAs = [[NSMutableArray alloc] init];
+    NSMutableArray <NSString *> *requestIdsToDismiss = [[NSMutableArray alloc] init];
+    
     [mfasDict enumerateKeysAndObjectsUsingBlock:^(id key, NSDictionary * value, BOOL* stop) {
         bool hasNotAnswered = [value objectForKey:ANSWER_KEY] == nil;
         NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
@@ -79,8 +102,13 @@ int MFA_SAVE_LIMIT = 256;
         bool hasNotExpired = [[value valueForKey:EXPIRED_TIME_KEY] intValue] <= currentTs;
         if (hasNotAnswered && hasNotExpired) {
             [pendingMFAs addObject:value];
+        } else {
+            [requestIdsToDismiss addObject:[value objectForKey:REQUEST_ID_KEY]];
         }
     }];
+    
+    [self dismissNotificaitons:requestIdsToDismiss];
+    
     return pendingMFAs;
 }
 

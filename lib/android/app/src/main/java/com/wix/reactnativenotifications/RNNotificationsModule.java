@@ -130,14 +130,9 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
 
     @ReactMethod
     public void removeDeliveredNotifications(ReadableArray mfaRequestIds) {
-        IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(getReactApplicationContext().getApplicationContext());
         MFAStorage storage = MFAStorage.getInstance(getReactApplicationContext().getApplicationContext());
         for (int i = 0; i < mfaRequestIds.size(); i++) {
-            String mfaRequestId = mfaRequestIds.getString(i);
-            if (mfaRequestId != null) {
-                int notificationId = storage.getNotificationId(mfaRequestId);
-                notificationsDrawer.onNotificationClearRequest(notificationId);
-            }
+            storage.dismissNotification(mfaRequestIds.getString(i));
         }
     }
 
