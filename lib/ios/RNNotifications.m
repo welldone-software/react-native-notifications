@@ -84,7 +84,7 @@
         [_logger saveLog:@"LOG" tag:@"RNNotifications" message:[NSString stringWithFormat:@"%@ MFA: %@", stateString, mfaJson]];
     }
     if (!isForeground) {
-        [_storage saveNotification:payload];
+        [_storage saveMFA:payload];
     }
 }
 

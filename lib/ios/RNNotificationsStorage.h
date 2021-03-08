@@ -5,9 +5,10 @@
 
 @interface RNNotificationsStorage : NSObject
 
-- (void) saveNotification:(NSDictionary *) notification;
-- (void) removeDeliveredNotifications:(NSArray<NSString *> *)identifiers;
-- (NSMutableArray <NSDictionary *> *) getDeliveredNotifications;
+- (void) saveMFA:(NSDictionary *) mfa;
+- (void) updateMFA:(NSString *) requestId answer:(BOOL *) answer;
+- (void) saveFetchedMFAs:(NSArray <NSDictionary *> *) fetchedMFAs;
+- (NSMutableArray <NSDictionary *> *) getPendingMFAs;
 - (void) clearAll;
 
 @end

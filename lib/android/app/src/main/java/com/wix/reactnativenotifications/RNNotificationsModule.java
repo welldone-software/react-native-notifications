@@ -7,11 +7,8 @@ import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-
-import androidx.annotation.RequiresApi;
 
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
@@ -121,7 +118,7 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
 
     @ReactMethod
     public void dismissNotification(String mfaRequestId) {
-        NotificationsStorage storage = NotificationsStorage.getInstance(getReactApplicationContext().getApplicationContext());
+        MFAStorage storage = MFAStorage.getInstance(getReactApplicationContext().getApplicationContext());
         IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(getReactApplicationContext().getApplicationContext());
         notificationsDrawer.onNotificationClearRequest(storage.getNotificationId(mfaRequestId));
     }
@@ -134,11 +131,11 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
     @ReactMethod
     public void removeDeliveredNotifications(ReadableArray mfaRequestIds) {
         IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(getReactApplicationContext().getApplicationContext());
-        NotificationsStorage storage = NotificationsStorage.getInstance(getReactApplicationContext().getApplicationContext());
+        MFAStorage storage = MFAStorage.getInstance(getReactApplicationContext().getApplicationContext());
         for (int i = 0; i < mfaRequestIds.size(); i++) {
             String mfaRequestId = mfaRequestIds.getString(i);
             if (mfaRequestId != null) {
-                int notificationId = storage.removeNotification(mfaRequestId);
+                int notificationId = storage.getNotificationId(mfaRequestId);
                 notificationsDrawer.onNotificationClearRequest(notificationId);
             }
         }
@@ -154,15 +151,37 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
     void removeAllDeliveredNotifications() {
         IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(getReactApplicationContext().getApplicationContext());
         notificationsDrawer.onAllNotificationsClearRequest();
-        NotificationsStorage storage = NotificationsStorage.getInstance(getReactApplicationContext().getApplicationContext());
+        MFAStorage storage = MFAStorage.getInstance(getReactApplicationContext().getApplicationContext());
         storage.clearAll();
     }
 
     @ReactMethod
-    void getDeliveredNotifications(final Promise promise) {
-        NotificationsStorage storage = NotificationsStorage.getInstance(getReactApplicationContext().getApplicationContext());
+    void getPendingMFAs(final Promise promise) {
+        MFAStorage storage = MFAStorage.getInstance(getReactApplicationContext().getApplicationContext());
         try {
-            promise.resolve(storage.getDeliveredNotifications());
+            promise.resolve(storage.getPendingMFAs());
+        } catch (Exception error) {
+            promise.reject(error);
+        }
+    }
+
+    @ReactMethod
+    void saveFetchedMFAs(final Promise promise, ReadableArray fetchedMFAs) {
+        MFAStorage storage = MFAStorage.getInstance(getReactApplicationContext().getApplicationContext());
+        try {
+            storage.saveMFAs(fetchedMFAs);
+            promise.resolve(null);
+        } catch (Exception error) {
+            promise.reject(error);
+        }
+    }
+
+    @ReactMethod
+    void updateMFA(final Promise promise, String requestId, boolean answer) {
+        MFAStorage storage = MFAStorage.getInstance(getReactApplicationContext().getApplicationContext());
+        try {
+            storage.updateMFA(requestId, answer);
+            promise.resolve(null);
         } catch (Exception error) {
             promise.reject(error);
         }

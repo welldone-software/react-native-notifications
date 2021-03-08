@@ -28,7 +28,7 @@ import com.wix.reactnativenotifications.core.NotificationBackgroundService;
 import com.wix.reactnativenotifications.core.NotificationIntentAdapter;
 import com.wix.reactnativenotifications.core.ProxyService;
 import com.wix.reactnativenotifications.utils.LoggerWrapper;
-import com.wix.reactnativenotifications.NotificationsStorage;
+import com.wix.reactnativenotifications.MFAStorage;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,7 +47,7 @@ public class PushNotification implements IPushNotification {
     final protected AppLaunchHelper mAppLaunchHelper;
     final protected JsIOHelper mJsIOHelper;
     final protected PushNotificationProps mNotificationProps;
-    final protected NotificationsStorage mStorage;
+    final protected MFAStorage mStorage;
     final protected AppVisibilityListener mAppVisibilityListener = new AppVisibilityListener() {
         @Override
         public void onAppVisible() {
@@ -75,7 +75,7 @@ public class PushNotification implements IPushNotification {
         mJsIOHelper = JsIOHelper;
         mNotificationProps = createProps(bundle);
         mLogger = LoggerWrapper.getInstance(context);
-        mStorage = NotificationsStorage.getInstance(context);
+        mStorage = MFAStorage.getInstance(context);
     }
 
     @Override
@@ -236,13 +236,12 @@ public class PushNotification implements IPushNotification {
 
     protected void postNotification(int id, Notification notification) {
         final NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-        mStorage.saveNotification(mNotificationProps);
+        mStorage.saveMFA(mNotificationProps);
         notificationManager.notify(id, notification);
     }
 
     protected void cancelNotification(int id) {
         final NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-        mStorage.removeNotification(mNotificationProps.asBundle().getString(NotificationsStorage.MFA_REQUEST_ID));
         notificationManager.cancel(id);
     }
 

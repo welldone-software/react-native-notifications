@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 import com.facebook.react.HeadlessJsTaskService;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.jstasks.HeadlessJsTaskConfig;
-import com.wix.reactnativenotifications.NotificationsStorage;
+import com.wix.reactnativenotifications.MFAStorage;
 import com.wix.reactnativenotifications.core.actions.ActionPayloadSaver;
 import com.wix.reactnativenotifications.core.actions.UnlockActivity;
 import com.wix.reactnativenotifications.core.notificationdrawer.IPushNotificationsDrawer;
@@ -29,8 +29,8 @@ public class NotificationBackgroundService extends HeadlessJsTaskService {
     private void dismissNotification(Bundle notification) {
         Bundle payload = notification.getBundle(PUSH_NOTIFICATION_EXTRA);
         if (payload != null) {
-            String mfaRequestId = payload.getString(NotificationsStorage.MFA_REQUEST_ID);
-            int notificationId = NotificationsStorage.getInstance(this).removeNotification(mfaRequestId);
+            String mfaRequestId = payload.getString(MFAStorage.MFA_REQUEST_ID);
+            int notificationId = MFAStorage.getInstance(this).getNotificationId(mfaRequestId);
             IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(this);
             notificationsDrawer.onNotificationClearRequest(notificationId);
         }

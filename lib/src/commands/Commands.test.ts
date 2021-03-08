@@ -1,22 +1,22 @@
 import * as _ from 'lodash';
-import { mock, verify, instance, when, anyNumber } from 'ts-mockito';
+import {mock, verify, instance, when, anyNumber} from 'ts-mockito';
 
-import { Commands } from './Commands';
-import { NativeCommandsSender } from '../adapters/NativeCommandsSender';
-import { Notification } from '../DTO/Notification';
-import { UniqueIdProvider } from '../adapters/UniqueIdProvider';
-import { NotificationCategory } from '../interfaces/NotificationCategory';
-import { NotificationPermissions } from '../interfaces/NotificationPermissions';
-import { NotificationFactory } from '../DTO/NotificationFactory';
-import {NotificationAndroid} from "../DTO/NotificationAndroid";
-import {Platform} from "react-native";
-import {NotificationIOS} from "../DTO/NotificationIOS";
+import {Commands} from './Commands';
+import {NativeCommandsSender} from '../adapters/NativeCommandsSender';
+import {Notification} from '../DTO/Notification';
+import {UniqueIdProvider} from '../adapters/UniqueIdProvider';
+import {NotificationCategory} from '../interfaces/NotificationCategory';
+import {NotificationPermissions} from '../interfaces/NotificationPermissions';
+import {NotificationFactory} from '../DTO/NotificationFactory';
+import {NotificationAndroid} from '../DTO/NotificationAndroid';
+import {Platform} from 'react-native';
+import {NotificationIOS} from '../DTO/NotificationIOS';
 
 describe('Commands', () => {
   let uut: Commands;
   let mockedNativeCommandsSender: NativeCommandsSender;
   let mockedUniqueIdProvider: UniqueIdProvider;
-  let notificationFactory: NotificationFactory
+  let notificationFactory: NotificationFactory;
 
   beforeEach(() => {
     notificationFactory = new NotificationFactory();
@@ -38,10 +38,12 @@ describe('Commands', () => {
 
     it('Android - returns a promise with the initial notification', async () => {
       Platform.OS = 'android';
-      const expectedNotification: Notification = new NotificationAndroid({'google.message_id': 'id'});
-      when(mockedNativeCommandsSender.getInitialNotification()).thenResolve(
-          {'google.message_id': 'id'}
-      );
+      const expectedNotification: Notification = new NotificationAndroid({
+        'google.message_id': 'id',
+      });
+      when(mockedNativeCommandsSender.getInitialNotification()).thenResolve({
+        'google.message_id': 'id',
+      });
       const result = await uut.getInitialNotification();
       expect(result).toEqual(expectedNotification);
     });
@@ -55,10 +57,12 @@ describe('Commands', () => {
 
     it('iOS - returns a promise with the initial notification', async () => {
       Platform.OS = 'ios';
-      const expectedNotification: Notification = new NotificationIOS({identifier: 'id'});
-      when(mockedNativeCommandsSender.getInitialNotification()).thenResolve(
-          {identifier: 'id'}
-      );
+      const expectedNotification: Notification = new NotificationIOS({
+        identifier: 'id',
+      });
+      when(mockedNativeCommandsSender.getInitialNotification()).thenResolve({
+        identifier: 'id',
+      });
       const result = await uut.getInitialNotification();
       expect(result).toEqual(expectedNotification);
     });
@@ -82,14 +86,18 @@ describe('Commands', () => {
     it('sends to native', () => {
       const emptyCategoriesArray: [NotificationCategory?] = [];
       uut.setCategories(emptyCategoriesArray);
-      verify(mockedNativeCommandsSender.setCategories(emptyCategoriesArray)).called();
+      verify(
+        mockedNativeCommandsSender.setCategories(emptyCategoriesArray)
+      ).called();
     });
 
     it('sends to native with categories', () => {
       const category: NotificationCategory = {identifier: 'id', actions: []};
       const categoriesArray: [NotificationCategory] = [category];
       uut.setCategories(categoriesArray);
-      verify(mockedNativeCommandsSender.setCategories(categoriesArray)).called();
+      verify(
+        mockedNativeCommandsSender.setCategories(categoriesArray)
+      ).called();
     });
   });
 
@@ -104,20 +112,32 @@ describe('Commands', () => {
     it('sends to native', () => {
       const notification: Notification = new Notification({identifier: 'id'});
       uut.postLocalNotification(notification);
-      verify(mockedNativeCommandsSender.postLocalNotification(notification, anyNumber())).called();
+      verify(
+        mockedNativeCommandsSender.postLocalNotification(
+          notification,
+          anyNumber()
+        )
+      ).called();
     });
 
     it('generates unique identifier', () => {
       const notification: Notification = new Notification({identifier: 'id'});
       uut.postLocalNotification(notification);
-      verify(mockedNativeCommandsSender.postLocalNotification(notification, anyNumber())).called();
+      verify(
+        mockedNativeCommandsSender.postLocalNotification(
+          notification,
+          anyNumber()
+        )
+      ).called();
     });
 
     it('use passed notification id', () => {
       const notification: Notification = new Notification({identifier: 'id'});
       const passedId: number = 2;
       uut.postLocalNotification(notification, passedId);
-      verify(mockedNativeCommandsSender.postLocalNotification(notification, passedId)).called();
+      verify(
+        mockedNativeCommandsSender.postLocalNotification(notification, passedId)
+      ).called();
     });
 
     it('return notification id', () => {
@@ -144,8 +164,10 @@ describe('Commands', () => {
 
   describe('cancelLocalNotification', () => {
     it('sends to native', () => {
-      uut.cancelLocalNotification("notificationId");
-      verify(mockedNativeCommandsSender.cancelLocalNotification("notificationId")).called();
+      uut.cancelLocalNotification('notificationId');
+      verify(
+        mockedNativeCommandsSender.cancelLocalNotification('notificationId')
+      ).called();
     });
   });
 
@@ -159,22 +181,26 @@ describe('Commands', () => {
   describe('isRegisteredForRemoteNotifications', () => {
     it('sends to native', () => {
       uut.isRegisteredForRemoteNotifications();
-      verify(mockedNativeCommandsSender.isRegisteredForRemoteNotifications()).called();
+      verify(
+        mockedNativeCommandsSender.isRegisteredForRemoteNotifications()
+      ).called();
     });
 
     it('return positive response from native', async () => {
-      when(mockedNativeCommandsSender.isRegisteredForRemoteNotifications()).thenResolve(
-        true
-      );
+      when(
+        mockedNativeCommandsSender.isRegisteredForRemoteNotifications()
+      ).thenResolve(true);
       const isRegistered = await uut.isRegisteredForRemoteNotifications();
-      verify(mockedNativeCommandsSender.isRegisteredForRemoteNotifications()).called();
+      verify(
+        mockedNativeCommandsSender.isRegisteredForRemoteNotifications()
+      ).called();
       expect(isRegistered).toEqual(true);
     });
 
     it('return negative response from native', async () => {
-      when(mockedNativeCommandsSender.isRegisteredForRemoteNotifications()).thenResolve(
-        false
-      );
+      when(
+        mockedNativeCommandsSender.isRegisteredForRemoteNotifications()
+      ).thenResolve(false);
       const isRegistered = await uut.isRegisteredForRemoteNotifications();
       expect(isRegistered).toEqual(false);
     });
@@ -187,7 +213,11 @@ describe('Commands', () => {
     });
 
     it('return negative response from native', async () => {
-      const expectedPermissions: NotificationPermissions = {badge: false, alert: true, sound: false};
+      const expectedPermissions: NotificationPermissions = {
+        badge: false,
+        alert: true,
+        sound: false,
+      };
       when(mockedNativeCommandsSender.checkPermissions()).thenResolve(
         expectedPermissions
       );
@@ -199,22 +229,26 @@ describe('Commands', () => {
   describe('removeAllDeliveredNotifications', () => {
     it('sends to native', () => {
       uut.removeAllDeliveredNotifications();
-      verify(mockedNativeCommandsSender.removeAllDeliveredNotifications()).called();
+      verify(
+        mockedNativeCommandsSender.removeAllDeliveredNotifications()
+      ).called();
     });
   });
 
   describe('removeDeliveredNotifications', () => {
     it('sends to native', () => {
-      const identifiers: Array<string> = ["id1", "id2"];
+      const identifiers: Array<string> = ['id1', 'id2'];
       uut.removeDeliveredNotifications(identifiers);
-      verify(mockedNativeCommandsSender.removeDeliveredNotifications(identifiers)).called();
+      verify(
+        mockedNativeCommandsSender.removeDeliveredNotifications(identifiers)
+      ).called();
     });
   });
 
-  describe('getDeliveredNotifications', () => {
+  describe('getPendingMFAs', () => {
     it('sends to native', () => {
-      uut.getDeliveredNotifications();
-      verify(mockedNativeCommandsSender.getDeliveredNotifications()).called();
+      uut.getPendingMFAs();
+      verify(mockedNativeCommandsSender.getPendingMFAs()).called();
     });
   });
 

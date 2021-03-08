@@ -1,13 +1,13 @@
-import * as _ from "lodash";
-import { NativeCommandsSender } from "../adapters/NativeCommandsSender";
-import { Notification } from "../DTO/Notification";
-import { NotificationCategory } from "../interfaces/NotificationCategory";
-import { NotificationChannel } from "../interfaces/NotificationChannel";
-import { NotificationPermissions } from "../interfaces/NotificationPermissions";
-import { UniqueIdProvider } from "../adapters/UniqueIdProvider";
-import { NotificationFactory } from "../DTO/NotificationFactory";
-import { NotificationActionResponse } from "../interfaces/NotificationActionResponse";
-import { Platform } from "react-native";
+import * as _ from 'lodash';
+import {NativeCommandsSender} from '../adapters/NativeCommandsSender';
+import {Notification} from '../DTO/Notification';
+import {NotificationCategory} from '../interfaces/NotificationCategory';
+import {NotificationChannel} from '../interfaces/NotificationChannel';
+import {NotificationPermissions} from '../interfaces/NotificationPermissions';
+import {UniqueIdProvider} from '../adapters/UniqueIdProvider';
+import {NotificationFactory} from '../DTO/NotificationFactory';
+import {NotificationActionResponse} from '../interfaces/NotificationActionResponse';
+import {Platform} from 'react-native';
 
 export class Commands {
   constructor(
@@ -38,7 +38,7 @@ export class Commands {
   }
 
   public async getInitialAction(): Promise<Notification | undefined> {
-    if (Platform.OS === "android") {
+    if (Platform.OS === 'android') {
       return this.getInitialNotification();
     }
     return this.nativeCommandsSender.getInitialAction().then((response) => {
@@ -110,8 +110,16 @@ export class Commands {
     return this.nativeCommandsSender.removeDeliveredNotifications(identifiers);
   }
 
-  public getDeliveredNotifications(): Promise<Notification[]> {
-    return this.nativeCommandsSender.getDeliveredNotifications();
+  public getPendingMFAs(): Promise<Notification[]> {
+    return this.nativeCommandsSender.getPendingMFAs();
+  }
+
+  public updateMFA(requestId: string, answer: boolean): Promise<void> {
+    return this.nativeCommandsSender.updateMFA(requestId, answer);
+  }
+
+  public saveFetchedMFAs(fetchedMFAs: Notification[]): Promise<void> {
+    return this.nativeCommandsSender.saveFetchedMFAs(fetchedMFAs);
   }
 
   public refreshToken() {

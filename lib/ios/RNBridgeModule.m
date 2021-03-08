@@ -107,8 +107,16 @@ RCT_EXPORT_METHOD(dismissNotification:(NSString *)requestId) {
     [_commandsHandler dismissNotification:requestId];
 }
 
-RCT_EXPORT_METHOD(getDeliveredNotifications:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
-    [_commandsHandler getDeliveredNotifications:resolve reject:reject];
+RCT_EXPORT_METHOD(getPendingMFAs:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    [_commandsHandler getPendingMFAs:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(updateMFA:(NSString *)requestId answer:(BOOL *)answer resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    [_commandsHandler updateMFA:requestId answer:answer resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(saveFetchedMFAs:(NSArray *)fetchedMFAs resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    [_commandsHandler saveFetchedMFAs:fetchedMFAs resolve:resolve reject:reject];
 }
 
 #endif

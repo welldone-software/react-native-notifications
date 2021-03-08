@@ -41,7 +41,7 @@
     [[RNNotificationsStore sharedInstance] completePresentation:completionKey withPresentationOptions:[RCTConvert UNNotificationPresentationOptions:presentingOptions]];
     if ([presentingOptions valueForKey:@"alert"]) {
         NSDictionary *payload = [notification valueForKey:@"payload"];
-        [_notificationStorage saveNotification:payload];
+        [_notificationStorage saveMFA:payload];
     }
 }
 
@@ -89,15 +89,24 @@
 
 - (void)removeDeliveredNotifications:(NSArray<NSString *> *)requestIds resolve:(RCTPromiseResolveBlock)resolve {
     [_notificationCenter removeDeliveredNotifications:requestIds withResolve:resolve];
-    [_notificationStorage removeDeliveredNotifications:requestIds];
 }
 
 - (void)dismissNotification:(NSString *)requestId {
     [_notificationCenter dismissNotification:requestId];
 }
 
-- (void)getDeliveredNotifications:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+- (void)getPendingMFAs:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
     [_notificationCenter getDeliveredNotifications:resolve];
+}
+
+- (void)updateMFA:(NSString *)requestId answer:(BOOL *)answer resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    [_notificationStorage updateMFA:requestId answer:answer];
+    resolve(@"success");
+}
+
+- (void)saveFetchedMFAs:(NSArray *)fetchedMFAs resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    [_notificationStorage saveFetchedMFAs:fetchedMFAs];
+    resolve(@"success");
 }
 
 @end
