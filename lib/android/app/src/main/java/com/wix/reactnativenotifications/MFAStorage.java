@@ -97,6 +97,7 @@ public class MFAStorage {
     public void saveMFAs(ReadableArray mfaObjects) throws JSONException {
         JSONObject mfasJson = getPendingMFAsJson();
         JSONArray mfasToAddJson = JsonConverter.convertArrayToJson(mfaObjects);
+        boolean hasAnyNewMFA = false;
         for (int i = 0; i < mfasToAddJson.length(); i++) {
             JSONObject mfaToAdd = mfasToAddJson.getJSONObject(i);
             if (mfaToAdd == null) {
@@ -105,9 +106,12 @@ public class MFAStorage {
             String requestId = mfaToAdd.getString(REQUEST_ID_KEY);
             if (!mfasJson.has(requestId)) {
                 mfasJson.put(requestId, mfaToAdd);
+                hasAnyNewMFA = true;
             }
         }
-        saveNotifications(clearOverLimit(mfasJson));
+        if (hasAnyNewMFA) {
+            saveNotifications(clearOverLimit(mfasJson));
+        }
     }
 
     public void updateMFA(String mfaRequestId, boolean answer) {
