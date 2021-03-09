@@ -60,7 +60,7 @@ int MFA_SAVE_LIMIT = 2;
         mfasDict = [NSMutableDictionary new];
     }
     
-    NSMutableArray* mfaOrder = [[userDefaults dictionaryForKey:MFA_ORDER_KEY] mutableCopy];
+    NSMutableArray* mfaOrder = [[userDefaults arrayForKey:MFA_ORDER_KEY] mutableCopy];
     if (mfaOrder == nil) {
         mfaOrder = [NSMutableArray new];
     }
@@ -70,6 +70,8 @@ int MFA_SAVE_LIMIT = 2;
     [mfasDict setObject:mfa forKey:requestId];
     
     [userDefaults setObject:[self clearLimit:mfasDict order:mfaOrder] forKey:NOTIFICATIONS_KEY];
+    [userDefaults synchronize];
+    
     [userDefaults setObject:mfaOrder forKey:MFA_ORDER_KEY];
     [userDefaults synchronize];
 }
@@ -92,7 +94,7 @@ int MFA_SAVE_LIMIT = 2;
         mfasDict = [NSMutableDictionary new];
     }
     
-    NSMutableArray* mfaOrder = [[userDefaults dictionaryForKey:MFA_ORDER_KEY] mutableCopy];
+    NSMutableArray* mfaOrder = [[userDefaults arrayForKey:MFA_ORDER_KEY] mutableCopy];
     if (mfaOrder == nil) {
         mfaOrder = [NSMutableArray new];
     }
@@ -101,12 +103,15 @@ int MFA_SAVE_LIMIT = 2;
         NSString *requestId = [value valueForKey:REQUEST_ID_KEY];
         if ([mfasDict objectForKey:requestId] == nil) {
             hasSavedAny = YES;
+            [mfaOrder addObject:requestId];
             [mfasDict setObject:value forKey:requestId];
         }
     }];
     
     if (hasSavedAny) {
         [userDefaults setObject:[self clearLimit:mfasDict order:mfaOrder] forKey:NOTIFICATIONS_KEY];
+        [userDefaults synchronize];
+        
         [userDefaults setObject:mfaOrder forKey:MFA_ORDER_KEY];
         [userDefaults synchronize];
     }

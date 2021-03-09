@@ -81,14 +81,13 @@
 }
 
 - (void)getDeliveredNotifications:(RCTPromiseResolveBlock)resolve {
-    RNNotificationsStorage *notificationStorage = [RNNotificationsStorage new];
-    NSMutableArray<NSDictionary *> *formattedNotifications = [notificationStorage getPendingMFAs];
+    RNNotificationsStorage *mfaStorage = [RNNotificationsStorage new];
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     [center getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
         for (UNNotification *notification in notifications) {
-            [formattedNotifications addObject:[RCTConvert UNNotificationPayload:notification]];
+            [mfaStorage saveMFA:[RCTConvert UNNotificationPayload:notification]];
         }
-        resolve(formattedNotifications);
+        resolve([mfaStorage getPendingMFAs]);
     }];
 }
 
