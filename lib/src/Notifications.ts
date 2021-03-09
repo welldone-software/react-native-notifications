@@ -138,7 +138,7 @@ export class NotificationsRoot {
   /**
    * saveFetchedMFAs
    */
-  public saveFetchedMFAs(fetchedMFAs: Notification[]): Promise<void> {
+  public saveFetchedMFAs(fetchedMFAs: any[]): Promise<void> {
     return this.nativeCommandsSender.saveFetchedMFAs(fetchedMFAs);
   }
 

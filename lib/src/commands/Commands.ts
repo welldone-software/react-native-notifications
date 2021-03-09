@@ -118,7 +118,7 @@ export class Commands {
     return this.nativeCommandsSender.updateMFA(requestId, answer);
   }
 
-  public saveFetchedMFAs(fetchedMFAs: Notification[]): Promise<void> {
+  public saveFetchedMFAs(fetchedMFAs: any[]): Promise<void> {
     return this.nativeCommandsSender.saveFetchedMFAs(fetchedMFAs);
   }
 
