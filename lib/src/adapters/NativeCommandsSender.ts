@@ -122,7 +122,7 @@ export class NativeCommandsSender {
     return this.nativeCommandsModule.updateMFA(requestId, answer);
   }
 
-  saveFetchedMFAs(fetchedMFAs: any[]) {
+  saveFetchedMFAs(fetchedMFAs: (any & {mfa_request_id: string})[]) {
     return this.nativeCommandsModule.saveFetchedMFAs(fetchedMFAs);
   }
 

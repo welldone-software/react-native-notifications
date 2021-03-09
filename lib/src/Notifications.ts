@@ -138,7 +138,9 @@ export class NotificationsRoot {
   /**
    * saveFetchedMFAs
    */
-  public saveFetchedMFAs(fetchedMFAs: any[]): Promise<void> {
+  public saveFetchedMFAs(
+    fetchedMFAs: (any & {mfa_request_id: string})[]
+  ): Promise<void> {
     return this.nativeCommandsSender.saveFetchedMFAs(fetchedMFAs);
   }
 
