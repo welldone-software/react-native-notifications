@@ -24,7 +24,7 @@ public class MFAStorage {
     private static final String DEFAULT_VALUE = "{}";
     private static final String ANSWER_KEY = "answer";
     private static final String EXPIRED_TIME_KEY = "expired_time";
-    private static final int MFA_SAVE_LIMIT = 2;
+    private static final int MFA_SAVE_LIMIT = 256;
 
     public static final String REQUEST_ID_KEY = "mfa_request_id";
 
