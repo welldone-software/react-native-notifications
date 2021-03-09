@@ -136,7 +136,7 @@ int MFA_SAVE_LIMIT = 256;
         
         double currentTsRaw = [[NSDate date] timeIntervalSince1970] * 1000;
         NSString * expiredTime = [value valueForKey:EXPIRED_TIME_KEY];
-        bool hasNotExpired = [expiredTime longLongValue] <= (long)currentTsRaw;
+        bool hasNotExpired = [expiredTime longLongValue] > (long)currentTsRaw;
         
         if (hasNotAnswered && hasNotExpired) {
             [pendingMFAs addObject:value];
