@@ -161,7 +161,7 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
     }
 
     @ReactMethod
-    void saveFetchedMFAs(final Promise promise, ReadableArray fetchedMFAs) {
+    void saveFetchedMFAs(ReadableArray fetchedMFAs, Promise promise) {
         MFAStorage storage = MFAStorage.getInstance(getReactApplicationContext().getApplicationContext());
         try {
             storage.saveMFAs(fetchedMFAs);
@@ -172,7 +172,7 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
     }
 
     @ReactMethod
-    void updateMFA(final Promise promise, String requestId, boolean answer) {
+    void updateMFA(String requestId, boolean answer, Promise promise) {
         MFAStorage storage = MFAStorage.getInstance(getReactApplicationContext().getApplicationContext());
         try {
             storage.updateMFA(requestId, answer);

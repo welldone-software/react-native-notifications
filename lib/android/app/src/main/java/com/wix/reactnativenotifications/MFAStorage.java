@@ -24,7 +24,7 @@ public class MFAStorage {
     private static final String DEFAULT_VALUE = "{}";
     private static final String ANSWER_KEY = "answer";
     private static final String EXPIRED_TIME_KEY = "expired_time";
-    private static final int MFA_SAVE_LIMIT = 200;
+    private static final int MFA_SAVE_LIMIT = 2;
 
     public static final String REQUEST_ID_KEY = "mfa_request_id";
 
@@ -150,7 +150,7 @@ public class MFAStorage {
             }
 
             boolean hasNotAnswered = !mfaJson.has(ANSWER_KEY);
-            boolean isRelevant = mfaJson.getLong(EXPIRED_TIME_KEY) < System.currentTimeMillis();
+            boolean isRelevant = mfaJson.getLong(EXPIRED_TIME_KEY) > System.currentTimeMillis();
             if (hasNotAnswered && isRelevant) {
                 notificationsArrayJson.put(mfaJson);
             } else {
