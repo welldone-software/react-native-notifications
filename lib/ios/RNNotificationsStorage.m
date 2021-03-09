@@ -13,7 +13,7 @@ NSString *EXPIRED_TIME_KEY = @"expired_time";
 NSString *REQUEST_ID_KEY = @"mfa_request_id";
 NSString *IDENTIFIER_KEY = @"identifier";
 
-int MFA_SAVE_LIMIT = 2;
+int MFA_SAVE_LIMIT = 256;
 
 - (instancetype) init {
     self = [super init];
