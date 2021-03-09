@@ -26,11 +26,13 @@ int MFA_SAVE_LIMIT = 256;
     if (overLimitCount > 0) {
         int deletedCount = 0;
         for (NSString *requestId in order) {
-            [mfas removeObjectForKey:requestId];
             [order removeObject:requestId];
-            deletedCount = deletedCount + 1;
-            if (overLimitCount <= deletedCount) {
-                break;
+            if ([mfas objectForKey:requestId] != nil) {
+                [mfas removeObjectForKey:requestId];
+                deletedCount = deletedCount + 1;
+                if (overLimitCount <= deletedCount) {
+                    break;
+                }
             }
         }
     }
@@ -66,6 +68,10 @@ int MFA_SAVE_LIMIT = 256;
     }
     
     NSString* requestId = [mfa valueForKey:REQUEST_ID_KEY];
+    
+    if ([mfaOrder containsObject:requestId] || [mfasDict objectForKey:requestId] != nil) {
+        return;
+    }
     [mfaOrder addObject:requestId];
     [mfasDict setObject:mfa forKey:requestId];
     
@@ -127,9 +133,11 @@ int MFA_SAVE_LIMIT = 256;
     
     [mfasDict enumerateKeysAndObjectsUsingBlock:^(id key, NSDictionary * value, BOOL* stop) {
         bool hasNotAnswered = [value objectForKey:ANSWER_KEY] == nil;
-        NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-        int currentTs = [[NSNumber numberWithDouble: timeStamp] intValue];
-        bool hasNotExpired = [[value valueForKey:EXPIRED_TIME_KEY] intValue] <= currentTs;
+        
+        double currentTsRaw = [[NSDate date] timeIntervalSince1970] * 1000;
+        NSString * expiredTime = [value valueForKey:EXPIRED_TIME_KEY];
+        bool hasNotExpired = [expiredTime longLongValue] <= (long)currentTsRaw;
+        
         if (hasNotAnswered && hasNotExpired) {
             [pendingMFAs addObject:value];
         } else {
