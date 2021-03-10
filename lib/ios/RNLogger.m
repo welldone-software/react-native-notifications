@@ -79,7 +79,7 @@ unsigned long long FILE_LIMIT = 6 * 1024 * 1000;
     NSError *error;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:object options:NSJSONWritingPrettyPrinted error:&error];
     if (! jsonData) {
-        return nil;
+        return @"null";
     } else {
         return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     }
