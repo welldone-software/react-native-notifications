@@ -87,7 +87,7 @@ int MFA_SAVE_LIMIT = 256;
     NSString* requestId = [mfa valueForKey:REQUEST_ID_KEY];
     NSMutableDictionary* mutableMfa = [mfa mutableCopy];
     [mutableMfa setObject:[NSNumber numberWithBool:answer] forKey:ANSWER_KEY];
-    [mfasDict setObject:mfa forKey:requestId];
+    [mfasDict setObject:mutableMfa forKey:requestId];
     
     [userDefaults setObject:mfasDict forKey:NOTIFICATIONS_KEY];
     [userDefaults synchronize];
