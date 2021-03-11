@@ -86,6 +86,7 @@ public class PushNotification implements IPushNotification {
             mLogger.i(TAG, "App is not visible, posting notification");
             postNotification(null);
         } else {
+            mStorage.saveMFA(mNotificationProps);
             mLogger.i(TAG, "App is visible, notifying JS");
         }
         if (hasActiveCatalystInstance) {

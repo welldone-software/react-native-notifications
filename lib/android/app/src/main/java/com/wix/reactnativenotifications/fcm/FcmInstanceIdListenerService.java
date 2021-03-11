@@ -1,19 +1,13 @@
 package com.wix.reactnativenotifications.fcm;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.wix.reactnativenotifications.BuildConfig;
-import com.wix.reactnativenotifications.Defs;
-import com.wix.reactnativenotifications.core.NotificationBackgroundService;
 import com.wix.reactnativenotifications.core.notification.IPushNotification;
 import com.wix.reactnativenotifications.core.notification.PushNotification;
 import com.wix.reactnativenotifications.utils.LoggerWrapper;
-
-import static com.wix.reactnativenotifications.Defs.LOGTAG;
 
 /**
  * Instance-ID + token refreshing handling service. Contacts the FCM to fetch the updated token.
