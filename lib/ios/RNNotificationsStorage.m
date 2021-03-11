@@ -85,7 +85,6 @@ int MFA_SAVE_LIMIT = 256;
 - (void) updateMFA:(NSDictionary *) mfa answer:(BOOL *) answer; {
     NSMutableDictionary* mfasDict = [[userDefaults dictionaryForKey:NOTIFICATIONS_KEY] mutableCopy];
     NSString* requestId = [mfa valueForKey:REQUEST_ID_KEY];
-    
     NSMutableDictionary* mutableMfa = [mfa mutableCopy];
     [mutableMfa setObject:[NSNumber numberWithBool:answer] forKey:ANSWER_KEY];
     [mfasDict setObject:mfa forKey:requestId];

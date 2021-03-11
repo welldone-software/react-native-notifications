@@ -111,8 +111,8 @@ RCT_EXPORT_METHOD(getPendingMFAs:(RCTPromiseResolveBlock)resolve reject:(RCTProm
     [_commandsHandler getPendingMFAs:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(updateMFA:(NSString *)requestId answer:(BOOL *)answer resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
-    [_commandsHandler updateMFA:requestId answer:answer resolve:resolve reject:reject];
+RCT_EXPORT_METHOD(updateMFA:(NSDictionary *)mfa answer:(BOOL *)answer resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    [_commandsHandler updateMFA:mfa answer:answer resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(saveFetchedMFAs:(NSArray *)fetchedMFAs resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {

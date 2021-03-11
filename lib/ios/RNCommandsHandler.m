@@ -99,8 +99,8 @@
     [_notificationCenter getDeliveredNotifications:resolve];
 }
 
-- (void)updateMFA:(NSString *)requestId answer:(BOOL *)answer resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-    [_notificationStorage updateMFA:requestId answer:answer];
+- (void)updateMFA:(NSDictionary *)mfa answer:(BOOL *)answer resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    [_notificationStorage updateMFA:mfa answer:answer];
     resolve(@"success");
 }
 
