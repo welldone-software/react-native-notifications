@@ -80,7 +80,7 @@ public class MFAStorage {
         mNotificationsDrawer.onNotificationClearRequest(getNotificationId(requestId));
     }
 
-    public synchronized void saveMFA(PushNotificationProps notificationProps) {
+    public void saveMFA(PushNotificationProps notificationProps) {
         try {
             JSONObject mfasJson = getPendingMFAsJson();
             String mfaRequestId = notificationProps.asBundle().getString(REQUEST_ID_KEY);
@@ -94,7 +94,7 @@ public class MFAStorage {
         }
     }
 
-    public synchronized void saveMFAs(ReadableArray mfaObjects) throws JSONException {
+    public void saveMFAs(ReadableArray mfaObjects) throws JSONException {
         JSONObject mfasJson = getPendingMFAsJson();
         JSONArray mfasToAddJson = JsonConverter.convertArrayToJson(mfaObjects);
         boolean hasAnyNewMFA = false;
@@ -114,7 +114,7 @@ public class MFAStorage {
         }
     }
 
-    public synchronized void updateMFA(String mfaRequestId, boolean answer) {
+    public void updateMFA(String mfaRequestId, boolean answer) {
         try {
             JSONObject mfasJson = getPendingMFAsJson();
             JSONObject mfaJson = mfasJson.getJSONObject(mfaRequestId);
