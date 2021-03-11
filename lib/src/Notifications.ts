@@ -131,8 +131,11 @@ export class NotificationsRoot {
   /**
    * updateMFA
    */
-  public updateMFA(requestId: string, answer: boolean): Promise<void> {
-    return this.commands.updateMFA(requestId, answer);
+  public updateMFA(
+    mfa: any & {mfa_request_id: string; answer: boolean},
+    answer: boolean
+  ): Promise<void> {
+    return this.commands.updateMFA(mfa, answer);
   }
 
   /**

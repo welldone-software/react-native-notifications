@@ -172,10 +172,10 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
     }
 
     @ReactMethod
-    void updateMFA(String requestId, boolean answer, Promise promise) {
+    void updateMFA(ReadableMap mfa, boolean answer, Promise promise) {
         MFAStorage storage = MFAStorage.getInstance(getReactApplicationContext().getApplicationContext());
         try {
-            storage.updateMFA(requestId, answer);
+            storage.updateMFA(mfa, answer);
             promise.resolve(null);
         } catch (Exception error) {
             promise.reject(error);

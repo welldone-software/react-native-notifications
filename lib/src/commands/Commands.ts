@@ -114,8 +114,11 @@ export class Commands {
     return this.nativeCommandsSender.getPendingMFAs();
   }
 
-  public updateMFA(requestId: string, answer: boolean): Promise<void> {
-    return this.nativeCommandsSender.updateMFA(requestId, answer);
+  public updateMFA(
+    mfa: any & {mfa_request_id: string; answer: boolean},
+    answer: boolean
+  ): Promise<void> {
+    return this.nativeCommandsSender.updateMFA(mfa, answer);
   }
 
   public saveFetchedMFAs(

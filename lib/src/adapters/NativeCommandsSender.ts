@@ -23,7 +23,10 @@ interface NativeCommandsModule {
   removeDeliveredNotifications(identifiers: Array<string>): void;
   removeAllDeliveredNotifications(): void;
   getPendingMFAs(): Promise<Notification[] | string>;
-  updateMFA(requestId: string, answer: boolean): Promise<void>;
+  updateMFA(
+    mfa: any & {mfa_request_id: string; answer: boolean},
+    answer: boolean
+  ): Promise<void>;
   saveFetchedMFAs(fetchedMFAs: any[]): Promise<void>;
   setCategories(categories: [NotificationCategory?]): void;
   finishPresentingNotification(
@@ -118,8 +121,11 @@ export class NativeCommandsSender {
     return payloadArray.map((payload: object) => new Notification(payload));
   }
 
-  updateMFA(requestId: string, answer: boolean) {
-    return this.nativeCommandsModule.updateMFA(requestId, answer);
+  updateMFA(
+    mfa: any & {mfa_request_id: string; answer: boolean},
+    answer: boolean
+  ) {
+    return this.nativeCommandsModule.updateMFA(mfa, answer);
   }
 
   saveFetchedMFAs(fetchedMFAs: (any & {mfa_request_id: string})[]) {

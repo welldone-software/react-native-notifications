@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.wix.reactnativenotifications.core.notification.PushNotificationProps;
 import com.wix.reactnativenotifications.core.notificationdrawer.IPushNotificationsDrawer;
 import com.wix.reactnativenotifications.core.notificationdrawer.PushNotificationsDrawer;
@@ -114,10 +115,11 @@ public class MFAStorage {
         }
     }
 
-    public void updateMFA(String mfaRequestId, boolean answer) {
+    public void updateMFA(ReadableMap mfa, boolean answer) {
         try {
             JSONObject mfasJson = getPendingMFAsJson();
-            JSONObject mfaJson = mfasJson.getJSONObject(mfaRequestId);
+            JSONObject mfaJson = JsonConverter.convertMapToJson(mfa);
+            String mfaRequestId = mfaJson.getString(REQUEST_ID_KEY);
             mfaJson.put(ANSWER_KEY, answer);
             mfasJson.put(mfaRequestId, mfaJson);
             saveNotifications(clearOverLimit(mfasJson));

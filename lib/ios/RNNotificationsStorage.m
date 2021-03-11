@@ -82,11 +82,14 @@ int MFA_SAVE_LIMIT = 256;
     [userDefaults synchronize];
 }
 
-- (void) updateMFA:(NSString *) requestId answer:(BOOL *) answer; {
+- (void) updateMFA:(NSDictionary *) mfa answer:(BOOL *) answer; {
     NSMutableDictionary* mfasDict = [[userDefaults dictionaryForKey:NOTIFICATIONS_KEY] mutableCopy];
-    NSMutableDictionary* mfa = [[mfasDict valueForKey:requestId] mutableCopy];
-    [mfa setObject:[NSNumber numberWithBool:answer] forKey:ANSWER_KEY];
+    NSString* requestId = [mfa valueForKey:REQUEST_ID_KEY];
+    
+    NSMutableDictionary* mutableMfa = [mfa mutableCopy];
+    [mutableMfa setObject:[NSNumber numberWithBool:answer] forKey:ANSWER_KEY];
     [mfasDict setObject:mfa forKey:requestId];
+    
     [userDefaults setObject:mfasDict forKey:NOTIFICATIONS_KEY];
     [userDefaults synchronize];
     

@@ -6,7 +6,7 @@
 @interface RNNotificationsStorage : NSObject
 
 - (void) saveMFA:(NSDictionary *) mfa;
-- (void) updateMFA:(NSString *) requestId answer:(BOOL *) answer;
+- (void) updateMFA:(NSDictionary *) mfa answer:(BOOL *) answer;
 - (void) saveFetchedMFAs:(NSArray <NSDictionary *> *) fetchedMFAs;
 - (NSMutableArray <NSDictionary *> *) getPendingMFAs;
 - (void) clearAll;
