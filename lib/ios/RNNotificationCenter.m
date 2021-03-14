@@ -85,9 +85,9 @@
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     [center getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
         for (UNNotification *notification in notifications) {
-            [mfaStorage saveMFA:[RCTConvert UNNotificationPayload:notification]];
+            [mfaStorage saveMfa:[RCTConvert UNNotificationPayload:notification]];
         }
-        resolve([mfaStorage getPendingMFAs]);
+        resolve([mfaStorage getPendingMfas]);
     }];
 }
 

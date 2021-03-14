@@ -28,7 +28,7 @@ import com.wix.reactnativenotifications.core.NotificationBackgroundService;
 import com.wix.reactnativenotifications.core.NotificationIntentAdapter;
 import com.wix.reactnativenotifications.core.ProxyService;
 import com.wix.reactnativenotifications.utils.LoggerWrapper;
-import com.wix.reactnativenotifications.MFAStorage;
+import com.wix.reactnativenotifications.MfaStorage;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,7 +47,7 @@ public class PushNotification implements IPushNotification {
     final protected AppLaunchHelper mAppLaunchHelper;
     final protected JsIOHelper mJsIOHelper;
     final protected PushNotificationProps mNotificationProps;
-    final protected MFAStorage mStorage;
+    final protected MfaStorage mStorage;
     final protected AppVisibilityListener mAppVisibilityListener = new AppVisibilityListener() {
         @Override
         public void onAppVisible() {
@@ -75,7 +75,7 @@ public class PushNotification implements IPushNotification {
         mJsIOHelper = JsIOHelper;
         mNotificationProps = createProps(bundle);
         mLogger = LoggerWrapper.getInstance(context);
-        mStorage = MFAStorage.getInstance(context);
+        mStorage = MfaStorage.getInstance(context);
     }
 
     @Override
@@ -86,7 +86,7 @@ public class PushNotification implements IPushNotification {
             mLogger.i(TAG, "App is not visible, posting notification");
             postNotification(null);
         } else {
-            mStorage.saveMFA(mNotificationProps);
+            mStorage.saveMfa(mNotificationProps);
             mLogger.i(TAG, "App is visible, notifying JS");
         }
         if (hasActiveCatalystInstance) {
@@ -237,7 +237,7 @@ public class PushNotification implements IPushNotification {
 
     protected void postNotification(int id, Notification notification) {
         final NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-        mStorage.saveMFA(mNotificationProps);
+        mStorage.saveMfa(mNotificationProps);
         notificationManager.notify(id, notification);
     }
 

@@ -22,12 +22,12 @@ interface NativeCommandsModule {
   checkPermissions(): Promise<NotificationPermissions>;
   removeDeliveredNotifications(identifiers: Array<string>): void;
   removeAllDeliveredNotifications(): void;
-  getPendingMFAs(): Promise<Notification[] | string>;
-  updateMFA(
+  getPendingMfas(): Promise<Notification[] | string>;
+  updateMfa(
     mfa: any & {mfa_request_id: string; answer: boolean},
     answer: boolean
   ): Promise<void>;
-  saveFetchedMFAs(fetchedMFAs: any[]): Promise<void>;
+  saveFetchedMfas(fetchedMfas: any[]): Promise<void>;
   isMfaAnswered(requestId: string): Promise<boolean>;
   setCategories(categories: [NotificationCategory?]): void;
   finishPresentingNotification(
@@ -115,22 +115,22 @@ export class NativeCommandsSender {
     return this.nativeCommandsModule.removeDeliveredNotifications(identifiers);
   }
 
-  public async getPendingMFAs(): Promise<Notification[]> {
-    const result = await this.nativeCommandsModule.getPendingMFAs();
+  public async getPendingMfas(): Promise<Notification[]> {
+    const result = await this.nativeCommandsModule.getPendingMfas();
     const payloadArray =
       typeof result === 'string' ? JSON.parse(result) : result;
     return payloadArray.map((payload: object) => new Notification(payload));
   }
 
-  updateMFA(
+  updateMfa(
     mfa: any & {mfa_request_id: string; answer: boolean},
     answer: boolean
   ) {
-    return this.nativeCommandsModule.updateMFA(mfa, answer);
+    return this.nativeCommandsModule.updateMfa(mfa, answer);
   }
 
-  saveFetchedMFAs(fetchedMFAs: (any & {mfa_request_id: string})[]) {
-    return this.nativeCommandsModule.saveFetchedMFAs(fetchedMFAs);
+  saveFetchedMfas(fetchedMfas: (any & {mfa_request_id: string})[]) {
+    return this.nativeCommandsModule.saveFetchedMfas(fetchedMfas);
   }
 
   isMfaAnswered(requestId: string) {

@@ -110,25 +110,25 @@ export class Commands {
     return this.nativeCommandsSender.removeDeliveredNotifications(identifiers);
   }
 
-  public getPendingMFAs(): Promise<Notification[]> {
-    return this.nativeCommandsSender.getPendingMFAs();
+  public getPendingMfas(): Promise<Notification[]> {
+    return this.nativeCommandsSender.getPendingMfas();
   }
 
-  public updateMFA(
+  public updateMfa(
     mfa: any & {mfa_request_id: string; answer: boolean},
     answer: boolean
   ): Promise<void> {
-    return this.nativeCommandsSender.updateMFA(mfa, answer);
+    return this.nativeCommandsSender.updateMfa(mfa, answer);
   }
 
   public isMfaAnswered(requestId: string) {
     return this.nativeCommandsSender.isMfaAnswered(requestId);
   }
 
-  public saveFetchedMFAs(
-    fetchedMFAs: (any & {mfa_request_id: string})[]
+  public saveFetchedMfas(
+    fetchedMfas: (any & {mfa_request_id: string})[]
   ): Promise<void> {
-    return this.nativeCommandsSender.saveFetchedMFAs(fetchedMFAs);
+    return this.nativeCommandsSender.saveFetchedMfas(fetchedMfas);
   }
 
   public refreshToken() {

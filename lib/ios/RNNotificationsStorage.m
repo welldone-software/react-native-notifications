@@ -7,13 +7,13 @@
 
 NSUserDefaults *userDefaults;
 NSString *NOTIFICATIONS_KEY = @"Notifications";
-NSString *MFA_ORDER_KEY = @"MFA Order";
+NSString *Mfa_ORDER_KEY = @"Mfa Order";
 NSString *ANSWER_KEY = @"answer";
 NSString *EXPIRED_TIME_KEY = @"expired_time";
 NSString *REQUEST_ID_KEY = @"mfa_request_id";
 NSString *IDENTIFIER_KEY = @"identifier";
 
-int MFA_SAVE_LIMIT = 256;
+int Mfa_SAVE_LIMIT = 256;
 
 - (instancetype) init {
     self = [super init];
@@ -30,7 +30,7 @@ int MFA_SAVE_LIMIT = 256;
 }
 
 - (NSMutableArray *) getMfasOrder {
-    NSMutableArray* mfaOrder = [[userDefaults arrayForKey:MFA_ORDER_KEY] mutableCopy];
+    NSMutableArray* mfaOrder = [[userDefaults arrayForKey:Mfa_ORDER_KEY] mutableCopy];
     if (mfaOrder == nil) {
         mfaOrder = [NSMutableArray new];
     }
@@ -38,7 +38,7 @@ int MFA_SAVE_LIMIT = 256;
 }
 
 - (NSMutableDictionary*)clearLimit:(NSMutableDictionary*) mfas order:(NSMutableArray*) order {
-    int overLimitCount = (int)[mfas count] - MFA_SAVE_LIMIT;
+    int overLimitCount = (int)[mfas count] - Mfa_SAVE_LIMIT;
     if (overLimitCount > 0) {
         int deletedCount = 0;
         for (NSString *requestId in order) {
@@ -72,7 +72,7 @@ int MFA_SAVE_LIMIT = 256;
     }];
 }
 
-- (void)saveMFA:(NSDictionary *)mfa{
+- (void)saveMfa:(NSDictionary *)mfa{
     NSMutableDictionary* mfasDict = [self getMfasDict];
     NSMutableArray* mfaOrder = [self getMfasOrder];
     
@@ -87,11 +87,11 @@ int MFA_SAVE_LIMIT = 256;
     [userDefaults setObject:[self clearLimit:mfasDict order:mfaOrder] forKey:NOTIFICATIONS_KEY];
     [userDefaults synchronize];
     
-    [userDefaults setObject:mfaOrder forKey:MFA_ORDER_KEY];
+    [userDefaults setObject:mfaOrder forKey:Mfa_ORDER_KEY];
     [userDefaults synchronize];
 }
 
-- (void) updateMFA:(NSDictionary *) mfa answer:(BOOL *) answer; {
+- (void) updateMfa:(NSDictionary *) mfa answer:(BOOL *) answer; {
     NSMutableDictionary* mfasDict = [self getMfasDict];
     NSString* requestId = [mfa valueForKey:REQUEST_ID_KEY];
     NSDictionary *savedMfa = [mfasDict objectForKey:requestId];
@@ -118,12 +118,12 @@ int MFA_SAVE_LIMIT = 256;
     return NO;
 }
 
-- (void)saveFetchedMFAs:(NSArray<NSDictionary *> *)fetchedMFAs {
+- (void)saveFetchedMfas:(NSArray<NSDictionary *> *)fetchedMfas {
     __block BOOL hasSavedAny = NO;
     NSMutableDictionary* mfasDict = [self getMfasDict];
     NSMutableArray* mfaOrder =  [self getMfasOrder];
     
-    [fetchedMFAs enumerateObjectsUsingBlock:^(NSDictionary * value, NSUInteger idx, BOOL *stop) {
+    [fetchedMfas enumerateObjectsUsingBlock:^(NSDictionary * value, NSUInteger idx, BOOL *stop) {
         NSString *requestId = [value valueForKey:REQUEST_ID_KEY];
         if ([mfasDict objectForKey:requestId] == nil) {
             hasSavedAny = YES;
@@ -136,14 +136,14 @@ int MFA_SAVE_LIMIT = 256;
         [userDefaults setObject:[self clearLimit:mfasDict order:mfaOrder] forKey:NOTIFICATIONS_KEY];
         [userDefaults synchronize];
         
-        [userDefaults setObject:mfaOrder forKey:MFA_ORDER_KEY];
+        [userDefaults setObject:mfaOrder forKey:Mfa_ORDER_KEY];
         [userDefaults synchronize];
     }
 }
 
-- (NSMutableArray <NSDictionary *> *) getPendingMFAs {
+- (NSMutableArray <NSDictionary *> *) getPendingMfas {
     NSMutableDictionary* mfasDict = [self getMfasDict];
-    NSMutableArray <NSDictionary *> *pendingMFAs = [[NSMutableArray alloc] init];
+    NSMutableArray <NSDictionary *> *pendingMfas = [[NSMutableArray alloc] init];
     NSMutableArray <NSString *> *requestIdsToDismiss = [[NSMutableArray alloc] init];
     
     [mfasDict enumerateKeysAndObjectsUsingBlock:^(id key, NSDictionary * value, BOOL* stop) {
@@ -154,7 +154,7 @@ int MFA_SAVE_LIMIT = 256;
         bool hasNotExpired = [expiredTime longLongValue] > (long)currentTsRaw;
         
         if (hasNotAnswered && hasNotExpired) {
-            [pendingMFAs addObject:value];
+            [pendingMfas addObject:value];
         } else {
             [requestIdsToDismiss addObject:[value objectForKey:REQUEST_ID_KEY]];
         }
@@ -162,7 +162,7 @@ int MFA_SAVE_LIMIT = 256;
     
     [self dismissNotificaitons:requestIdsToDismiss];
     
-    return pendingMFAs;
+    return pendingMfas;
 }
 
 - (void) clearAll {

@@ -43,12 +43,12 @@
 
 - (void)dismissNotification:(NSString *)requestId;
 
-- (void)getPendingMFAs:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
+- (void)getPendingMfas:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
 
-- (void)updateMFA:(NSString *)requestId answer:(BOOL *)answer resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
+- (void)updateMfa:(NSString *)requestId answer:(BOOL *)answer resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
 
 - (void)isMfaAnswered:(NSString *)requestId resolve:(RCTPromiseResolveBlock)resolve;
 
-- (void)saveFetchedMFAs:(NSArray *)fetchedMFAs resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
+- (void)saveFetchedMfas:(NSArray *)fetchedMfas resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
 
 @end

@@ -245,10 +245,10 @@ describe('Commands', () => {
     });
   });
 
-  describe('getPendingMFAs', () => {
+  describe('getPendingMfas', () => {
     it('sends to native', () => {
-      uut.getPendingMFAs();
-      verify(mockedNativeCommandsSender.getPendingMFAs()).called();
+      uut.getPendingMfas();
+      verify(mockedNativeCommandsSender.getPendingMfas()).called();
     });
   });
 

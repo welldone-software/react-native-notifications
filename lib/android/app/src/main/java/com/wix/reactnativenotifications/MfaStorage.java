@@ -16,16 +16,16 @@ import org.json.JSONObject;
 
 import java.util.Iterator;
 
-public class MFAStorage {
+public class MfaStorage {
 
-    private static MFAStorage mInstance;
+    private static MfaStorage mInstance;
 
     private static final String PREFERENCES_NAME = "react-native";
     private static final String NOTIFICATIONS = "notifications";
     private static final String DEFAULT_VALUE = "{}";
     private static final String ANSWER_KEY = "answer";
     private static final String EXPIRED_TIME_KEY = "expired_time";
-    private static final int MFA_SAVE_LIMIT = 256;
+    private static final int Mfa_SAVE_LIMIT = 256;
 
     public static final String REQUEST_ID_KEY = "mfa_request_id";
 
@@ -33,14 +33,14 @@ public class MFAStorage {
     private final SharedPreferences mPreferences;
     private final IPushNotificationsDrawer mNotificationsDrawer;
 
-    private MFAStorage(Context context) {
+    private MfaStorage(Context context) {
         mPreferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
         mNotificationsDrawer = PushNotificationsDrawer.get(context.getApplicationContext());
     }
 
-    public static MFAStorage getInstance(Context context) {
+    public static MfaStorage getInstance(Context context) {
         if (mInstance == null) {
-            mInstance = new MFAStorage(context);
+            mInstance = new MfaStorage(context);
         }
         return mInstance;
     }
@@ -51,15 +51,15 @@ public class MFAStorage {
         editor.apply();
     }
 
-    private JSONObject getPendingMFAsJson() throws JSONException {
+    private JSONObject getPendingMfasJson() throws JSONException {
         String rawJson = mPreferences.getString(NOTIFICATIONS, DEFAULT_VALUE);
         return new JSONObject(rawJson);
     }
 
     private JSONObject clearOverLimit (JSONObject json) {
         int savedCount = json.length();
-        if (savedCount > MFA_SAVE_LIMIT) {
-            int amountToDelete = savedCount - MFA_SAVE_LIMIT;
+        if (savedCount > Mfa_SAVE_LIMIT) {
+            int amountToDelete = savedCount - Mfa_SAVE_LIMIT;
             int amountDeleted = 0;
             Iterator<String> keys = json.keys();
             while(keys.hasNext()) {
@@ -81,9 +81,9 @@ public class MFAStorage {
         mNotificationsDrawer.onNotificationClearRequest(getNotificationId(requestId));
     }
 
-    public void saveMFA(PushNotificationProps notificationProps) {
+    public void saveMfa(PushNotificationProps notificationProps) {
         try {
-            JSONObject mfasJson = getPendingMFAsJson();
+            JSONObject mfasJson = getPendingMfasJson();
             String mfaRequestId = notificationProps.asBundle().getString(REQUEST_ID_KEY);
             if (!mfasJson.has(mfaRequestId)) {
                 JSONObject mfaJson = JsonConverter.convertBundleToJson(notificationProps.asBundle());
@@ -95,10 +95,10 @@ public class MFAStorage {
         }
     }
 
-    public void saveMFAs(ReadableArray mfaObjects) throws JSONException {
-        JSONObject mfasJson = getPendingMFAsJson();
+    public void saveMfas(ReadableArray mfaObjects) throws JSONException {
+        JSONObject mfasJson = getPendingMfasJson();
         JSONArray mfasToAddJson = JsonConverter.convertArrayToJson(mfaObjects);
-        boolean hasAnyNewMFA = false;
+        boolean hasAnyNewMfa = false;
         for (int i = 0; i < mfasToAddJson.length(); i++) {
             JSONObject mfaToAdd = mfasToAddJson.getJSONObject(i);
             if (mfaToAdd == null) {
@@ -107,17 +107,17 @@ public class MFAStorage {
             String requestId = mfaToAdd.getString(REQUEST_ID_KEY);
             if (!mfasJson.has(requestId)) {
                 mfasJson.put(requestId, mfaToAdd);
-                hasAnyNewMFA = true;
+                hasAnyNewMfa = true;
             }
         }
-        if (hasAnyNewMFA) {
+        if (hasAnyNewMfa) {
             saveNotifications(clearOverLimit(mfasJson));
         }
     }
 
-    public void updateMFA(ReadableMap mfa, boolean answer) {
+    public void updateMfa(ReadableMap mfa, boolean answer) {
         try {
-            JSONObject mfasJson = getPendingMFAsJson();
+            JSONObject mfasJson = getPendingMfasJson();
             String mfaRequestId = mfa.getString(REQUEST_ID_KEY);
             if (mfasJson.has(mfaRequestId)) {
                 JSONObject savedMfa = mfasJson.getJSONObject(mfaRequestId);
@@ -138,7 +138,7 @@ public class MFAStorage {
 
     public int getNotificationId(String mfaRequestId) {
         try {
-            JSONObject mfasJson = getPendingMFAsJson();
+            JSONObject mfasJson = getPendingMfasJson();
             JSONObject mfaJson = mfasJson.getJSONObject(mfaRequestId);
             return Integer.parseInt(mfaJson.getString(PushNotificationProps.ID));
         } catch (JSONException e) {
@@ -147,9 +147,9 @@ public class MFAStorage {
         }
     }
 
-    public String getPendingMFAs() throws JSONException {
+    public String getPendingMfas() throws JSONException {
         JSONArray notificationsArrayJson = new JSONArray();
-        JSONObject mfasJson = getPendingMFAsJson();
+        JSONObject mfasJson = getPendingMfasJson();
         Iterator<String> keys = mfasJson.keys();
         while(keys.hasNext()) {
             String key = keys.next();
@@ -170,7 +170,7 @@ public class MFAStorage {
     }
 
     public boolean isMfaAnswered(String requestId) throws JSONException {
-        JSONObject mfasJson = getPendingMFAsJson();
+        JSONObject mfasJson = getPendingMfasJson();
         JSONObject mfaJson = mfasJson.getJSONObject(requestId);
         return mfaJson.has(ANSWER_KEY);
     }

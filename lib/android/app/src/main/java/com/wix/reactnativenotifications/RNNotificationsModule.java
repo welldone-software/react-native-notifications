@@ -118,7 +118,7 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
 
     @ReactMethod
     public void dismissNotification(String mfaRequestId) {
-        MFAStorage storage = MFAStorage.getInstance(getReactApplicationContext().getApplicationContext());
+        MfaStorage storage = MfaStorage.getInstance(getReactApplicationContext().getApplicationContext());
         IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(getReactApplicationContext().getApplicationContext());
         notificationsDrawer.onNotificationClearRequest(storage.getNotificationId(mfaRequestId));
     }
@@ -130,7 +130,7 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
 
     @ReactMethod
     public void removeDeliveredNotifications(ReadableArray mfaRequestIds) {
-        MFAStorage storage = MFAStorage.getInstance(getReactApplicationContext().getApplicationContext());
+        MfaStorage storage = MfaStorage.getInstance(getReactApplicationContext().getApplicationContext());
         for (int i = 0; i < mfaRequestIds.size(); i++) {
             storage.dismissNotification(mfaRequestIds.getString(i));
         }
@@ -146,25 +146,25 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
     void removeAllDeliveredNotifications() {
         IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(getReactApplicationContext().getApplicationContext());
         notificationsDrawer.onAllNotificationsClearRequest();
-        MFAStorage storage = MFAStorage.getInstance(getReactApplicationContext().getApplicationContext());
+        MfaStorage storage = MfaStorage.getInstance(getReactApplicationContext().getApplicationContext());
         storage.clearAll();
     }
 
     @ReactMethod
-    void getPendingMFAs(final Promise promise) {
-        MFAStorage storage = MFAStorage.getInstance(getReactApplicationContext().getApplicationContext());
+    void getPendingMfas(final Promise promise) {
+        MfaStorage storage = MfaStorage.getInstance(getReactApplicationContext().getApplicationContext());
         try {
-            promise.resolve(storage.getPendingMFAs());
+            promise.resolve(storage.getPendingMfas());
         } catch (Exception error) {
             promise.reject(error);
         }
     }
 
     @ReactMethod
-    void saveFetchedMFAs(ReadableArray fetchedMFAs, Promise promise) {
-        MFAStorage storage = MFAStorage.getInstance(getReactApplicationContext().getApplicationContext());
+    void saveFetchedMfas(ReadableArray fetchedMfas, Promise promise) {
+        MfaStorage storage = MfaStorage.getInstance(getReactApplicationContext().getApplicationContext());
         try {
-            storage.saveMFAs(fetchedMFAs);
+            storage.saveMfas(fetchedMfas);
             promise.resolve(null);
         } catch (Exception error) {
             promise.reject(error);
@@ -172,10 +172,10 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
     }
 
     @ReactMethod
-    void updateMFA(ReadableMap mfa, boolean answer, Promise promise) {
-        MFAStorage storage = MFAStorage.getInstance(getReactApplicationContext().getApplicationContext());
+    void updateMfa(ReadableMap mfa, boolean answer, Promise promise) {
+        MfaStorage storage = MfaStorage.getInstance(getReactApplicationContext().getApplicationContext());
         try {
-            storage.updateMFA(mfa, answer);
+            storage.updateMfa(mfa, answer);
             promise.resolve(null);
         } catch (Exception error) {
             promise.reject(error);
@@ -184,7 +184,7 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
 
     @ReactMethod
     void isMfaAnswered(String requestId, Promise promise) {
-        MFAStorage storage = MFAStorage.getInstance(getReactApplicationContext().getApplicationContext());
+        MfaStorage storage = MfaStorage.getInstance(getReactApplicationContext().getApplicationContext());
         try {
             promise.resolve(storage.isMfaAnswered(requestId));
         } catch (Exception error) {
