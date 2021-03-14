@@ -148,6 +148,13 @@ export class NotificationsRoot {
   }
 
   /**
+   * isMfaAnswered
+   */
+  public isMfaAnswered(requestId: string) {
+    return this.nativeCommandsSender.isMfaAnswered(requestId);
+  }
+
+  /**
    * removeDeliveredNotifications
    * @param identifiers Array of notification identifiers
    */

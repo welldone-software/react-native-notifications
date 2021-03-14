@@ -47,6 +47,8 @@
 
 - (void)updateMFA:(NSString *)requestId answer:(BOOL *)answer resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
 
+- (void)isMfaAnswered:(NSString *)requestId resolve:(RCTPromiseResolveBlock)resolve;
+
 - (void)saveFetchedMFAs:(NSArray *)fetchedMFAs resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
 
 @end

@@ -21,6 +21,22 @@ int MFA_SAVE_LIMIT = 256;
     return self;
 }
 
+- (NSMutableDictionary *) getMfasDict {
+    NSMutableDictionary* mfasDict = [[userDefaults dictionaryForKey:NOTIFICATIONS_KEY] mutableCopy];
+    if (mfasDict == nil) {
+        mfasDict = [NSMutableDictionary new];
+    }
+    return mfasDict;
+}
+
+- (NSMutableArray *) getMfasOrder {
+    NSMutableArray* mfaOrder = [[userDefaults arrayForKey:MFA_ORDER_KEY] mutableCopy];
+    if (mfaOrder == nil) {
+        mfaOrder = [NSMutableArray new];
+    }
+    return mfaOrder;
+}
+
 - (NSMutableDictionary*)clearLimit:(NSMutableDictionary*) mfas order:(NSMutableArray*) order {
     int overLimitCount = (int)[mfas count] - MFA_SAVE_LIMIT;
     if (overLimitCount > 0) {
@@ -57,15 +73,8 @@ int MFA_SAVE_LIMIT = 256;
 }
 
 - (void)saveMFA:(NSDictionary *)mfa{
-    NSMutableDictionary* mfasDict = [[userDefaults dictionaryForKey:NOTIFICATIONS_KEY] mutableCopy];
-    if (mfasDict == nil) {
-        mfasDict = [NSMutableDictionary new];
-    }
-    
-    NSMutableArray* mfaOrder = [[userDefaults arrayForKey:MFA_ORDER_KEY] mutableCopy];
-    if (mfaOrder == nil) {
-        mfaOrder = [NSMutableArray new];
-    }
+    NSMutableDictionary* mfasDict = [self getMfasDict];
+    NSMutableArray* mfaOrder = [self getMfasOrder];
     
     NSString* requestId = [mfa valueForKey:REQUEST_ID_KEY];
     
@@ -83,8 +92,13 @@ int MFA_SAVE_LIMIT = 256;
 }
 
 - (void) updateMFA:(NSDictionary *) mfa answer:(BOOL *) answer; {
-    NSMutableDictionary* mfasDict = [[userDefaults dictionaryForKey:NOTIFICATIONS_KEY] mutableCopy];
+    NSMutableDictionary* mfasDict = [self getMfasDict];
     NSString* requestId = [mfa valueForKey:REQUEST_ID_KEY];
+    NSDictionary *savedMfa = [mfasDict objectForKey:requestId];
+    if (savedMfa != nil && [savedMfa objectForKey:ANSWER_KEY]) {
+        return;
+    }
+    
     NSMutableDictionary* mutableMfa = [mfa mutableCopy];
     [mutableMfa setObject:[NSNumber numberWithBool:answer] forKey:ANSWER_KEY];
     [mfasDict setObject:mutableMfa forKey:requestId];
@@ -95,17 +109,19 @@ int MFA_SAVE_LIMIT = 256;
     [self dismissNotificaitons:@[requestId]];
 }
 
+- (BOOL *)isMfaAnswered:(NSString *)requestId {
+    NSMutableDictionary* mfasDict = [self getMfasDict];
+    NSDictionary *savedMfa = [mfasDict objectForKey:requestId];
+    if ([savedMfa objectForKey:ANSWER_KEY] != nil) {
+        return YES;
+    }
+    return NO;
+}
+
 - (void)saveFetchedMFAs:(NSArray<NSDictionary *> *)fetchedMFAs {
     __block BOOL hasSavedAny = NO;
-    NSMutableDictionary* mfasDict = [[userDefaults dictionaryForKey:NOTIFICATIONS_KEY] mutableCopy];
-    if (mfasDict == nil) {
-        mfasDict = [NSMutableDictionary new];
-    }
-    
-    NSMutableArray* mfaOrder = [[userDefaults arrayForKey:MFA_ORDER_KEY] mutableCopy];
-    if (mfaOrder == nil) {
-        mfaOrder = [NSMutableArray new];
-    }
+    NSMutableDictionary* mfasDict = [self getMfasDict];
+    NSMutableArray* mfaOrder =  [self getMfasOrder];
     
     [fetchedMFAs enumerateObjectsUsingBlock:^(NSDictionary * value, NSUInteger idx, BOOL *stop) {
         NSString *requestId = [value valueForKey:REQUEST_ID_KEY];
@@ -126,10 +142,7 @@ int MFA_SAVE_LIMIT = 256;
 }
 
 - (NSMutableArray <NSDictionary *> *) getPendingMFAs {
-    NSMutableDictionary* mfasDict = [[userDefaults dictionaryForKey:NOTIFICATIONS_KEY] mutableCopy];
-    if (mfasDict == nil) {
-        mfasDict = [NSMutableDictionary new];
-    }
+    NSMutableDictionary* mfasDict = [self getMfasDict];
     NSMutableArray <NSDictionary *> *pendingMFAs = [[NSMutableArray alloc] init];
     NSMutableArray <NSString *> *requestIdsToDismiss = [[NSMutableArray alloc] init];
     

@@ -183,6 +183,16 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
     }
 
     @ReactMethod
+    void isMfaAnswered(String requestId, Promise promise) {
+        MFAStorage storage = MFAStorage.getInstance(getReactApplicationContext().getApplicationContext());
+        try {
+            promise.resolve(storage.isMfaAnswered(requestId));
+        } catch (Exception error) {
+            promise.reject(error);
+        }
+    }
+
+    @ReactMethod
     void setNotificationChannel(ReadableMap notificationChannelPropsMap) {
         final Bundle notificationChannelProps = Arguments.toBundle(notificationChannelPropsMap);
         INotificationChannel notificationsDrawer = NotificationChannel.get(

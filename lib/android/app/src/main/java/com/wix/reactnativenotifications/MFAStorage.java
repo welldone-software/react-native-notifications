@@ -118,8 +118,15 @@ public class MFAStorage {
     public void updateMFA(ReadableMap mfa, boolean answer) {
         try {
             JSONObject mfasJson = getPendingMFAsJson();
+            String mfaRequestId = mfa.getString(REQUEST_ID_KEY);
+            if (mfasJson.has(mfaRequestId)) {
+                JSONObject savedMfa = mfasJson.getJSONObject(mfaRequestId);
+                if (savedMfa.has(ANSWER_KEY)) {
+                    dismissNotification(savedMfa);
+                    return;
+                }
+            }
             JSONObject mfaJson = JsonConverter.convertMapToJson(mfa);
-            String mfaRequestId = mfaJson.getString(REQUEST_ID_KEY);
             mfaJson.put(ANSWER_KEY, answer);
             mfasJson.put(mfaRequestId, mfaJson);
             saveNotifications(clearOverLimit(mfasJson));
@@ -160,6 +167,12 @@ public class MFAStorage {
             }
         }
         return notificationsArrayJson.toString();
+    }
+
+    public boolean isMfaAnswered(String requestId) throws JSONException {
+        JSONObject mfasJson = getPendingMFAsJson();
+        JSONObject mfaJson = mfasJson.getJSONObject(requestId);
+        return mfaJson.has(ANSWER_KEY);
     }
 
     public void clearAll() {

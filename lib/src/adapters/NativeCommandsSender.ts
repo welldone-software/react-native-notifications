@@ -28,6 +28,7 @@ interface NativeCommandsModule {
     answer: boolean
   ): Promise<void>;
   saveFetchedMFAs(fetchedMFAs: any[]): Promise<void>;
+  isMfaAnswered(requestId: string): Promise<boolean>;
   setCategories(categories: [NotificationCategory?]): void;
   finishPresentingNotification(
     notification: Notification,
@@ -130,6 +131,10 @@ export class NativeCommandsSender {
 
   saveFetchedMFAs(fetchedMFAs: (any & {mfa_request_id: string})[]) {
     return this.nativeCommandsModule.saveFetchedMFAs(fetchedMFAs);
+  }
+
+  isMfaAnswered(requestId: string) {
+    return this.nativeCommandsModule.isMfaAnswered(requestId);
   }
 
   finishPresentingNotification(

@@ -104,6 +104,11 @@
     resolve(@"success");
 }
 
+- (void)isMfaAnswered:(NSString *)requestId resolve:(RCTPromiseResolveBlock)resolve {
+    BOOL hasAnswered = *[_notificationStorage isMfaAnswered:requestId];
+    resolve(@(hasAnswered));
+}
+
 - (void)saveFetchedMFAs:(NSArray *)fetchedMFAs resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
     [_notificationStorage saveFetchedMFAs:fetchedMFAs];
     resolve(@"success");
