@@ -46,10 +46,14 @@ public class FcmInstanceIdListenerService extends FirebaseMessagingService {
             return false;
         }
 
-        long expiredTime = Long.parseLong(bundle.getString(MfaStorage.EXPIRED_TIME_KEY, "0"));
-        if (expiredTime <= System.currentTimeMillis()) {
-            logger.w(TAG, "MFA has already been expired");
-            return true;
+        try {
+            long expiredTime = Long.parseLong(bundle.getString(MfaStorage.EXPIRED_TIME_KEY, "0"));
+            if (expiredTime <= System.currentTimeMillis()) {
+                logger.w(TAG, "MFA has already been expired");
+                return true;
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
         }
 
         try {
