@@ -24,10 +24,10 @@ public class MfaStorage {
     private static final String NOTIFICATIONS = "notifications";
     private static final String DEFAULT_VALUE = "{}";
     private static final String ANSWER_KEY = "answer";
-    private static final String EXPIRED_TIME_KEY = "expired_time";
     private static final int Mfa_SAVE_LIMIT = 256;
 
     public static final String REQUEST_ID_KEY = "mfa_request_id";
+    public static final String EXPIRED_TIME_KEY = "expired_time";
 
 
     private final SharedPreferences mPreferences;

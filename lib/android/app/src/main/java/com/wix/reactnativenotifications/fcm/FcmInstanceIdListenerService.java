@@ -28,7 +28,7 @@ public class FcmInstanceIdListenerService extends FirebaseMessagingService {
         Bundle bundle = message.toIntent().getExtras();
         if(BuildConfig.DEBUG) logger.d(TAG, "New message from FCM: " + bundle);
 
-        if (hasMfaAnswered(bundle)) {
+        if (isMfaAndInvalid(bundle, logger)) {
             return;
         }
 
@@ -41,19 +41,27 @@ public class FcmInstanceIdListenerService extends FirebaseMessagingService {
         }
     }
 
-    private boolean hasMfaAnswered(Bundle bundle) {
-        try {
-            if (bundle == null) {
-                return false;
-            }
-            String requestId = bundle.getString(MfaStorage.REQUEST_ID_KEY);
-            if (requestId == null) {
-                return false;
-            }
-            return MfaStorage.getInstance(this).isMfaAnswered(requestId);
-        } catch (JSONException e) {
-            e.printStackTrace();
+    private boolean isMfaAndInvalid(Bundle bundle, LoggerWrapper logger) {
+        if (bundle == null) {
             return false;
         }
+
+        long expiredTime = bundle.getLong(MfaStorage.EXPIRED_TIME_KEY);
+        if (expiredTime <= System.currentTimeMillis()) {
+            logger.w(TAG, "MFA has already been expired");
+            return true;
+        }
+
+        try {
+            String requestId = bundle.getString(MfaStorage.REQUEST_ID_KEY);
+            if (requestId != null && MfaStorage.getInstance(this).isMfaAnswered(requestId)) {
+                logger.w(TAG, "MFA has already been answered");
+                return true;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 }
