@@ -46,7 +46,7 @@ public class FcmInstanceIdListenerService extends FirebaseMessagingService {
             return false;
         }
 
-        long expiredTime = bundle.getLong(MfaStorage.EXPIRED_TIME_KEY);
+        long expiredTime = Long.parseLong(bundle.getString(MfaStorage.EXPIRED_TIME_KEY, "0"));
         if (expiredTime <= System.currentTimeMillis()) {
             logger.w(TAG, "MFA has already been expired");
             return true;
