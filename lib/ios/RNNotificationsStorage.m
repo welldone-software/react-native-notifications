@@ -29,6 +29,14 @@ int Mfa_SAVE_LIMIT = 256;
     return mfasDict;
 }
 
+- (bool) isMfaValid:(NSDictionary *) mfa {
+    bool hasNotAnswered = [mfa objectForKey:ANSWER_KEY] == nil;
+    double currentTsRaw = [[NSDate date] timeIntervalSince1970] * 1000;
+    NSString * expiredTime = [mfa valueForKey:EXPIRED_TIME_KEY];
+    bool hasNotExpired = [expiredTime longLongValue] > (long)currentTsRaw;
+    return hasNotAnswered && hasNotExpired;
+}
+
 - (NSMutableArray *) getMfasOrder {
     NSMutableArray* mfaOrder = [[userDefaults arrayForKey:Mfa_ORDER_KEY] mutableCopy];
     if (mfaOrder == nil) {
@@ -78,9 +86,14 @@ int Mfa_SAVE_LIMIT = 256;
     
     NSString* requestId = [mfa valueForKey:REQUEST_ID_KEY];
     
-    if ([mfaOrder containsObject:requestId] || [mfasDict objectForKey:requestId] != nil) {
+    NSDictionary *savedMfa = [mfasDict objectForKey:requestId];
+    if (savedMfa != nil) {
+        if (![self isMfaValid:savedMfa]) {
+            [self dismissNotificaitons:@[requestId]];
+        }
         return;
     }
+    
     [mfaOrder addObject:requestId];
     [mfasDict setObject:mfa forKey:requestId];
     
@@ -147,13 +160,7 @@ int Mfa_SAVE_LIMIT = 256;
     NSMutableArray <NSString *> *requestIdsToDismiss = [[NSMutableArray alloc] init];
     
     [mfasDict enumerateKeysAndObjectsUsingBlock:^(id key, NSDictionary * value, BOOL* stop) {
-        bool hasNotAnswered = [value objectForKey:ANSWER_KEY] == nil;
-        
-        double currentTsRaw = [[NSDate date] timeIntervalSince1970] * 1000;
-        NSString * expiredTime = [value valueForKey:EXPIRED_TIME_KEY];
-        bool hasNotExpired = [expiredTime longLongValue] > (long)currentTsRaw;
-        
-        if (hasNotAnswered && hasNotExpired) {
+        if ([self isMfaValid:value]) {
             [pendingMfas addObject:value];
         } else {
             [requestIdsToDismiss addObject:[value objectForKey:REQUEST_ID_KEY]];
