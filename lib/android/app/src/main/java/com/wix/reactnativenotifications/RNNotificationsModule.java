@@ -7,11 +7,8 @@ import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-
-import androidx.annotation.RequiresApi;
 
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
@@ -121,7 +118,7 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
 
     @ReactMethod
     public void dismissNotification(String mfaRequestId) {
-        NotificationsStorage storage = NotificationsStorage.getInstance(getReactApplicationContext().getApplicationContext());
+        MfaStorage storage = MfaStorage.getInstance(getReactApplicationContext().getApplicationContext());
         IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(getReactApplicationContext().getApplicationContext());
         notificationsDrawer.onNotificationClearRequest(storage.getNotificationId(mfaRequestId));
     }
@@ -133,14 +130,9 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
 
     @ReactMethod
     public void removeDeliveredNotifications(ReadableArray mfaRequestIds) {
-        IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(getReactApplicationContext().getApplicationContext());
-        NotificationsStorage storage = NotificationsStorage.getInstance(getReactApplicationContext().getApplicationContext());
+        MfaStorage storage = MfaStorage.getInstance(getReactApplicationContext().getApplicationContext());
         for (int i = 0; i < mfaRequestIds.size(); i++) {
-            String mfaRequestId = mfaRequestIds.getString(i);
-            if (mfaRequestId != null) {
-                int notificationId = storage.removeNotification(mfaRequestId);
-                notificationsDrawer.onNotificationClearRequest(notificationId);
-            }
+            storage.dismissNotification(mfaRequestIds.getString(i));
         }
     }
 
@@ -154,15 +146,47 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
     void removeAllDeliveredNotifications() {
         IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(getReactApplicationContext().getApplicationContext());
         notificationsDrawer.onAllNotificationsClearRequest();
-        NotificationsStorage storage = NotificationsStorage.getInstance(getReactApplicationContext().getApplicationContext());
+        MfaStorage storage = MfaStorage.getInstance(getReactApplicationContext().getApplicationContext());
         storage.clearAll();
     }
 
     @ReactMethod
-    void getDeliveredNotifications(final Promise promise) {
-        NotificationsStorage storage = NotificationsStorage.getInstance(getReactApplicationContext().getApplicationContext());
+    void getPendingMfas(final Promise promise) {
+        MfaStorage storage = MfaStorage.getInstance(getReactApplicationContext().getApplicationContext());
         try {
-            promise.resolve(storage.getDeliveredNotifications());
+            promise.resolve(storage.getPendingMfas());
+        } catch (Exception error) {
+            promise.reject(error);
+        }
+    }
+
+    @ReactMethod
+    void saveFetchedMfas(ReadableArray fetchedMfas, Promise promise) {
+        MfaStorage storage = MfaStorage.getInstance(getReactApplicationContext().getApplicationContext());
+        try {
+            storage.saveMfas(fetchedMfas);
+            promise.resolve(null);
+        } catch (Exception error) {
+            promise.reject(error);
+        }
+    }
+
+    @ReactMethod
+    void updateMfa(ReadableMap mfa, boolean answer, Promise promise) {
+        MfaStorage storage = MfaStorage.getInstance(getReactApplicationContext().getApplicationContext());
+        try {
+            storage.updateMfa(mfa, answer);
+            promise.resolve(null);
+        } catch (Exception error) {
+            promise.reject(error);
+        }
+    }
+
+    @ReactMethod
+    void isMfaAnswered(String requestId, Promise promise) {
+        MfaStorage storage = MfaStorage.getInstance(getReactApplicationContext().getApplicationContext());
+        try {
+            promise.resolve(storage.isMfaAnswered(requestId));
         } catch (Exception error) {
             promise.reject(error);
         }

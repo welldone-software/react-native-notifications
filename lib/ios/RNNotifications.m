@@ -79,12 +79,12 @@
     BOOL isForeground = [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive;
     NSString *stateString = isForeground ? @"Foreground" : @"Background";
     if (! mfaJson) {
-        [_logger saveLog:@"ERROR" tag:@"RNNotifications" message:[NSString stringWithFormat:@"%@ MFA: Could not parse MFA", stateString]];
+        [_logger saveLog:@"ERROR" tag:@"RNNotifications" message:[NSString stringWithFormat:@"%@ Mfa: Could not parse Mfa", stateString]];
     } else {
-        [_logger saveLog:@"LOG" tag:@"RNNotifications" message:[NSString stringWithFormat:@"%@ MFA: %@", stateString, mfaJson]];
+        [_logger saveLog:@"LOG" tag:@"RNNotifications" message:[NSString stringWithFormat:@"%@ Mfa: %@", stateString, mfaJson]];
     }
     if (!isForeground) {
-        [_storage saveNotification:payload];
+        [_storage saveMfa:payload];
     }
 }
 

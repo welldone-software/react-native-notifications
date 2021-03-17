@@ -1,13 +1,13 @@
-import { NativeModules } from "react-native";
-import { Notification } from "../DTO/Notification";
-import { NotificationCompletion } from "../interfaces/NotificationCompletion";
-import { NotificationPermissions } from "../interfaces/NotificationPermissions";
-import { NotificationCategory } from "../interfaces/NotificationCategory";
-import { NotificationChannel } from "../interfaces/NotificationChannel";
+import {NativeModules} from 'react-native';
+import {Notification} from '../DTO/Notification';
+import {NotificationCompletion} from '../interfaces/NotificationCompletion';
+import {NotificationPermissions} from '../interfaces/NotificationPermissions';
+import {NotificationCategory} from '../interfaces/NotificationCategory';
+import {NotificationChannel} from '../interfaces/NotificationChannel';
 
 interface NativeCommandsModule {
   getInitialNotification(): Promise<Object>;
-  getInitialAction(): Promise<{ notification: any; action: any }>;
+  getInitialAction(): Promise<{notification: any; action: any}>;
   postLocalNotification(notification: Notification, id: number): void;
   requestPermissions(): void;
   abandonPermissions(): void;
@@ -22,7 +22,13 @@ interface NativeCommandsModule {
   checkPermissions(): Promise<NotificationPermissions>;
   removeDeliveredNotifications(identifiers: Array<string>): void;
   removeAllDeliveredNotifications(): void;
-  getDeliveredNotifications(): Promise<Notification[] | string>;
+  getPendingMfas(): Promise<Notification[] | string>;
+  updateMfa(
+    mfa: any & {mfa_request_id: string; answer: boolean},
+    answer: boolean
+  ): Promise<void>;
+  saveFetchedMfas(fetchedMfas: any[]): Promise<void>;
+  isMfaAnswered(requestId: string): Promise<boolean>;
   setCategories(categories: [NotificationCategory?]): void;
   finishPresentingNotification(
     notification: Notification,
@@ -40,7 +46,7 @@ export class NativeCommandsSender {
 
   postLocalNotification(notification: Notification, id: number) {
     return this.nativeCommandsModule.postLocalNotification(
-      { ...notification.payload },
+      {...notification.payload},
       id
     );
   }
@@ -49,7 +55,7 @@ export class NativeCommandsSender {
     return this.nativeCommandsModule.getInitialNotification();
   }
 
-  getInitialAction(): Promise<{ notification: any; action: any }> {
+  getInitialAction(): Promise<{notification: any; action: any}> {
     return this.nativeCommandsModule.getInitialAction();
   }
 
@@ -109,11 +115,26 @@ export class NativeCommandsSender {
     return this.nativeCommandsModule.removeDeliveredNotifications(identifiers);
   }
 
-  public async getDeliveredNotifications(): Promise<Notification[]> {
-    const result = await this.nativeCommandsModule.getDeliveredNotifications();
+  public async getPendingMfas(): Promise<Notification[]> {
+    const result = await this.nativeCommandsModule.getPendingMfas();
     const payloadArray =
-      typeof result === "string" ? JSON.parse(result) : result;
+      typeof result === 'string' ? JSON.parse(result) : result;
     return payloadArray.map((payload: object) => new Notification(payload));
+  }
+
+  updateMfa(
+    mfa: any & {mfa_request_id: string; answer: boolean},
+    answer: boolean
+  ) {
+    return this.nativeCommandsModule.updateMfa(mfa, answer);
+  }
+
+  saveFetchedMfas(fetchedMfas: (any & {mfa_request_id: string})[]) {
+    return this.nativeCommandsModule.saveFetchedMfas(fetchedMfas);
+  }
+
+  isMfaAnswered(requestId: string) {
+    return this.nativeCommandsModule.isMfaAnswered(requestId);
   }
 
   finishPresentingNotification(

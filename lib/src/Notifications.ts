@@ -1,16 +1,16 @@
-import { NativeCommandsSender } from "./adapters/NativeCommandsSender";
-import { NativeEventsReceiver } from "./adapters/NativeEventsReceiver";
-import { Commands } from "./commands/Commands";
-import { EventsRegistry } from "./events/EventsRegistry";
-import { EventsRegistryIOS } from "./events/EventsRegistryIOS";
-import { Notification } from "./DTO/Notification";
-import { UniqueIdProvider } from "./adapters/UniqueIdProvider";
-import { CompletionCallbackWrapper } from "./adapters/CompletionCallbackWrapper";
-import { NotificationCategory } from "./interfaces/NotificationCategory";
-import { NotificationChannel } from "./interfaces/NotificationChannel";
-import { NotificationsIOS } from "./NotificationsIOS";
-import { NotificationsAndroid } from "./NotificationsAndroid";
-import { NotificationFactory } from "./DTO/NotificationFactory";
+import {NativeCommandsSender} from './adapters/NativeCommandsSender';
+import {NativeEventsReceiver} from './adapters/NativeEventsReceiver';
+import {Commands} from './commands/Commands';
+import {EventsRegistry} from './events/EventsRegistry';
+import {EventsRegistryIOS} from './events/EventsRegistryIOS';
+import {Notification} from './DTO/Notification';
+import {UniqueIdProvider} from './adapters/UniqueIdProvider';
+import {CompletionCallbackWrapper} from './adapters/CompletionCallbackWrapper';
+import {NotificationCategory} from './interfaces/NotificationCategory';
+import {NotificationChannel} from './interfaces/NotificationChannel';
+import {NotificationsIOS} from './NotificationsIOS';
+import {NotificationsAndroid} from './NotificationsAndroid';
+import {NotificationFactory} from './DTO/NotificationFactory';
 
 export class NotificationsRoot {
   public readonly _ios: NotificationsIOS;
@@ -122,10 +122,36 @@ export class NotificationsRoot {
   }
 
   /**
-   * getDeliveredNotifications
+   * getPendingMfas
    */
-  public getDeliveredNotifications(): Promise<Notification[]> {
-    return this.commands.getDeliveredNotifications();
+  public getPendingMfas(): Promise<Notification[]> {
+    return this.commands.getPendingMfas();
+  }
+
+  /**
+   * updateMfa
+   */
+  public updateMfa(
+    mfa: any & {mfa_request_id: string; answer: boolean},
+    answer: boolean
+  ): Promise<void> {
+    return this.commands.updateMfa(mfa, answer);
+  }
+
+  /**
+   * saveFetchedMfas
+   */
+  public saveFetchedMfas(
+    fetchedMfas: (any & {mfa_request_id: string})[]
+  ): Promise<void> {
+    return this.nativeCommandsSender.saveFetchedMfas(fetchedMfas);
+  }
+
+  /**
+   * isMfaAnswered
+   */
+  public isMfaAnswered(requestId: string) {
+    return this.nativeCommandsSender.isMfaAnswered(requestId);
   }
 
   /**
@@ -135,7 +161,7 @@ export class NotificationsRoot {
   public removeDeliveredNotifications(identifiers: Array<string | number>) {
     return this.commands.removeDeliveredNotifications(
       identifiers.map((value) =>
-        typeof value === "number" ? `${value}` : value
+        typeof value === 'number' ? `${value}` : value
       )
     );
   }
