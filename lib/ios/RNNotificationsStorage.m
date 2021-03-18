@@ -154,6 +154,16 @@ int Mfa_SAVE_LIMIT = 256;
     }
 }
 
+- (NSMutableArray<NSDictionary *> *)getSavedMfas {
+    NSMutableDictionary* mfasDict = [self getMfasDict];
+    NSMutableArray* mfaOrder =  [self getMfasOrder];
+    NSMutableArray <NSDictionary *> *savedMfas = [[NSMutableArray alloc] init];
+    for (id value in mfaOrder) {
+        [savedMfas addObject:[mfasDict objectForKey:value]];
+    }
+    return savedMfas;
+}
+
 - (NSMutableArray <NSDictionary *> *) getPendingMfas {
     NSMutableDictionary* mfasDict = [self getMfasDict];
     NSMutableArray <NSDictionary *> *pendingMfas = [[NSMutableArray alloc] init];

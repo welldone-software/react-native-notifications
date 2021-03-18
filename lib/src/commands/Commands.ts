@@ -114,6 +114,10 @@ export class Commands {
     return this.nativeCommandsSender.getPendingMfas();
   }
 
+  public getSavedMfas(): Promise<Notification[]> {
+    return this.nativeCommandsSender.getSavedMfas();
+  }
+
   public updateMfa(
     mfa: any & {mfa_request_id: string; answer: boolean},
     answer: boolean

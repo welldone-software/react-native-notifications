@@ -169,6 +169,17 @@ public class MfaStorage {
         return notificationsArrayJson.toString();
     }
 
+    public String getSavedMfas() throws JSONException {
+        JSONArray notificationsArrayJson = new JSONArray();
+        JSONObject mfasJson = getPendingMfasJson();
+        Iterator<String> keys = mfasJson.keys();
+        while(keys.hasNext()) {
+            String key = keys.next();
+            notificationsArrayJson.put(mfasJson.getJSONObject(key));
+        }
+        return notificationsArrayJson.toString();
+    }
+
     public boolean isMfaAnswered(String requestId) throws JSONException {
         JSONObject mfasJson = getPendingMfasJson();
         JSONObject mfaJson = mfasJson.getJSONObject(requestId);

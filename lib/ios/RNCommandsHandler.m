@@ -109,6 +109,11 @@
     resolve(@(hasAnswered));
 }
 
+- (void)getSavedMfas:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    NSArray <NSDictionary *> *savedMfas = [_notificationStorage getSavedMfas];
+    resolve(savedMfas);
+}
+
 - (void)saveFetchedMfas:(NSArray *)fetchedMfas resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
     [_notificationStorage saveFetchedMfas:fetchedMfas];
     resolve(@"success");
