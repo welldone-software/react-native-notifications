@@ -30,9 +30,4 @@ public class FcmInstanceIdRefreshHandlerService extends JobIntentService {
             fcmToken.onNewTokenReady();
         }
     }
-
-    @Override
-    public boolean onStopJob(JobParameters params) {
-        return false;
-    }
 }

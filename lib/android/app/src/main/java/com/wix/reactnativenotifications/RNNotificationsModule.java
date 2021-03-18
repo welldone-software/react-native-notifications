@@ -202,7 +202,7 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
         notificationsDrawer.setNotificationChannel();
     }
 
-    protected void startFcmIntentService(int jobId) {
+    protected void startFcmIntentService(String extraFlag) {
         final Context appContext = getReactApplicationContext().getApplicationContext();
         final Intent tokenFetchIntent = new Intent(appContext, FcmInstanceIdRefreshHandlerService.class);
         tokenFetchIntent.putExtra(extraFlag, true);
