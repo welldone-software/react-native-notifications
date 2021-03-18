@@ -25,7 +25,9 @@
 }
 
 - (void)getInitialNotification:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-    resolve([[RNNotificationsStore sharedInstance] initialNotification]);
+  NSDictionary* initialNotification = [[RNNotificationsStore sharedInstance] initialNotification];
+  [[RNNotificationsStore sharedInstance] setInitialNotification:nil];
+  resolve(initialNotification);
 }
 
 - (void)getInitialAction:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
@@ -59,7 +61,9 @@
 }
 
 - (void)setBadgeCount:(int)count {
-    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:count];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[UIApplication sharedApplication] setApplicationIconBadgeNumber:count];
+    });
 }
 
 - (void)postLocalNotification:(NSDictionary *)notification withId:(NSNumber *)notificationId {

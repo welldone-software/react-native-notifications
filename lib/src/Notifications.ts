@@ -44,7 +44,10 @@ export class NotificationsRoot {
       this.nativeEventsReceiver,
       this.completionCallbackWrapper
     );
-    this.eventsRegistryIOS = new EventsRegistryIOS(this.nativeEventsReceiver);
+    this.eventsRegistryIOS = new EventsRegistryIOS(
+      this.nativeEventsReceiver,
+      this.completionCallbackWrapper
+    );
 
     this._ios = new NotificationsIOS(this.commands, this.eventsRegistryIOS);
     this._android = new NotificationsAndroid(this.commands);
@@ -61,7 +64,7 @@ export class NotificationsRoot {
   /**
    * postLocalNotification
    */
-  public postLocalNotification(notification: Notification, id: number) {
+  public postLocalNotification(notification: Notification, id?: number) {
     return this.commands.postLocalNotification(notification, id);
   }
 

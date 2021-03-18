@@ -1,32 +1,34 @@
 package com.wix.reactnativenotifications.fcm;
 
-import android.app.job.JobParameters;
-import android.app.job.JobService;
-import android.os.Build;
+import androidx.annotation.NonNull;
+import androidx.core.app.JobIntentService;
+import android.content.Context;
+import android.content.Intent;
 
-import androidx.annotation.RequiresApi;
+public class FcmInstanceIdRefreshHandlerService extends JobIntentService {
 
-public class FcmInstanceIdRefreshHandlerService extends JobService {
+    public static String EXTRA_IS_APP_INIT = "isAppInit";
+    public static String EXTRA_MANUAL_REFRESH = "doManualRefresh";
+    public static final int JOB_ID = 2400;
 
-    public static final int EXTRA_IS_APP_INIT = -1;
-    public static final int EXTRA_MANUAL_REFRESH = -2;
+    public static void enqueueWork(Context context, Intent work) {
+        enqueueWork(context, FcmInstanceIdRefreshHandlerService.class, JOB_ID, work);
+    }
 
     @Override
-    public boolean onStartJob(JobParameters params) {
-        int jobId = params.getJobId();
+    protected void onHandleWork(@NonNull Intent intent) {
         IFcmToken fcmToken = FcmToken.get(this);
         if (fcmToken == null) {
-            return false;
+            return;
         }
 
-        if (jobId == EXTRA_IS_APP_INIT) {
+        if (intent.getBooleanExtra(EXTRA_IS_APP_INIT, false)) {
             fcmToken.onAppReady();
-        } else if (jobId == EXTRA_MANUAL_REFRESH) {
+        } else if (intent.getBooleanExtra(EXTRA_MANUAL_REFRESH, false)) {
             fcmToken.onManualRefresh();
         } else {
             fcmToken.onNewTokenReady();
         }
-        return false;
     }
 
     @Override
