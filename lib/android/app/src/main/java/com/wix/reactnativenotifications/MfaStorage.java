@@ -28,6 +28,7 @@ public class MfaStorage {
 
     public static final String REQUEST_ID_KEY = "mfa_request_id";
     public static final String EXPIRED_TIME_KEY = "expired_time";
+    public static final String MFA_ARRIVED_TIME_KEY = "mfa_arrived_time";
 
 
     private final SharedPreferences mPreferences;
@@ -87,6 +88,7 @@ public class MfaStorage {
             String mfaRequestId = notificationProps.asBundle().getString(REQUEST_ID_KEY);
             if (!mfasJson.has(mfaRequestId)) {
                 JSONObject mfaJson = JsonConverter.convertBundleToJson(notificationProps.asBundle());
+                mfaJson.put(MFA_ARRIVED_TIME_KEY, System.currentTimeMillis());
                 mfasJson.put(mfaRequestId, mfaJson);
                 saveNotifications(clearOverLimit(mfasJson));
             }
@@ -106,6 +108,7 @@ public class MfaStorage {
             }
             String requestId = mfaToAdd.getString(REQUEST_ID_KEY);
             if (!mfasJson.has(requestId)) {
+                mfaToAdd.put(MFA_ARRIVED_TIME_KEY, System.currentTimeMillis());
                 mfasJson.put(requestId, mfaToAdd);
                 hasAnyNewMfa = true;
             }
