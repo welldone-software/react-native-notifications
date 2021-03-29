@@ -18,5 +18,5 @@ Pod::Spec.new do |s|
   s.preserve_paths = 'LICENSE', 'README.md', 'package.json', 'notification.ios.js', 'notification.android.js', 'index.android.js', 'index.ios.js'
   s.source_files   = 'lib/ios/*.{h,m}'
 
-  s.dependency 'React'
+  s.dependency 'React-Core'
 end

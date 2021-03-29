@@ -1,9 +1,9 @@
-import { NativeCommandsSender } from "./NativeCommandsSender";
-import { NotificationCompletion } from "../interfaces/NotificationCompletion";
-import { Platform, AppState } from "react-native";
-import { NotificationIOS } from "../DTO/NotificationIOS";
-import { Notification } from "..";
-import { NotificationActionResponse } from "../interfaces/NotificationActionResponse";
+import {NativeCommandsSender} from './NativeCommandsSender';
+import {NotificationCompletion} from '../interfaces/NotificationCompletion';
+import {Platform, AppState} from 'react-native';
+import {NotificationIOS} from '../DTO/NotificationIOS';
+import {Notification} from '..';
+import {NotificationActionResponse} from '../interfaces/NotificationActionResponse';
 
 export class CompletionCallbackWrapper {
   constructor(private readonly nativeCommandsSender: NativeCommandsSender) {}
@@ -33,7 +33,7 @@ export class CompletionCallbackWrapper {
     notification: Notification
   ) {
     const completion = (response: NotificationCompletion) => {
-      if (Platform.OS === "ios") {
+      if (Platform.OS === 'ios') {
         this.nativeCommandsSender.finishPresentingNotification(
           notification,
           response
@@ -47,15 +47,14 @@ export class CompletionCallbackWrapper {
   public wrapOpenedCallback(
     callback: Function
   ): (
-    notification: Notification,
-    completion: () => void,
+    notification: object,
     actionResponse?: NotificationActionResponse
   ) => void {
-    return (notification, _completion, actionResponse) => {
+    return (notification, actionResponse) => {
       const completion = () => {
-        if (Platform.OS === "ios") {
+        if (Platform.OS === 'ios') {
           this.nativeCommandsSender.finishHandlingAction(
-            ((notification as unknown) as NotificationIOS).identifier
+            (notification as NotificationIOS).identifier
           );
         }
       };
@@ -65,6 +64,6 @@ export class CompletionCallbackWrapper {
   }
 
   private applicationIsVisible(): Boolean {
-    return AppState.currentState !== "background";
+    return AppState.currentState !== 'background';
   }
 }

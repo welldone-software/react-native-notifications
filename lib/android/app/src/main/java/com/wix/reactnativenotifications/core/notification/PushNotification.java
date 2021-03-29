@@ -36,6 +36,7 @@ import org.json.JSONObject;
 
 import static com.wix.reactnativenotifications.Defs.NOTIFICATION_OPENED_EVENT_NAME;
 import static com.wix.reactnativenotifications.Defs.NOTIFICATION_RECEIVED_EVENT_NAME;
+import static com.wix.reactnativenotifications.Defs.NOTIFICATION_RECEIVED_BACKGROUND_EVENT_NAME;
 
 public class PushNotification implements IPushNotification {
 
@@ -85,6 +86,7 @@ public class PushNotification implements IPushNotification {
         if (!mAppLifecycleFacade.isAppVisible() || !hasActiveCatalystInstance) {
             mLogger.i(TAG, "App is not visible, posting notification");
             postNotification(null);
+            notifyReceivedBackgroundToJS();
         } else {
             mStorage.saveMfa(mNotificationProps);
             mLogger.i(TAG, "App is visible, notifying JS");
@@ -252,6 +254,10 @@ public class PushNotification implements IPushNotification {
 
     private void notifyReceivedToJS() {
         mJsIOHelper.sendEventToJS(NOTIFICATION_RECEIVED_EVENT_NAME, mNotificationProps.asBundle(), mAppLifecycleFacade.getRunningReactContext());
+    }
+
+    private void notifyReceivedBackgroundToJS() {
+        mJsIOHelper.sendEventToJS(NOTIFICATION_RECEIVED_BACKGROUND_EVENT_NAME, mNotificationProps.asBundle(), mAppLifecycleFacade.getRunningReactContext());
     }
 
     private void notifyOpenedToJS() {

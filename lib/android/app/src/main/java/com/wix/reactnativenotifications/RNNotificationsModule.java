@@ -202,12 +202,10 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
         notificationsDrawer.setNotificationChannel();
     }
 
-    protected void startFcmIntentService(int jobId) {
+    protected void startFcmIntentService(String extraFlag) {
         final Context appContext = getReactApplicationContext().getApplicationContext();
-        ComponentName serviceComponent = new ComponentName(appContext, FcmInstanceIdRefreshHandlerService.class);
-        JobInfo.Builder builder = new JobInfo.Builder(jobId, serviceComponent);
-        builder.setOverrideDeadline(3 * 1000);
-        JobScheduler jobScheduler = (JobScheduler) appContext.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        jobScheduler.schedule(builder.build());
+        final Intent tokenFetchIntent = new Intent(appContext, FcmInstanceIdRefreshHandlerService.class);
+        tokenFetchIntent.putExtra(extraFlag, true);
+        FcmInstanceIdRefreshHandlerService.enqueueWork(appContext, tokenFetchIntent);
     }
 }

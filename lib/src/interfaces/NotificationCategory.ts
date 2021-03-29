@@ -20,7 +20,7 @@ export interface NotificationTextInput {
 
 export interface NotificationActionParams {
   identifier: string;
-  activationMode: "foreground" | "authenticationRequired" | "destructive";
+  activationMode: 'foreground' | 'authenticationRequired' | 'destructive';
   title: string;
   authenticationRequired?: boolean;
   textInput?: NotificationTextInput;
@@ -29,10 +29,14 @@ export interface NotificationActionParams {
 
 export class NotificationAction {
   identifier: string;
-  activationMode: "foreground" | "authenticationRequired" | "destructive";
+  activationMode:
+    | 'background'
+    | 'foreground'
+    | 'authenticationRequired'
+    | 'destructive';
   title: string;
   authenticationRequired: boolean;
-  textInput: NotificationTextInput | undefined;
+  textInput?: NotificationTextInput;
   destructive: boolean;
 
   constructor(params: NotificationActionParams) {
