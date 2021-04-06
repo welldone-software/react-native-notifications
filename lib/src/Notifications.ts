@@ -132,6 +132,13 @@ export class NotificationsRoot {
   }
 
   /**
+   * getSavedMfas
+   */
+  public getSavedMfas(): Promise<Notification[]> {
+    return this.commands.getSavedMfas();
+  }
+
+  /**
    * updateMfa
    */
   public updateMfa(

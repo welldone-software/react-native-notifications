@@ -12,6 +12,7 @@ NSString *ANSWER_KEY = @"answer";
 NSString *EXPIRED_TIME_KEY = @"expired_time";
 NSString *REQUEST_ID_KEY = @"mfa_request_id";
 NSString *IDENTIFIER_KEY = @"identifier";
+NSString *MFA_ARRIVED_TIME_KEY = @"mfa_arrived_time";
 
 int Mfa_SAVE_LIMIT = 256;
 
@@ -29,11 +30,15 @@ int Mfa_SAVE_LIMIT = 256;
     return mfasDict;
 }
 
+- (long) getCurrentTime {
+    double currentTsRaw = [[NSDate date] timeIntervalSince1970] * 1000;
+    return (long)currentTsRaw;
+}
+
 - (bool) isMfaValid:(NSDictionary *) mfa {
     bool hasNotAnswered = [mfa objectForKey:ANSWER_KEY] == nil;
-    double currentTsRaw = [[NSDate date] timeIntervalSince1970] * 1000;
     NSString * expiredTime = [mfa valueForKey:EXPIRED_TIME_KEY];
-    bool hasNotExpired = [expiredTime longLongValue] > (long)currentTsRaw;
+    bool hasNotExpired = [expiredTime longLongValue] > [self getCurrentTime];
     return hasNotAnswered && hasNotExpired;
 }
 
@@ -94,8 +99,10 @@ int Mfa_SAVE_LIMIT = 256;
         return;
     }
     
+    NSMutableDictionary *mutableMfa = [mfa mutableCopy];
+    [mutableMfa setObject:[NSNumber numberWithLong:[self getCurrentTime]] forKey:MFA_ARRIVED_TIME_KEY];
     [mfaOrder addObject:requestId];
-    [mfasDict setObject:mfa forKey:requestId];
+    [mfasDict setObject:mutableMfa forKey:requestId];
     
     [userDefaults setObject:[self clearLimit:mfasDict order:mfaOrder] forKey:NOTIFICATIONS_KEY];
     [userDefaults synchronize];
@@ -139,9 +146,11 @@ int Mfa_SAVE_LIMIT = 256;
     [fetchedMfas enumerateObjectsUsingBlock:^(NSDictionary * value, NSUInteger idx, BOOL *stop) {
         NSString *requestId = [value valueForKey:REQUEST_ID_KEY];
         if ([mfasDict objectForKey:requestId] == nil) {
+            NSMutableDictionary *mutableMfa = [value mutableCopy];
+            [mutableMfa setObject:[NSNumber numberWithLong:[self getCurrentTime]] forKey:MFA_ARRIVED_TIME_KEY];
             hasSavedAny = YES;
             [mfaOrder addObject:requestId];
-            [mfasDict setObject:value forKey:requestId];
+            [mfasDict setObject:mutableMfa forKey:requestId];
         }
     }];
     
@@ -152,6 +161,16 @@ int Mfa_SAVE_LIMIT = 256;
         [userDefaults setObject:mfaOrder forKey:Mfa_ORDER_KEY];
         [userDefaults synchronize];
     }
+}
+
+- (NSMutableArray<NSDictionary *> *)getSavedMfas {
+    NSMutableDictionary* mfasDict = [self getMfasDict];
+    NSMutableArray* mfaOrder =  [self getMfasOrder];
+    NSMutableArray <NSDictionary *> *savedMfas = [[NSMutableArray alloc] init];
+    for (id value in mfaOrder) {
+        [savedMfas addObject:[mfasDict objectForKey:value]];
+    }
+    return savedMfas;
 }
 
 - (NSMutableArray <NSDictionary *> *) getPendingMfas {

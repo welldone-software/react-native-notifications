@@ -252,6 +252,13 @@ describe('Commands', () => {
     });
   });
 
+  describe('getSavedMfas', () => {
+    it('sends to native', () => {
+      uut.getSavedMfas();
+      verify(mockedNativeCommandsSender.getSavedMfas()).called();
+    });
+  });
+
   describe('refreshToken', () => {
     it('sends to native', () => {
       uut.refreshToken();

@@ -23,6 +23,7 @@ interface NativeCommandsModule {
   removeDeliveredNotifications(identifiers: Array<string>): void;
   removeAllDeliveredNotifications(): void;
   getPendingMfas(): Promise<Notification[] | string>;
+  getSavedMfas(): Promise<Notification[] | string>;
   updateMfa(
     mfa: any & {mfa_request_id: string; answer: boolean},
     answer: boolean
@@ -117,6 +118,13 @@ export class NativeCommandsSender {
 
   public async getPendingMfas(): Promise<Notification[]> {
     const result = await this.nativeCommandsModule.getPendingMfas();
+    const payloadArray =
+      typeof result === 'string' ? JSON.parse(result) : result;
+    return payloadArray.map((payload: object) => new Notification(payload));
+  }
+
+  public async getSavedMfas(): Promise<Notification[]> {
+    const result = await this.nativeCommandsModule.getSavedMfas();
     const payloadArray =
       typeof result === 'string' ? JSON.parse(result) : result;
     return payloadArray.map((payload: object) => new Notification(payload));
