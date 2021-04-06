@@ -56,13 +56,13 @@ public class MfaStorage {
         return new JSONObject(rawJson);
     }
 
-    private JSONObject clearOverLimit (JSONObject json) {
+    private JSONObject clearOverLimit(JSONObject json) {
         int savedCount = json.length();
         if (savedCount > Mfa_SAVE_LIMIT) {
             int amountToDelete = savedCount - Mfa_SAVE_LIMIT;
             int amountDeleted = 0;
-            Iterator<String> keys = json.keys();
-            while(keys.hasNext()) {
+            for (Iterator<String> keys = json.keys(); keys.hasNext(); ) {
+                keys.next();
                 keys.remove();
                 amountDeleted++;
                 if (amountDeleted >= amountToDelete) {
