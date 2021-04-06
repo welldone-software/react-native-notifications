@@ -63,7 +63,7 @@ public class MfaStorage {
             int amountDeleted = 0;
             Iterator<String> keys = json.keys();
             while(keys.hasNext()) {
-                json.remove(keys.next());
+                keys.remove();
                 amountDeleted++;
                 if (amountDeleted >= amountToDelete) {
                     break;
