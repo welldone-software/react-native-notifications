@@ -2,10 +2,12 @@
 #import "RCTConvert+RNNotifications.h"
 #import "RNNotificationsStorage.h"
 #import "RNNotificationParser.h"
+#import "RNLogger.h"
 
 @implementation RNNotificationsStorage
 
 NSUserDefaults *userDefaults;
+RNLogger *logger;
 NSString *NOTIFICATIONS_KEY = @"Notifications";
 NSString *MFA_ORDER_KEY = @"Mfa Order";
 NSString *ANSWER_KEY = @"answer";
@@ -13,11 +15,12 @@ NSString *EXPIRED_TIME_KEY = @"expired_time";
 NSString *REQUEST_ID_KEY = @"mfa_request_id";
 NSString *IDENTIFIER_KEY = @"identifier";
 
-int Mfa_SAVE_LIMIT = 256;
+int MFA_SAVE_LIMIT = 256;
 
 - (instancetype) init {
     self = [super init];
     userDefaults = [NSUserDefaults standardUserDefaults];
+    logger = [RNLogger new];
     return self;
 }
 
@@ -46,9 +49,10 @@ int Mfa_SAVE_LIMIT = 256;
 }
 
 - (NSDictionary*)clearLimit:(NSMutableDictionary*) mfas order:(NSMutableArray*) order {
-    int overLimitCount = (int)[mfas count] - Mfa_SAVE_LIMIT;
+    int overLimitCount = (int)[mfas count] - MFA_SAVE_LIMIT;
     NSMutableArray *mutableOrder = [order mutableCopy];
     if (overLimitCount > 0) {
+        [logger saveLog:@"LOG" tag:@"RNNotificationsStorage" message:[NSString stringWithFormat:@"Reached limit MFAs of %d - %d MFAs to delete", MFA_SAVE_LIMIT, overLimitCount]];
         int deletedCount = 0;
         for (NSString *requestId in order) {
             [mutableOrder removeObject:requestId];
