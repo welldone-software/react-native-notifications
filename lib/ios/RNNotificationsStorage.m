@@ -49,8 +49,9 @@ int Mfa_SAVE_LIMIT = 256;
     int overLimitCount = (int)[mfas count] - Mfa_SAVE_LIMIT;
     if (overLimitCount > 0) {
         int deletedCount = 0;
+        NSMutableArray *mutableOrder = [order mutableCopy];
         for (NSString *requestId in order) {
-            [order removeObject:requestId];
+            [mutableOrder removeObject:requestId];
             if ([mfas objectForKey:requestId] != nil) {
                 [mfas removeObjectForKey:requestId];
                 deletedCount = deletedCount + 1;
@@ -59,6 +60,7 @@ int Mfa_SAVE_LIMIT = 256;
                 }
             }
         }
+        order = mutableOrder;
     }
     return mfas;
 }
