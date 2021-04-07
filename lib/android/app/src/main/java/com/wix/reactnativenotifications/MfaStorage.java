@@ -9,6 +9,7 @@ import com.wix.reactnativenotifications.core.notification.PushNotificationProps;
 import com.wix.reactnativenotifications.core.notificationdrawer.IPushNotificationsDrawer;
 import com.wix.reactnativenotifications.core.notificationdrawer.PushNotificationsDrawer;
 import com.wix.reactnativenotifications.utils.JsonConverter;
+import com.wix.reactnativenotifications.utils.LoggerWrapper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,11 +21,12 @@ public class MfaStorage {
 
     private static MfaStorage mInstance;
 
+    private static final String TAG = MfaStorage.class.getSimpleName();
     private static final String PREFERENCES_NAME = "react-native";
     private static final String NOTIFICATIONS = "notifications";
     private static final String DEFAULT_VALUE = "{}";
     private static final String ANSWER_KEY = "answer";
-    private static final int Mfa_SAVE_LIMIT = 256;
+    private static final int MFA_SAVE_LIMIT = 256;
 
     public static final String REQUEST_ID_KEY = "mfa_request_id";
     public static final String EXPIRED_TIME_KEY = "expired_time";
@@ -32,10 +34,12 @@ public class MfaStorage {
 
     private final SharedPreferences mPreferences;
     private final IPushNotificationsDrawer mNotificationsDrawer;
+    private final LoggerWrapper mLogger;
 
     private MfaStorage(Context context) {
         mPreferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
         mNotificationsDrawer = PushNotificationsDrawer.get(context.getApplicationContext());
+        mLogger = LoggerWrapper.getInstance(context.getApplicationContext());
     }
 
     public static MfaStorage getInstance(Context context) {
@@ -56,14 +60,15 @@ public class MfaStorage {
         return new JSONObject(rawJson);
     }
 
-    private JSONObject clearOverLimit (JSONObject json) {
+    private JSONObject clearOverLimit(JSONObject json) {
         int savedCount = json.length();
-        if (savedCount > Mfa_SAVE_LIMIT) {
-            int amountToDelete = savedCount - Mfa_SAVE_LIMIT;
+        if (savedCount > MFA_SAVE_LIMIT) {
+            int amountToDelete = savedCount - MFA_SAVE_LIMIT;
+            mLogger.i(TAG, "Reached " + MFA_SAVE_LIMIT + "MFAs - Deleting " + amountToDelete + " MFAs");
             int amountDeleted = 0;
-            Iterator<String> keys = json.keys();
-            while(keys.hasNext()) {
-                json.remove(keys.next());
+            for (Iterator<String> keys = json.keys(); keys.hasNext(); ) {
+                keys.next();
+                keys.remove();
                 amountDeleted++;
                 if (amountDeleted >= amountToDelete) {
                     break;
