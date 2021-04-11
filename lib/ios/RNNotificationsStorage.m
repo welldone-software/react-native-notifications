@@ -2,23 +2,26 @@
 #import "RCTConvert+RNNotifications.h"
 #import "RNNotificationsStorage.h"
 #import "RNNotificationParser.h"
+#import "RNLogger.h"
 
 @implementation RNNotificationsStorage
 
 NSUserDefaults *userDefaults;
+RNLogger *logger;
 NSString *NOTIFICATIONS_KEY = @"Notifications";
-NSString *Mfa_ORDER_KEY = @"Mfa Order";
+NSString *MFA_ORDER_KEY = @"Mfa Order";
 NSString *ANSWER_KEY = @"answer";
 NSString *EXPIRED_TIME_KEY = @"expired_time";
 NSString *REQUEST_ID_KEY = @"mfa_request_id";
 NSString *IDENTIFIER_KEY = @"identifier";
 NSString *MFA_ARRIVED_TIME_KEY = @"mfa_arrived_time";
 
-int Mfa_SAVE_LIMIT = 256;
+int MFA_SAVE_LIMIT = 256;
 
 - (instancetype) init {
     self = [super init];
     userDefaults = [NSUserDefaults standardUserDefaults];
+    logger = [RNLogger new];
     return self;
 }
 
@@ -43,19 +46,21 @@ int Mfa_SAVE_LIMIT = 256;
 }
 
 - (NSMutableArray *) getMfasOrder {
-    NSMutableArray* mfaOrder = [[userDefaults arrayForKey:Mfa_ORDER_KEY] mutableCopy];
+    NSMutableArray* mfaOrder = [[userDefaults arrayForKey:MFA_ORDER_KEY] mutableCopy];
     if (mfaOrder == nil) {
         mfaOrder = [NSMutableArray new];
     }
     return mfaOrder;
 }
 
-- (NSMutableDictionary*)clearLimit:(NSMutableDictionary*) mfas order:(NSMutableArray*) order {
-    int overLimitCount = (int)[mfas count] - Mfa_SAVE_LIMIT;
+- (NSDictionary*)clearLimit:(NSMutableDictionary*) mfas order:(NSMutableArray*) order {
+    int overLimitCount = (int)[mfas count] - MFA_SAVE_LIMIT;
+    NSMutableArray *mutableOrder = [order mutableCopy];
     if (overLimitCount > 0) {
+        [logger saveLog:@"LOG" tag:@"RNNotificationsStorage" message:[NSString stringWithFormat:@"Reached limit MFAs of %d - %d MFAs to delete", MFA_SAVE_LIMIT, overLimitCount]];
         int deletedCount = 0;
         for (NSString *requestId in order) {
-            [order removeObject:requestId];
+            [mutableOrder removeObject:requestId];
             if ([mfas objectForKey:requestId] != nil) {
                 [mfas removeObjectForKey:requestId];
                 deletedCount = deletedCount + 1;
@@ -65,7 +70,10 @@ int Mfa_SAVE_LIMIT = 256;
             }
         }
     }
-    return mfas;
+    NSMutableDictionary *data = [NSMutableDictionary new];
+    [data setObject:mfas forKey:@"mfas"];
+    [data setObject:mutableOrder forKey:@"order"];
+    return data;
 }
 
 -(void)dismissNotificaitons:(NSArray <NSString *> *)requestIds {
@@ -104,10 +112,11 @@ int Mfa_SAVE_LIMIT = 256;
     [mfaOrder addObject:requestId];
     [mfasDict setObject:mutableMfa forKey:requestId];
     
-    [userDefaults setObject:[self clearLimit:mfasDict order:mfaOrder] forKey:NOTIFICATIONS_KEY];
+    NSDictionary *data = [self clearLimit:mfasDict order:mfaOrder];
+    [userDefaults setObject:[data objectForKey:@"mfas"] forKey:NOTIFICATIONS_KEY];
     [userDefaults synchronize];
     
-    [userDefaults setObject:mfaOrder forKey:Mfa_ORDER_KEY];
+    [userDefaults setObject:[data objectForKey:@"order"] forKey:MFA_ORDER_KEY];
     [userDefaults synchronize];
 }
 
@@ -155,10 +164,11 @@ int Mfa_SAVE_LIMIT = 256;
     }];
     
     if (hasSavedAny) {
-        [userDefaults setObject:[self clearLimit:mfasDict order:mfaOrder] forKey:NOTIFICATIONS_KEY];
+        NSDictionary *data = [self clearLimit:mfasDict order:mfaOrder];
+        [userDefaults setObject:[data objectForKey:@"mfas"] forKey:NOTIFICATIONS_KEY];
         [userDefaults synchronize];
         
-        [userDefaults setObject:mfaOrder forKey:Mfa_ORDER_KEY];
+        [userDefaults setObject:[data objectForKey:@"order"] forKey:MFA_ORDER_KEY];
         [userDefaults synchronize];
     }
 }
