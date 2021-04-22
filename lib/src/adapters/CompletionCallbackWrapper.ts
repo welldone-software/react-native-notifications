@@ -48,9 +48,10 @@ export class CompletionCallbackWrapper {
     callback: Function
   ): (
     notification: object,
+    completion: () => void,
     actionResponse?: NotificationActionResponse
   ) => void {
-    return (notification, actionResponse) => {
+    return (notification, _completion, actionResponse) => {
       const completion = () => {
         if (Platform.OS === 'ios') {
           this.nativeCommandsSender.finishHandlingAction(
