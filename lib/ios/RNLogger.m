@@ -69,7 +69,8 @@ unsigned long long FILE_LIMIT = 6 * 1024 * 1000;
 
 - (NSString *)parseLog: (NSString *)type tag:(NSString *)tag message:(NSString *)message {
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"MMMM DD YYYY, h:mm:ss a"];
+    [formatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
+    [formatter setDateFormat:@"MMMM dd YYYY, h:mm:ss a"];
     NSDate *currentDate = [NSDate date];
     NSString *dateString = [formatter stringFromDate:currentDate];
     return [NSString stringWithFormat:@"[%@] [%@] %@: %@\n", type, dateString, tag, message];
