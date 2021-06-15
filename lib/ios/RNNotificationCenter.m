@@ -1,8 +1,17 @@
 #import "RNNotificationCenter.h"
 #import "RCTConvert+RNNotifications.h"
 #import "RNNotificationsStorage.h"
+#import "RNLogger.h"
 
 @implementation RNNotificationCenter
+
+RNLogger *logger;
+
+- (instancetype) init {
+    self = [super init];
+    logger = [RNLogger new];
+    return self;
+}
 
 - (void)requestPermissions {
     UNAuthorizationOptions authOptions = (UNAuthorizationOptionBadge | UNAuthorizationOptionSound | UNAuthorizationOptionAlert);
@@ -85,7 +94,14 @@
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     [center getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
         for (UNNotification *notification in notifications) {
-            [mfaStorage saveMfa:[RCTConvert UNNotificationPayload:notification]];
+            NSDictionary* mfaDict = [RCTConvert UNNotificationPayload:notification];
+            NSString * mfaJson = [logger parseDictionaryToJSON:mfaDict];
+            if (! mfaJson) {
+                [logger saveLog:@"ERROR" tag:@"RNNotificationsCenter" message:@"Could not parse Mfa"];
+            } else {
+                [logger saveLog:@"LOG" tag:@"RNNotificationsCenter" message:[NSString stringWithFormat:@"%@ Mfa: %@", stateString, mfaJson]];
+            }
+            [mfaStorage saveMfa:mfaDict];
         }
         resolve([mfaStorage getPendingMfas]);
     }];
