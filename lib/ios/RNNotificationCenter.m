@@ -99,7 +99,7 @@ RNLogger *logger;
             if (! mfaJson) {
                 [logger saveLog:@"ERROR" tag:@"RNNotificationsCenter" message:@"Could not parse Mfa"];
             } else {
-                [logger saveLog:@"LOG" tag:@"RNNotificationsCenter" message:[NSString stringWithFormat:@"%@ Mfa: %@", stateString, mfaJson]];
+                [logger saveLog:@"LOG" tag:@"RNNotificationsCenter" message:[NSString stringWithFormat:@"Mfa: %@", mfaJson]];
             }
             [mfaStorage saveMfa:mfaDict];
         }
