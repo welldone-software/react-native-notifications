@@ -5,11 +5,11 @@
 
 @implementation RNNotificationCenter
 
-RNLogger *logger;
+RNLogger *_logger;
 
 - (instancetype) init {
     self = [super init];
-    logger = [RNLogger new];
+    _logger = [RNLogger new];
     return self;
 }
 
@@ -95,11 +95,11 @@ RNLogger *logger;
     [center getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
         for (UNNotification *notification in notifications) {
             NSDictionary* mfaDict = [RCTConvert UNNotificationPayload:notification];
-            NSString * mfaJson = [logger parseDictionaryToJSON:mfaDict];
+            NSString * mfaJson = [_logger parseDictionaryToJSON:mfaDict];
             if (! mfaJson) {
-                [logger saveLog:@"ERROR" tag:@"RNNotificationsCenter" message:@"Could not parse Mfa"];
+                [_logger saveLog:@"ERROR" tag:@"RNNotificationsCenter" message:@"Could not parse Mfa"];
             } else {
-                [logger saveLog:@"LOG" tag:@"RNNotificationsCenter" message:[NSString stringWithFormat:@"Mfa: %@", mfaJson]];
+                [_logger saveLog:@"LOG" tag:@"RNNotificationsCenter" message:[NSString stringWithFormat:@"Mfa: %@", mfaJson]];
             }
             [mfaStorage saveMfa:mfaDict];
         }
