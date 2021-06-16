@@ -57,7 +57,7 @@ int MFA_SAVE_LIMIT = 256;
     int overLimitCount = (int)[mfas count] - MFA_SAVE_LIMIT;
     NSMutableArray *mutableOrder = [order mutableCopy];
     if (overLimitCount > 0) {
-        [logger saveLog:@"LOG" tag:@"RNNotificationsStorage" message:[NSString stringWithFormat:@"Reached limit MFAs of %d - %d MFAs to delete", MFA_SAVE_LIMIT, overLimitCount]];
+        [logger saveLog:@"LOG" tag:@"RNNotificationsStorage" message:@"Reached MFA's limit!"];
         int deletedCount = 0;
         for (NSString *requestId in order) {
             [mutableOrder removeObject:requestId];
