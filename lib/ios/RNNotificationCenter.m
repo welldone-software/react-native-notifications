@@ -2,7 +2,15 @@
 #import "RCTConvert+RNNotifications.h"
 #import "RNNotificationsStorage.h"
 
-@implementation RNNotificationCenter
+@implementation RNNotificationCenter {
+    RNNotificationsStorage* _notificationStorage;
+}
+
+- (instancetype)init {
+    self = [super init];
+    _notificationStorage = [RNNotificationsStorage new];
+    return self;
+}
 
 - (void)requestPermissions {
     UNAuthorizationOptions authOptions = (UNAuthorizationOptionBadge | UNAuthorizationOptionSound | UNAuthorizationOptionAlert);
@@ -81,13 +89,12 @@
 }
 
 - (void)getDeliveredNotifications:(RCTPromiseResolveBlock)resolve {
-    RNNotificationsStorage *mfaStorage = [RNNotificationsStorage new];
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     [center getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
         for (UNNotification *notification in notifications) {
-            [mfaStorage saveMfa:[RCTConvert UNNotificationPayload:notification]];
+            [_notificationStorage saveMfa:[RCTConvert UNNotificationPayload:notification]];
         }
-        resolve([mfaStorage getPendingMfas]);
+        resolve([self->_notificationStorage getPendingMfas]);
     }];
 }
 
